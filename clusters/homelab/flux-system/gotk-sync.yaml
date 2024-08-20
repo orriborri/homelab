@@ -11,7 +11,7 @@ spec:
     branch: main
   secretRef:
     name: flux-system
-  url: ssh://git@github.com/FruitieX/homelab
+  url: ssh://git@github.com/orriborri/homelab
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -19,7 +19,7 @@ metadata:
   name: flux-system
   namespace: flux-system
 spec:
-  interval: 1h
+  interval: 10m0s
   path: ./clusters/homelab
   prune: true
   sourceRef:
