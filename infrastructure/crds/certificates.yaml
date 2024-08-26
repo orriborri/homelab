@@ -2,10 +2,10 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: fruitiex-org-tls
+  name: orriborri-com-tls
   namespace: default
 spec:
-  secretName: fruitiex-org-tls
+  secretName: orriborri-com-tls
   issuerRef:
     kind: ClusterIssuer
     name: ${LETSENCRYPT_CLUSTER_ISSUER}
