@@ -8,7 +8,7 @@ spec:
   tls:
     - secretName: fruitiex-org-tls
   rules:
-    - host: homectl.fruitiex.org
+    - host: homectl.orriborri.com
       http:
         paths:
           - path: /

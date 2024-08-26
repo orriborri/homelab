@@ -19,13 +19,13 @@ metadata:
   name: fruitiex-org-ingress
   namespace: default
   annotations:
-    nginx.ingress.kubernetes.io/server-alias: www.fruitiex.org
+    nginx.ingress.kubernetes.io/server-alias: www.orriborri.com
 spec:
   ingressClassName: public
   tls:
     - secretName: fruitiex-org-tls
   rules:
-    - host: fruitiex.org
+    - host: orriborri.com
       http:
         paths:
           - path: /
@@ -75,7 +75,7 @@ spec:
     spec:
       containers:
         - name: fruitiex-org
-          image: ghcr.io/fruitiex/fruitiex.org:main@sha256:fe34bc76ad2f876dcfc8e601ea1518db7fb8caa01fd6b60bc580698f10c813e3
+          image: ghcr.io/fruitiex/orriborri.com:main@sha256:fe34bc76ad2f876dcfc8e601ea1518db7fb8caa01fd6b60bc580698f10c813e3
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

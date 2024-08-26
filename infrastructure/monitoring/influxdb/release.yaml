@@ -26,4 +26,4 @@ spec:
       className: private
       tls: true
       secretName: fruitiex-org-tls
-      hostname: influxdb.fruitiex.org
+      hostname: influxdb.orriborri.com

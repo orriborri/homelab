@@ -9,7 +9,7 @@ provisioner: csi.san.synology.com
 parameters:
   protocol: iscsi
   csi.storage.k8s.io/fstype: ext4
-  dsm: nectarine.internal.fruitiex.org
+  dsm: nectarine.internal.orriborri.com
   location: "/volume3"
 reclaimPolicy: Retain
 allowVolumeExpansion: true

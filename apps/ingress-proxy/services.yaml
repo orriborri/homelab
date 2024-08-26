@@ -6,4 +6,4 @@ metadata:
   namespace: ingress-proxy
 spec:
   type: ExternalName
-  externalName: nectarine.internal.fruitiex.org
+  externalName: nectarine.internal.orriborri.com

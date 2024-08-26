@@ -22,7 +22,7 @@ spec:
   tls:
     - secretName: fruitiex-org-tls
   rules:
-    - host: homectl-server.fruitiex.org
+    - host: homectl-server.orriborri.com
       http:
         paths:
           - path: /

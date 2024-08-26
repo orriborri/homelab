@@ -24,7 +24,7 @@ spec:
             # TODO: replace annotation filter with ingress class filter, which will be supported in a future version of external-dns
             # - --ingress-class=private
             - --annotation-filter=external-dns.alpha.kubernetes.io/exclude notin (true)
-            - --domain-filter=fruitiex.org
+            - --domain-filter=orriborri.com
             - --provider=cloudflare
             - --cloudflare-dns-records-per-page=5000
           env:

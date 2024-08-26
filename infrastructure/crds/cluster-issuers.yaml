@@ -21,7 +21,7 @@ spec:
               key: api-token
         selector:
           dnsNames:
-            - '*.fruitiex.org'
+            - "*.orriborri.com"
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -45,4 +45,4 @@ spec:
               key: api-token
         selector:
           dnsNames:
-            - '*.fruitiex.org'
+            - "*.orriborri.com"

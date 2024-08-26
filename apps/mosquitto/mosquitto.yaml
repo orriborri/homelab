@@ -4,16 +4,16 @@ metadata:
   name: mqtt
   namespace: default
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: mqtt.fruitiex.org
+    external-dns.alpha.kubernetes.io/hostname: mqtt.orriborri.com
 spec:
   type: LoadBalancer
   selector:
     app: mosquitto
   ports:
-  - name: mqtt
-    protocol: TCP
-    port: 1883
-    targetPort: 1883
+    - name: mqtt
+      protocol: TCP
+      port: 1883
+      targetPort: 1883
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -41,3 +41,4 @@ spec:
               cpu: 100m
               memory: 512Mi
 ---
+

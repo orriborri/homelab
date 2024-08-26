@@ -15,7 +15,7 @@ spec:
         namespace: flux-system
   values:
     metrics:
-      health: 
+      health:
         enabled: false
       internal:
         enabled: false
@@ -27,7 +27,7 @@ spec:
       outputs:
         - influxdb_v2:
             urls:
-              - "https://influxdb.fruitiex.org"
+              - "https://influxdb.orriborri.com"
             organization: influxdata
             bucket: home
             token: ${INFLUXDB_TOKEN}
@@ -35,7 +35,7 @@ spec:
       inputs:
         - mqtt_consumer:
             servers:
-              - "tcp://mqtt.fruitiex.org:1883"
+              - "tcp://mqtt.orriborri.com:1883"
             topics:
               - "home/#"
             data_format: json_v2
