@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: public
   tls:
-    - secretName: fruitiex-org-tls
+    - secretName: orriborri-com-tls
   rules:
     - host: ${FLUX_NOTIFICATION_DOMAIN_NAME}
       http:

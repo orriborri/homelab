@@ -22,7 +22,7 @@ spec:
         enabled: true
         ingressClassName: private
         tls:
-          - secretName: fruitiex-org-tls
+          - secretName: orriborri-com-tls
         hosts:
           - grafana.orriborri.com
       persistence:
@@ -47,7 +47,7 @@ spec:
         enabled: true
         ingressClassName: private
         tls:
-          - secretName: fruitiex-org-tls
+          - secretName: orriborri-com-tls
         hosts:
           - alertmanager.orriborri.com
       alertmanagerSpec:
@@ -67,7 +67,7 @@ spec:
         enabled: true
         ingressClassName: private
         tls:
-          - secretName: fruitiex-org-tls
+          - secretName: orriborri-com-tls
         hosts:
           - prometheus.orriborri.com
       prometheusSpec:

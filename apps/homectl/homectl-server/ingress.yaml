@@ -20,7 +20,7 @@ metadata:
 spec:
   ingressClassName: private
   tls:
-    - secretName: fruitiex-org-tls
+    - secretName: orriborri-com-tls
   rules:
     - host: homectl-server.orriborri.com
       http:

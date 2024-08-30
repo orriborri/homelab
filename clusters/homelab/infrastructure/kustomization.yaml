@@ -10,9 +10,9 @@ resources:
   #- synology-csi.yaml
   - crds.yaml
   #- kube-prometheus-stack.yaml
-  #- external-dns.yaml
-  #- ingress-nginx-public.yaml
-  #- ingress-nginx-private.yaml
+  - external-dns.yaml
+  - ingress-nginx-public.yaml
+  - ingress-nginx-private.yaml
   - metallb.yaml
   #- reloader.yaml
   #- reflector.yaml

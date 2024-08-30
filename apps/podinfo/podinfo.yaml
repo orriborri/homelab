@@ -23,7 +23,7 @@ metadata:
 spec:
   ingressClassName: public
   tls:
-    - secretName: fruitiex-org-tls
+    - secretName: orriborri-com-tls
   rules:
     - host: ${PODINFO_DOMAIN_NAME}
       http:
