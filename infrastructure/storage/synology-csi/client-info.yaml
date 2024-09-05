@@ -4,35 +4,36 @@ metadata:
     name: client-info-secret
     namespace: synology-csi
 stringData:
-    client-info.yaml: ENC[AES256_GCM,data:bCPFvdrT5u7rRdHxsXKCOGVHYRIPkpgB4ElkuBYr5fkjSKnnQQpa3gVP19gv9NvoZuuDi3KeueHnPFlLkRHrLT7VIA01KSMFWfUDWY9A8lgRYJTHZ5cKSYOrrk+Sj+pZhJi7NZvV2FAvB6DT+jf8QkOy+oPebN2Y4WXo8buPQuodwWDV8JRWBMJTOAhOkt8=,iv:74r83RxrsoW0VXoorUd70CZ65uHxr2vGs5JWzKEeSpw=,tag:Gr7k+cy418k2/QJnr/a3Iw==,type:str]
+    client-info.yaml: ENC[AES256_GCM,data:ThyYevaboIEJbrHrtInRafXw64+2cN+yUZbRiw/3LeoivwZA4ao39WHayd4nJGU/EPeJpXCx82Ax02jQPGd1t8W4ZmdSgz0HtOF7q+I149vuIquO/Xr0nhHaUxpGpoDoOg2mshWtvHHlCQyohXjlyO69ac/rzpf5Q0uzgfjiRts=,iv:14o3im3xzboRr9MKR+g1DlOYc80tr3bjzotoTpFTfmA=,tag:+o8xyhDQ8iCVnfVCwz8L/g==,type:str]
 sops:
     kms: []
     gcp_kms: []
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2023-11-27T16:17:21Z"
-    mac: ENC[AES256_GCM,data:GGb/BLe6P8cvX222HonODqupqimW+YH+gjHWqBxpv6UKVq+1FLB9lZ6yx5iyCLpa4fwdD/5aYRELz2qN15dGHfaATt1/CSh+QfuqQqZl8RjjJg+KpQrVTgS4G4nd3muRlqsT74UgAeF2jeyvENJjJbdlebYFDnx/ODCcD/0U9M8=,iv:xoCol8HmGspPSQnbs6uy2NUePJ8o71KqbOfNzQZezyQ=,tag:piqQYRZUv3k6nok0gAJRYg==,type:str]
+    lastmodified: "2024-09-05T18:47:39Z"
+    mac: ENC[AES256_GCM,data:UsjiP9SuBaBIyNJa+U6ihhA/rTTPHfY5+vP7xJUiUIMEJD3T309fyaFUNF0PT6ss84ncPojN3C3snZIAIuwh6/bkgp2WGozjsKC/g7rSbF/riWVapHknPKtr9je1knEqs6AdUJqFwJXIzaMiBzmJghOEoQufLhyjWEGub01zJhM=,iv:UdZK9Y6mYTClOc63A1MjCyrFPtQ7unEtgTjuMK9vBhg=,tag:kTiLjlo47VFWpD7uP6Fe+w==,type:str]
     pgp:
-        - created_at: "2023-04-13T17:50:04Z"
+        - created_at: "2024-09-05T18:47:39Z"
           enc: |-
             -----BEGIN PGP MESSAGE-----
 
-            wcFMA8WjeZLD+fxwAQ//ZkWGp+CLf0/gblQBUwhrn1w1DOOYE6llS2TzOKxN/WNu
-            hXZpeVwONpWI4hXDyvvFTSegUhIeIHYLHSz2rmDOpSlmbEFmTiUAmiH3vAkviiYD
-            kKFYifEnL4Xh92xsbGSJw3JP7Rve5ceLPMjLZxVR2m4NGkdoQy2dpDZQl8ZaaoTq
-            ikbX75vcfzRISFNzz+l47ED89u1lXLqmiAQabO80904QPXyUWZPqpjfxq0n3i0O2
-            vjee3wbfRjfXWhgGa5RK+mMNBso0Ys72ke9oo6AkhEX84kXeUT0b1f8NvES+ANQ0
-            8cuZdCeAkteSSzF7+hpN8T39Xxf9l4kwWcPc+0YgjTVYmsoIfauwKo8jYYVBdTfp
-            NKroacw7JNeHYPc77t+X76boGNZDPkBNpuVQo699VcpOu24HqFjWoGRxbbqYMIlz
-            H1GQoqxGgvmsoJr1wYrsViBLb1gwCZ9rbYDq1fytu8WxIhAHWSbsTU8SzmUOPbE3
-            v5V71qBaOZzA0pUbBVxDNpUCTM7vKc2tDw7NwEHI9mb/HxAsgQ9nwO9U5bHIRj4n
-            XP4Pge634UMXqCoBIrYFaB5ZgiwNFkdZXPKIZE8ViX0ct/uul0ykDlbxMIpW391F
-            UGe4NKY8d2NZJIhDb2Ki3JEgvw+Zmlr42aX6eeQCiR9NGFpxpO8Fg/8Qvtt2VUnS
-            UQFZ9LNyhmv7yC18PZOs2uajBczK/fD8DxScTg8RM6lGi31OJGGIKEXG4faGQ951
-            bc1GEbTDPou//yonc+HC0JnuRiugEidxi9/cNe1s5jdDnA==
-            =arQA
+            hQIMA1X/kZ4Jzp5jAQ//VFKiMJucLaBW1enkt0LWJVCGDiDO+INTwArCebdfL5FL
+            Pp1nCBieRp7xYWFhWmoVQNZ6qRFoQpsl6Q5YpyoeBjv8vNguZnmBMrWLCTxuvLbM
+            /1U2XUvry4WsOmwgIKO4Yvsf1ifc2JPgJEAFCgA9ySBQ+RAECwaGjikpstv/rwfJ
+            U2OTWkLmMFNJB0aoN5W/ubVqvC4rWzihxHn9nRugZdHXW1pv1eQd5Uo6ydjfONpB
+            LfqR4Y3WppchiWeamCnirBK6bZB25/kY6/gRTxWshA8Uj6YnllQGxxUUAYtDkAnC
+            p1oDehJnAtpkrPsGu8n5L8SiXoNBbN4NuqpifSc7Q0H2+MHPP6wRgfl12A4RqjZV
+            2I/gJxXzB95SbQBINpgGt7dOIXg64FbGd10AnZt30IhFC85lbewMKn64iY9r/R/0
+            /bDUfvzN5DwX1rTd29ehpybfxCnMwCYPGq9GGOJOsLRk1FtSLKwwGpeo2gUlz+iy
+            guD2rKVnY+86k770GmWEcNGnPiEzIaEQ0DzFpUUXROID6F6H6CBjM61SPOMTWvtm
+            n34ZtStNYDBXRhJacMdSDh/HanETRjTSuyqSQAb+xXLSUs0keXQ+D5foqiJ4s2Db
+            i48P938ZpaYsGHUSGGUxVcQL+23KONiUDiWczjOVWTvukTDRX0zX7OUEC8KLcd/U
+            aAEJAhC7G6xbLLLO2m57vqAL3J5akkm7RtkWCiRmt4C7juRA8E+Jd0QAO30dDEHm
+            2ferIP4k76WH2ygcTXYizlH4ghc2cgD/SI9gqQldyuM2HIfTw7zgu1J0zbI7OhVJ
+            ZgcyrrKWPAQ6
+            =NbkZ
             -----END PGP MESSAGE-----
-          fp: 3536F7F9345D96C86FB7F9CD21FAFEE575B18815
+          fp: 7A5DC69AD7F7A05AAF22EBD8005B9C45909B266E
     encrypted_regex: ^(data|stringData)$
-    version: 3.8.0
+    version: 3.9.0
