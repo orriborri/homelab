@@ -9,5 +9,7 @@ pkgs.mkShell {
     fluxcd
     talosctl
     pre-commit
+    git
+    kubernetes-helm
   ];
 }

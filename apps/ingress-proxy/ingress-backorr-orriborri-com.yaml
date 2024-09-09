@@ -1,0 +1,54 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: backorr-orriborri-com
+    namespace: ingress-proxy
+    annotations:
+        external-dns.alpha.kubernetes.io/exclude: "true"
+spec:
+    ingressClassName: public
+    tls:
+        - secretName: orriborri-com-tls
+    rules:
+        - host: ENC[AES256_GCM,data:NfenKu2tvVljoeJzkA==,iv:77uQEiJDc5mnWhCYnOV5xdutLaV/DuGrmJ7O50eelAY=,tag:HoyeZ1huVeVes8ePVLmHzg==,type:str]
+          http:
+            paths:
+                - path: /
+                  pathType: Prefix
+                  backend:
+                    service:
+                        name: backorr
+                        port:
+                            number: 5000
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2024-09-09T18:31:28Z"
+    mac: ENC[AES256_GCM,data:9Qe/uOp47qUPvjDWxuMhoM833wkxjWevaV9SW97I6bCF2hz7WoKtkw4NvbtcCGOEEuIL+OB0O7NVCM6fdkzUuiM3vvwn8Rc68ebUbrSRPAf3av0Ejqu/JmUtC1hxFsPy+KjZ4eXLEFP0MY6bQc4ZKVYTEv9OT3NwnwTgYY2D7zY=,iv:wluvLokyBHCzA5IvZ7gCq3XnFMn+b+kSV13OInzr2Q0=,tag:7JmyDM+5XgM/mvmtbUKqEw==,type:str]
+    pgp:
+        - created_at: "2024-09-09T18:30:48Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA1X/kZ4Jzp5jAQ/8DV/6bO/S8LLBx/mr2w2RFi/0rgnWNsn3kUUE3ekaeitx
+            KlPcwEQDGf/N1fAb3f5/uGJ8lqrUYPEtqdaGe7/w161lWUst3Vwxk25p8pE/euQE
+            szMx4q21GpIov6gbTHIQCcwbTOEHgAkZqpBJxnrRV4pdVhStP2azeleXpcRejUu1
+            bBViCZ7JI9Na3PUvCbHh+R1unFtN81MO4C6P7G9wGPd39M+PZP/2+wPTtr+47Is6
+            BCQ9/QSa6q9HnRyDg+y7NtVXKCgNqhlrI4JSfb+f+p6QWmX3D+Z0OIbyI+aL6FMG
+            UyfKwMK4bgA7YoH1/cHhK71Hy7BJk3voJ5IziEMI/fhBs+AAJSo+kl+cJDnQZJiT
+            cs8FagLRA9iyFqyHviuY5bLGafNNn6iRmUGunG98yk/z6LmishFW4uDZDfGFXBml
+            wte4FH4y9aGSXZ4yFwciq104ikTbGKovmZ9zj7tx4LzHrE9C9NL04DAP9eFvGpG6
+            PJM7lCu5kiJXHrB/m9vt+h2qzSBlA7NvgFxWPU9s3mSJymFogWJh75uBiMvucRQV
+            KjNLKR6cziF5I3D1DBtgpcOAv5bZFcQYB9/cUW0MADV+/wlxqE1NjCzT3nZWdBem
+            C/XfIcinSARs8MMacn3KNs8QKhI9DNhXOQiV67B2Q1gxH7EZPDeuiQXsDmHNci3U
+            aAEJAhCUXW3wZoZoyJAC6CCW1NFp69MPPNPpMdkTfWDFa1GkGI8Ot0Ln4beV08Pu
+            F9Bmn9QN78L5fZ40e4VepgjOXfDZWtaeFyhvA3FeJfpmHlX6nCqP/16oOl5NxwnL
+            1uF7W/QUCbdC
+            =1RfA
+            -----END PGP MESSAGE-----
+          fp: 7A5DC69AD7F7A05AAF22EBD8005B9C45909B266E
+    encrypted_regex: ^(hosts?)$
+    version: 3.9.0
