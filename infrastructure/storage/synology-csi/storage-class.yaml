@@ -13,14 +13,3 @@ parameters:
   location: "/volume1"
 reclaimPolicy: Retain
 allowVolumeExpansion: true
----
-apiVersion: snapshot.storage.k8s.io/v1
-kind: VolumeSnapshotClass
-metadata:
-  name: syno-snapshot
-  annotations:
-    storageclass.kubernetes.io/is-default-class: "false"
-driver: csi.san.synology.com
-deletionPolicy: Delete
-parameters:
-  description: "Kubernetes CSI"
