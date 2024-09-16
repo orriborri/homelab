@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: flux-system
 resources:
   - podinfo.yaml
+  - audiobookshelf.yaml
   #- mosquitto.yaml
   - postgres.yaml
 #- add-bot.yaml
