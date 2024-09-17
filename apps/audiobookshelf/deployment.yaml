@@ -21,9 +21,9 @@ spec:
               containerPort: 80
               protocol: TCP
           resources:
-            limits:
+            requests:
               memory: 128Mi
-              cpu: 100m
+              cpu: 1
           volumeMounts:
             - name: audiobookshelf-data
               mountPath: /audiobooks

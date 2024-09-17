@@ -4,16 +4,16 @@ namespace: flux-system
 resources:
   - podinfo.yaml
   - audiobookshelf.yaml
-  #- mosquitto.yaml
+  - mosquitto.yaml
   - postgres.yaml
 #- add-bot.yaml
 #- homectl.yaml
 #- hue-mqtt.yaml
-#- ingress-proxy.yaml
+  - ingress-proxy.yaml
 #- lifx-mqtt.yaml
 #- tuya-mqtt.yaml
 #- twinkly-mqtt.yaml
 #- nordpool-mqtt.yaml
 #- adb-mqtt.yaml
 #- fruitiex-org.yaml
-#- influxdb.yaml
+  - influxdb.yaml

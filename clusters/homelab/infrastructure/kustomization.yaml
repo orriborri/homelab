@@ -14,7 +14,6 @@ resources:
   - ingress-nginx-public.yaml
   - ingress-nginx-private.yaml
   - metallb.yaml
-  #- reloader.yaml
-  #- reflector.yaml
+  - reloader.yaml
+  - reflector.yaml
   - influxdb.yaml
-  - loki-stack.yaml

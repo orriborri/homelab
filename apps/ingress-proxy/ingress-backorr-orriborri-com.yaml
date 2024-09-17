@@ -10,7 +10,7 @@ spec:
     tls:
         - secretName: orriborri-com-tls
     rules:
-        - host: ENC[AES256_GCM,data:NfenKu2tvVljoeJzkA==,iv:77uQEiJDc5mnWhCYnOV5xdutLaV/DuGrmJ7O50eelAY=,tag:HoyeZ1huVeVes8ePVLmHzg==,type:str]
+        - host: ENC[AES256_GCM,data:MXZtNA67iz0RlIhZDgO+6w==,iv:et3G+BGzGuGcxsQKRmal1c+N8enECrEaZwo0qR4HrX0=,tag:ikWS8p/IfxT2vvK9v3qojQ==,type:str]
           http:
             paths:
                 - path: /
@@ -26,8 +26,8 @@ sops:
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2024-09-09T18:31:28Z"
-    mac: ENC[AES256_GCM,data:9Qe/uOp47qUPvjDWxuMhoM833wkxjWevaV9SW97I6bCF2hz7WoKtkw4NvbtcCGOEEuIL+OB0O7NVCM6fdkzUuiM3vvwn8Rc68ebUbrSRPAf3av0Ejqu/JmUtC1hxFsPy+KjZ4eXLEFP0MY6bQc4ZKVYTEv9OT3NwnwTgYY2D7zY=,iv:wluvLokyBHCzA5IvZ7gCq3XnFMn+b+kSV13OInzr2Q0=,tag:7JmyDM+5XgM/mvmtbUKqEw==,type:str]
+    lastmodified: "2024-09-18T05:21:11Z"
+    mac: ENC[AES256_GCM,data:rRIENUIYdgaDl2WzOIicxeKrtyorm80SR86nMMrASD4ZzqbNaIs8HJcjGNx662KTRLVYVV6rR8719Un/3QPHlL6IORWOdUEdSBpyyN0y9So8Db10eD9/Kq6rKzRUY3EXXYTqVvZAsenpaXJ60r7k4Q6cogzDhrSPByOHReYW+TU=,iv:6asbr2ithnisFtz8XSqfuyhybj8mzYZnUp6vOjh0Y3w=,tag:38vXFqsJlCHp+R1B2bXhXw==,type:str]
     pgp:
         - created_at: "2024-09-09T18:30:48Z"
           enc: |-
