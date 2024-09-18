@@ -4,4 +4,4 @@ metadata:
   namespace: flux-system
   name: cluster-config
 data:
-  LETSENCRYPT_CLUSTER_ISSUER: letsencrypt-staging
+  LETSENCRYPT_CLUSTER_ISSUER: letsencrypt-prod
