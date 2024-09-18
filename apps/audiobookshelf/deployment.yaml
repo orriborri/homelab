@@ -26,13 +26,7 @@ spec:
               cpu: 1
           volumeMounts:
             - name: audiobookshelf-data
-              mountPath: /audiobooks
-            - name: audiobookshelf-data
-              mountPath: /podcasts
-            - name: audiobookshelf-data
-              mountPath: /config
-            - name: audiobookshelf-data
-              mountPath: /metadata
+              mountPath: /data
       volumes:
         - name: audiobookshelf-data
           persistentVolumeClaim:
