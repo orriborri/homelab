@@ -25,9 +25,24 @@ spec:
               memory: 128Mi
               cpu: 1
           volumeMounts:
-            - name: audiobookshelf-data
-              mountPath: /data
+            - name: audiobookshelf-podcast-data
+              mountPath: /podcasts
+            - name: audiobookshelf-audiobooks-data
+              mountPath: /audiobooks
+            - name: audiobookshelf-metadata-data
+              mountPath: /metadata
+            - name: audiobookshelf-config-data
+              mountPath: /config
       volumes:
-        - name: audiobookshelf-data
+        - name: audiobookshelf-podcast-data
           persistentVolumeClaim:
-            claimName: audiobookshelf-data
+            claimName: audiobookshelf-podcast-data
+        - name: audiobookshelf-audiobooks-data
+          persistentVolumeClaim:
+            claimName: audiobookshelf-audiobooks-data
+        - name: audiobookshelf-metadata-data
+          persistentVolumeClaim:
+            claimName: audiobookshelf-metadata-data
+        - name: audiobookshelf-config-data
+          persistentVolumeClaim:
+            claimName: audiobookshelf-config-data
