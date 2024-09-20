@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: calibre
+  namespace: default
+spec:
+  ingressClassName: private
+  tls:
+    - secretName: orriborri-com-tls
+  rules:
+    - host: calibre.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: calibre
+                port:
+                  number: 80
