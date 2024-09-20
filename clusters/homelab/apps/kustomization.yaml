@@ -7,9 +7,9 @@ resources:
   - mosquitto.yaml
   - postgres.yaml
   - calibre.yaml
-#- add-bot.yaml
-#- homectl.yaml
-#- hue-mqtt.yaml
+  #- add-bot.yaml
+  #- homectl.yaml
+  #- hue-mqtt.yaml
   - ingress-proxy.yaml
 #- lifx-mqtt.yaml
 #- tuya-mqtt.yaml
@@ -17,4 +17,4 @@ resources:
 #- nordpool-mqtt.yaml
 #- adb-mqtt.yaml
 #- fruitiex-org.yaml
-  - influxdb.yaml
+# - influxdb.yaml
