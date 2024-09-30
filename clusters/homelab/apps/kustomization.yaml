@@ -6,6 +6,7 @@ resources:
   - audiobookshelf.yaml
   - mosquitto.yaml
   - postgres.yaml
+  - homeassistant.yaml
   #- calibre.yaml
   #- add-bot.yaml
   #- homectl.yaml
