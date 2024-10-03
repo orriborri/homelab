@@ -12,3 +12,4 @@ resources:
   - prometheus-community.yaml
   - reloader.yaml
   - influxdata.yaml
+  - homeassistant.yaml
