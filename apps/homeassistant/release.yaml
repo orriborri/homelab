@@ -3,14 +3,12 @@ kind: Ingress
 metadata:
   name: home-assistant
   namespace: default
-  annotations:
-    external-dns.alpha.kubernetes.io/exclude: "true"
 spec:
   ingressClassName: private
   tls:
     - secretName: orriborri-com-tls
   rules:
-    - host: home-assistant.orriborri.com
+    - host: ha.orriborri.com
       http:
         paths:
           - path: /
@@ -19,7 +17,7 @@ spec:
               service:
                 name: home-assistant
                 port:
-                  number: 8123
+                  number: 80
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -40,7 +38,8 @@ spec:
   values:
     service:
       type: LoadBalancer
-      port: 8123
+      port: 80
+      targetPort: 8123
     persistence:
       enabled: true
       accessMode: ReadWriteMany
