@@ -2,11 +2,15 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: home-assistant
-  namespace: default
+  namespace: default # Ensure it's the same namespace as your service
 spec:
   ingressClassName: private
   tls:
     - secretName: orriborri-com-tls
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
   rules:
     - host: ha.orriborri.com
       http:
@@ -17,7 +21,7 @@ spec:
               service:
                 name: home-assistant
                 port:
-                  number: 8080
+                  number: 80
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -39,3 +43,15 @@ spec:
     persistence:
       enabled: true
       accessMode: ReadWriteMany
+    service:
+      type: LoadBalancer
+      port: 80
+      targetPort: 8123
+    configuration:
+      enabled: true
+      templateConfig: |-
+        http:
+          base_url: https://ha.orriborri.com
+          use_x_forwarded_for: true
+          trusted_proxies:
+            - 10.244.0.0/16
