@@ -17,7 +17,7 @@ spec:
               service:
                 name: home-assistant
                 port:
-                  number: 80
+                  number: 8080
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -36,10 +36,6 @@ spec:
         name: home-assistant
         namespace: flux-system
   values:
-    service:
-      type: LoadBalancer
-      port: 80
-      targetPort: 8123
     persistence:
       enabled: true
       accessMode: ReadWriteMany
