@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: home-assistant
+  name: firefly
   namespace: default # Ensure it's the same namespace as your service
 spec:
   ingressClassName: private
@@ -12,7 +12,7 @@ spec:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
   rules:
-    - host: ha.orriborri.com
+    - host: firefly.orriborri.com
       http:
         paths:
           - path: /
@@ -26,32 +26,25 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: home-assistant
+  name: firefly
   namespace: default
 spec:
   interval: 1h
   timeout: 5m
   chart:
     spec:
-      chart: home-assistant
+      chart: firefly-iii
       version: "*"
       sourceRef:
         kind: HelmRepository
-        name: home-assistant
+        name: firefly
         namespace: flux-system
-  values:
-    persistence:
-      enabled: true
-      accessMode: ReadWriteMany
-    service:
-      type: LoadBalancer
-      port: 80
-      targetPort: 8123
-    configuration:
-      enabled: true
-      templateConfig: |-
-        default_config:
-        http:
-          use_x_forwarded_for: true
-          trusted_proxies:
-            - 10.244.0.0/16
+    values:
+      persistence:
+        enabled: true
+        accessMode: ReadWriteMany
+      service:
+        type: LoadBalancer
+        port: 80
+      envFrom:
+        name: firefly-config

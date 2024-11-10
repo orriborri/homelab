@@ -7,6 +7,7 @@ resources:
   - mosquitto.yaml
   - postgres.yaml
   - homeassistant.yaml
+  - firefly.yaml
   #- calibre.yaml
   #- add-bot.yaml
   #- homectl.yaml
