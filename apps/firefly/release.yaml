@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: firefly
+  name: firefly-iii
   namespace: default # Ensure it's the same namespace as your service
 spec:
   ingressClassName: private
@@ -19,14 +19,14 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: home-assistant
+                name: firefly-iii
                 port:
                   number: 80
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: firefly
+  name: firefly-iii
   namespace: default
 spec:
   interval: 1h
@@ -39,12 +39,28 @@ spec:
         kind: HelmRepository
         name: firefly-iii
         namespace: flux-system
-    values:
-      persistence:
-        enabled: true
-        accessMode: ReadWriteMany
-      service:
-        type: LoadBalancer
-        port: 80
-      envFrom:
-        name: firefly-config
+  values:
+    persistence:
+      enabled: true
+      accessMode: ReadWriteMany
+    service:
+      type: LoadBalancer
+      port: 80
+    config:
+      envValueFrom:
+        DB_CONNECTION:
+          secretRef:
+            name: firefly-iii
+            key: DB_CONNECTION
+        DB_HOST:
+          secretRef:
+            name: firefly-iii
+            key: DB_HOST
+        DB_USER:
+          secretRef:
+            name: firefly-iii
+            key: DB_USER
+        DB_PASSWORD:
+          secretRef:
+            name: firefly-iii
+            key: DB_PASSWORD
