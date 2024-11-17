@@ -37,7 +37,7 @@ spec:
       version: "*"
       sourceRef:
         kind: HelmRepository
-        name: firefly
+        name: firefly-iii
         namespace: flux-system
     values:
       persistence:
