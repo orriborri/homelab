@@ -1,43 +1,43 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: firefly-iii
-  namespace: default # Ensure it's the same namespace as your service
-spec:
-  ingressClassName: private
-  tls:
-    - secretName: orriborri-com-tls
-  annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-  rules:
-    - host: firefly.orriborri.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: firefly-iii
-                port:
-                  number: 80
----
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: firefly
+#   namespace: default # Ensure it's the same namespace as your service
+# spec:
+#   ingressClassName: private
+#   tls:
+#     - secretName: orriborri-com-tls
+#   annotations:
+#     nginx.ingress.kubernetes.io/proxy-body-size: "0"
+#     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+#     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+#   rules:
+#     - host: firefly.orriborri.com
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: firefly
+#                 port:
+#                   number: 80
+# ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: firefly-iii
+  name: firefly
   namespace: default
 spec:
   interval: 1h
   timeout: 5m
   chart:
     spec:
-      chart: firefly-iii
+      chart: firefly
       version: "*"
       sourceRef:
         kind: HelmRepository
-        name: firefly-iii
+        name: firefly
         namespace: flux-system
   values:
     persistence:
@@ -50,25 +50,25 @@ spec:
       envValueFrom:
         DB_CONNECTION:
           secretRef:
-            name: firefly-iii
+            name: firefly
             key: DB_CONNECTION
         DB_HOST:
           secretRef:
-            name: firefly-iii
+            name: firefly
             key: DB_HOST
         DB_USER:
           secretRef:
-            name: firefly-iii
+            name: firefly
             key: DB_USER
         DB_PASSWORD:
           secretRef:
-            name: firefly-iii
+            name: firefly
             key: DB_PASSWORD
         DB_PORT:
           secretRef:
-            name: firefly-iii
+            name: firefly
             key: DB_PORT
         DB_DATABASE:
           secretRef:
-            name: firefly-iii
+            name: firefly
             key: DB_DATABASE
