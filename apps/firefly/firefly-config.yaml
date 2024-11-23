@@ -9,14 +9,16 @@ stringData:
     DB_HOST: ENC[AES256_GCM,data:+IaU2pFMU8gEGQQdPJjmgu6EPiUzag==,iv:ISiyVLFcjXeLnfVpnPep+33LehBj0GmQ9yEhvg0G9ts=,tag:7jdMInwOzo5qZR+tuCnLHA==,type:str]
     DB_USER: ENC[AES256_GCM,data:iPsvgjqb,iv:2a4QqTEMhGG7HnVUKUMLSAEdOUYdLJeHET/6X/js4ZY=,tag:dX0+3KduVgm4ma0P9umrmg==,type:str]
     DB_PASSWORD: ENC[AES256_GCM,data:qClk5RDOUU0+YR5JNuIEIyuLrm0=,iv:F4enCdbfElBr61YW++jkLewOEY0wSFc8P7hh6mBChVE=,tag:PUGakVPqtDmOFEeeHc0pXg==,type:str]
+    DB_PORT: ENC[AES256_GCM,data:HfxkDA==,iv:jpZKCSWB9tzLvMgOfR9Hqhvrg1CZdChgCox7qSwyodI=,tag:dJlMNcDQCZncSE/whjBjHw==,type:int]
+    DB_DATABASE: ENC[AES256_GCM,data:fnoMKpEq4g==,iv:Nqj+PnP8yCZUpezdkiNwXqB0/Px0zQjCybQaQwRZ7iU=,tag:TRE28nxwp8KhwrUvrB2Yqg==,type:str]
 sops:
     kms: []
     gcp_kms: []
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2024-11-23T19:50:32Z"
-    mac: ENC[AES256_GCM,data:Rkz1IZm/itAwe+zLkCOCHdYhVPBf676GqRWNfbAr6NKunCAvc2s/anMOuJ7rucGQuByh7QLoClZ5flh/Le7liT7W8YN6AFZaVNnC2HBi22aM4ROOXfH3zivJGUc9cooXmHb5UO8L5rqK8ppTf7JvAddoy+nW/QW2p5qSXVzFvis=,iv:qgQ+1mVcTOuLdWdY72AAHA1dJBYKwQL6apDscjdrhbg=,tag:D7FZz6w7CmRnt1acoo89pg==,type:str]
+    lastmodified: "2024-11-23T20:26:31Z"
+    mac: ENC[AES256_GCM,data:tolU768pkcm1MNGt4iBaBHbVLyKF5KehCgocUY8aTNywBCAKIYySES/qoWR+32Fa/xo/L0B4+oh43hYecMQpaTndj4Oz4U2s5fp9TrW/yPa8FjcVBELW3lUJbtncoFTK5qsBGeGnlIm+BiO4pAq1iiiNOMNz4bKI4OPphfUo8bg=,iv:buH9SI36x7Qkerb9tlOgdETZcC4jO6lSuTXyGUODT0Y=,tag:IgxGvtAZGFzk8Q3TlTwqKA==,type:str]
     pgp:
         - created_at: "2024-11-10T17:04:36Z"
           enc: |-

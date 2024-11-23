@@ -64,3 +64,11 @@ spec:
           secretRef:
             name: firefly-iii
             key: DB_PASSWORD
+        DB_PORT:
+          secretRef:
+            name: firefly-iii
+            key: DB_PORT
+        DB_DATABASE:
+          secretRef:
+            name: firefly-iii
+            key: DB_DATABASE
