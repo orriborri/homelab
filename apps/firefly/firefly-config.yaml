@@ -5,20 +5,17 @@ metadata:
     namespace: default
 type: Opaque
 stringData:
-    DB_CONNECTION: ENC[AES256_GCM,data:FP47zrU=,iv:+lSe5MlEurG1jTC6mZdgNS+uIGepFOLeL2v6/D4TixQ=,tag:qmuPj2K8Z9KaIOAIDDcoyg==,type:str]
-    DB_HOST: ENC[AES256_GCM,data:+IaU2pFMU8gEGQQdPJjmgu6EPiUzag==,iv:ISiyVLFcjXeLnfVpnPep+33LehBj0GmQ9yEhvg0G9ts=,tag:7jdMInwOzo5qZR+tuCnLHA==,type:str]
-    DB_USER: ENC[AES256_GCM,data:iPsvgjqb,iv:2a4QqTEMhGG7HnVUKUMLSAEdOUYdLJeHET/6X/js4ZY=,tag:dX0+3KduVgm4ma0P9umrmg==,type:str]
-    DB_PASSWORD: ENC[AES256_GCM,data:qClk5RDOUU0+YR5JNuIEIyuLrm0=,iv:F4enCdbfElBr61YW++jkLewOEY0wSFc8P7hh6mBChVE=,tag:PUGakVPqtDmOFEeeHc0pXg==,type:str]
-    DB_PORT: ENC[AES256_GCM,data:6oQCrw==,iv:+MUHyuhMC+B1UlLXkDpNG7RfuQtdWOgXcryvNbXxu0c=,tag:vam9HE0MJi8XEzwiPktFgw==,type:str]
-    DB_DATABASE: ENC[AES256_GCM,data:fnoMKpEq4g==,iv:Nqj+PnP8yCZUpezdkiNwXqB0/Px0zQjCybQaQwRZ7iU=,tag:TRE28nxwp8KhwrUvrB2Yqg==,type:str]
+    DB_PASSWORD: ENC[AES256_GCM,data:W6XhCDju1s8CMJ0olHXSYCfHAHQ=,iv:0zD2UCdNyK3YjIcA3Z9xW6Cgz9SF58UUYVYZO7d/1E0=,tag:0ZMl8CXqkcI3yq0M9hG/3g==,type:str]
+    DB_URL: ENC[AES256_GCM,data:NtJkLkGCeo4LjZKrhYWREZwUBIOG4g==,iv:qHu1eHCNcRYrxXVG6KIOTCqbeIGgf1jJZaxmZSHpvRg=,tag:FED7a7oHmh6DIhi6oNnkWg==,type:str]
+    APP_SECRET: ENC[AES256_GCM,data:/PEuX6tKX3ghYfbgNzn/MratUdetJI/mR+tGe0/gBoM=,iv:rS5OX1gbZ9tahkL2hjfVYGRLsDjhWgQi25+UhfPVbhU=,tag:ghWtFLF5seNd/RlQlTnwHw==,type:str]
 sops:
     kms: []
     gcp_kms: []
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2024-11-23T21:48:00Z"
-    mac: ENC[AES256_GCM,data:levu2/DIMcZRDZVF/VJl5TQYoYw68fWBm6SXE6eIkcE5l1xS+XmIkh68n1tzQSqHFrUWCVSJFSkQvBHZLJk7CIXIW+QCFpUY6Bj/ui9OE4SdHzVErS/zSQdLNKXLrOHE7VRtb441JsSepGc+MmPoB6wFlepHOrj6LHXyVl4q3c8=,iv:ZgyVaJy2TcTDC+VIhAN/U6Bdv0g8xeBwKUs8acftL9A=,tag:sXSwu61GR3oUh7n3UD5imA==,type:str]
+    lastmodified: "2024-12-06T20:32:17Z"
+    mac: ENC[AES256_GCM,data:93KNEv0XMuX9WoFQIUUm0Yxte48Foa2jyROZkiA9gFggw+D1IKVDb7KjW1J8M5I8ipz0BedKGR6C+6Vc7r1dndhrR6hUTO9XnCssx80V0flwnBogH35u0hNV+bE4Lopqz2cVe7owkPSsfja9jkHo+KXgsFHH4iXR+6PgPg7/GnA=,iv:GG0VB6N9hI+MBP/c0d8W6IC3/P+AqbgynJMXWO5BbNg=,tag:s7NS7TozRI/YRO5YX8DyWQ==,type:str]
     pgp:
         - created_at: "2024-11-10T17:04:36Z"
           enc: |-

@@ -1,28 +1,3 @@
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: firefly
-#   namespace: default # Ensure it's the same namespace as your service
-# spec:
-#   ingressClassName: private
-#   tls:
-#     - secretName: orriborri-com-tls
-#   annotations:
-#     nginx.ingress.kubernetes.io/proxy-body-size: "0"
-#     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-#     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-#   rules:
-#     - host: firefly.orriborri.com
-#       http:
-#         paths:
-#           - path: /
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: firefly
-#                 port:
-#                   number: 80
-# ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
@@ -30,10 +5,10 @@ metadata:
   namespace: default
 spec:
   interval: 1h
-  timeout: 5m
+  timeout: 1m
   chart:
     spec:
-      chart: firefly
+      chart: firefly-iii
       version: "*"
       sourceRef:
         kind: HelmRepository
@@ -47,28 +22,20 @@ spec:
       type: LoadBalancer
       port: 80
     config:
-      envValueFrom:
-        DB_CONNECTION:
-          secretRef:
-            name: firefly
-            key: DB_CONNECTION
-        DB_HOST:
-          secretRef:
-            name: firefly
-            key: DB_HOST
-        DB_USER:
-          secretRef:
-            name: firefly
-            key: DB_USER
-        DB_PASSWORD:
-          secretRef:
-            name: firefly
-            key: DB_PASSWORD
-        DB_PORT:
-          secretRef:
-            name: firefly
-            key: DB_PORT
-        DB_DATABASE:
-          secretRef:
-            name: firefly
-            key: DB_DATABASE
+      env:
+        DB_CONNECTION: "pgsql" # Ensure all values are strings
+        DB_USER: "firefly"
+        DB_DATABASE: "firefly"
+        DEFAULT_LANGUAGE: "en_FI"
+        DEFAULT_LOCALE: "equal"
+        TZ: "Europe/Helsinki"
+        DB_PORT: "5432" # Quote numeric values
+        envValueFrom:
+          APP_SECRET:
+            secretKeyRef:
+              name: firefly
+              key: APP_SECRET
+          DB_PASSWORD:
+            secretKeyRef:
+              name: firefly
+              key: DB_PASSWORD
