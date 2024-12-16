@@ -24,10 +24,9 @@ spec:
     config:
       env:
         DB_CONNECTION: "pgsql" # Ensure all values are strings
+        DB_URL: postgres.orriborri.com
         DB_USER: "firefly"
         DB_DATABASE: "firefly"
-        DEFAULT_LANGUAGE: "en_FI"
-        DEFAULT_LOCALE: "equal"
         TZ: "Europe/Helsinki"
         DB_PORT: "5432" # Quote numeric values
         envValueFrom:
