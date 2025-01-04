@@ -5,9 +5,10 @@ metadata:
     namespace: default
 type: Opaque
 stringData:
-    PG_USER: ENC[AES256_GCM,data:Zr/E4/TH,iv:oEzj0ww81xBBSKGQT0q2lnHmBieugfLofAhWtPqp+Bc=,tag:Rl24QLXcBcWu2QNT1MGR9g==,type:str]
+    DB_USERNAME: ENC[AES256_GCM,data:4M+gl7xC,iv:X14f9Sft9dfRA1WNL3sypJbCdRdD6SIoLYpZXLgWP+A=,tag:E8rWKsZsvEPDwNohicO+Rg==,type:str]
     DB_PASSWORD: ENC[AES256_GCM,data:W6XhCDju1s8CMJ0olHXSYCfHAHQ=,iv:0zD2UCdNyK3YjIcA3Z9xW6Cgz9SF58UUYVYZO7d/1E0=,tag:0ZMl8CXqkcI3yq0M9hG/3g==,type:str]
     DB_URL: ENC[AES256_GCM,data:NtJkLkGCeo4LjZKrhYWREZwUBIOG4g==,iv:qHu1eHCNcRYrxXVG6KIOTCqbeIGgf1jJZaxmZSHpvRg=,tag:FED7a7oHmh6DIhi6oNnkWg==,type:str]
+    DB_DATABASE: ENC[AES256_GCM,data:R8xR7nHkLg==,iv:nMCu2JJD0Pcs4Zy8L75vRE66wFSydG7LQWREpl4crLA=,tag:DNxe5UZn0xmBM5Ze/kzn4A==,type:str]
     DB_CONNECTION: ENC[AES256_GCM,data:IJ2F5Jo=,iv:e8MQswAl0QMWRoDWXThd4jK/ShqBWb5wZlMe4IieFns=,tag:wyt6FTT4rI+GVAZCGQz8CQ==,type:str]
     DB_PORT: ENC[AES256_GCM,data:3dHpEw==,iv:zey7pMZNQ4QF69ds7GJQvXeRnrhfDMlDPmNfJvIYOO0=,tag:TR+VAoJCaH+lFShuWo+hUg==,type:str]
     APP_KEY: ENC[AES256_GCM,data:gpIiQ8GXlWlZv5qUQWhloOJFFrBkqmbsUUjdpZbFSE0=,iv:csdO0VENE5a0teG/zsRB+wR9TTiThJln1UmxgpnUik8=,tag:IYEgg0OvFOzPmcxuxsoqQA==,type:str]
@@ -17,8 +18,8 @@ sops:
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2025-01-04T16:20:46Z"
-    mac: ENC[AES256_GCM,data:Y+eXcmiRVASVA68/X2kpKjM3uvmq0goKcqWU3zdNDnxH8KJFzOnEN2SLxlqz8azYGwKFv6i7vJkdbkThxcA2tvvc97xixueNjthKQoLLSd2WQieh0bvUhBuRCbldM9b3fb4zrD27XMnISt1rf/MWYgX2I46OiChdeuwuH1goozw=,iv:CoRaDzOnURXMLSHM2VW0j6y9YrmJsVk98Hltt8+FSuA=,tag:bMWxj20TyM5BZpmbgW0rVQ==,type:str]
+    lastmodified: "2025-01-04T16:29:21Z"
+    mac: ENC[AES256_GCM,data:0KQq0VXJvVlE+vd5QwgVqJ4Pb7jntq1ysLxhcQdsjvWIOkolCW9JZwftEG/gbLgE3jcGpO2lOF7Ah+tIovDqjroLKzAi7ytQSWfrasgxn4Ju703M4ZZr0fc3/f6CsqZ3nOboZYoiMEpmMJ8PSJu+3B5DByLKlnMVPPKynO4aAVg=,iv:SDTORzTm8SN3yaVUdz/gJoVMDhATizHg2IbBIGZkoKI=,tag:cndBZjkejv94e+WRRzcnsA==,type:str]
     pgp:
         - created_at: "2024-11-10T17:04:36Z"
           enc: |-
