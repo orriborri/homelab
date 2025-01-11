@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: actual-data
+  namespace: default
+spec:
+  storageClassName: syno-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: actual-ingress
+  namespace: default
+spec:
+  ingressClassName: private
+  tls:
+    - secretName: orriborri-com-tls
+  rules:
+    - host: actual.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: actual
+                port:
+                  number: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: actual
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: actual
+  ports:
+    - name: web
+      protocol: TCP
+      port: 80
+      targetPort: 5006
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: actual
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: actual
+  template:
+    metadata:
+      labels:
+        app: actual
+    spec:
+      containers:
+        - name: actual
+          image: docker.io/actualbudget/actual-server:latest
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5006
+          volumeMounts:
+            - mountPath: /data
+              name: actual-data
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+      
+      volumes:
+        - name: actual-data
+          persistentVolumeClaim:
+            claimName: actual-data
