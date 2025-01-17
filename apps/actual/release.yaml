@@ -17,7 +17,7 @@ metadata:
   name: actual-ingress
   namespace: default
 spec:
-  ingressClassName: private
+  ingressClassName: public
   tls:
     - secretName: orriborri-com-tls
   rules:
