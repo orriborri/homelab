@@ -1,0 +1,64 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wol-ingress
+  namespace: default
+spec:
+  ingressClassName: private
+  tls:
+    - secretName: orriborri-com-tls
+  rules:
+    - host: wol.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wol 
+                port:
+                  number: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wol
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: wol
+  ports:
+    - name: web
+      protocol: TCP
+      port: 80
+      targetPort: 8090
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wol
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: wol
+  template:
+    metadata:
+      labels:
+        app: wol
+    spec:
+      containers:
+        - name: wol
+          image: ghcr.io/seriousm4x/upsnap:4
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 8090
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+      

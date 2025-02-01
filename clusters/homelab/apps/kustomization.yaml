@@ -9,6 +9,7 @@ resources:
   - homeassistant.yaml
   - firefly.yaml
   - actual.yaml
+  - wol.yaml
   #- calibre.yaml
   #- add-bot.yaml
   #- homectl.yaml
