@@ -16,9 +16,7 @@ spec:
         namespace: flux-system
   values:
     grafana:
-      enabled: false
-      forceDeployDatasources: true
-      forceDeployDashboards: true
+      enabled: true
     alertmanager:
       ingress:
         enabled: true
