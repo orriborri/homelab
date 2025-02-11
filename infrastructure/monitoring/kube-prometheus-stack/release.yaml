@@ -1,10 +1,10 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: kube-prometheus-stack
   namespace: kube-prometheus-stack
 spec:
-  interval: 1h
+  interval: 99999h
   timeout: 5m
   chart:
     spec:
@@ -16,33 +16,10 @@ spec:
         namespace: flux-system
   values:
     grafana:
-      service:
-        type: NodePort
-      ingress:
-        enabled: true
-        ingressClassName: private
-        tls:
-          - secretName: orriborri-com-tls
-        hosts:
-          - grafana.orriborri.com
-      persistence:
-        type: pvc
-        enabled: true
-        storageClassName: syno-storage
-        accessModes:
-          - ReadWriteOnce
-        size: 10Gi
-      defaultDashboardsTimezone: Europe/Helsinki
-      additionalDatasources:
-        - name: Loki
-          type: loki
-          isDefault: false
-          access: proxy
-          url: http://loki.monitoring.svc.cluster.local:3100
-          version: 1
+      enabled: false
+      forceDeployDatasources: true
+      forceDeployDashboards: true
     alertmanager:
-      service:
-        type: NodePort
       ingress:
         enabled: true
         ingressClassName: private
@@ -61,8 +38,6 @@ spec:
                 requests:
                   storage: 10Gi
     prometheus:
-      service:
-        type: NodePort
       ingress:
         enabled: true
         ingressClassName: private
