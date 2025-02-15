@@ -66,7 +66,7 @@ spec:
     spec:
       containers:
         - name: actual
-          image: docker.io/actualbudget/actual-server:latest
+          image: docker.io/actualbudget/actual-server:edge
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5006
@@ -80,7 +80,7 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
-      
+
       volumes:
         - name: actual-data
           persistentVolumeClaim:
