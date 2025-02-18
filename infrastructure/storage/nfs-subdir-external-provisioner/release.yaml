@@ -19,8 +19,8 @@ spec:
       name: homelab-nfs
       reclaimPolicy: Retain
     nfs:
-      server: backorr.internal.orriborri.com
-      path: /volume3/homelab
+      server: 192.168.1.244
+      path: /volume3
       mountOptions:
         - nfsvers=4.1
         - timeo=600
