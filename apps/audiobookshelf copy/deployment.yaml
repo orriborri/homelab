@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vikunja
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: vikunja
+  template:
+    metadata:
+      labels:
+        app: vikunja
+    spec: # Fix the indentation here
+      containers:
+        - name: vikunja
+          image: vikunja/vikunja
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3456
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: vikunja-data
+              mountPath: /app/vikunja/files
+            
+      volumes:
+        - name: vikunja-data
+          persistentVolumeClaim:
+            claimName: vikunja-data
+        
