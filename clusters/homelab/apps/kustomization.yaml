@@ -13,6 +13,7 @@ resources:
   #- add-bot.yaml
   #- homectl.yaml
   #- hue-mqtt.yaml
+  - vikunja.yaml
   - ingress-proxy.yaml
 #- lifx-mqtt.yaml
 #- tuya-mqtt.yaml
