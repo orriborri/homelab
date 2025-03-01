@@ -3,5 +3,5 @@ kind: Kustomization
 resources:
   - ./deployment.yaml
   - ./ingress.yaml
-  - ./service.yaml
   - ./persistentVolume.yaml
+  - ./service.yaml
