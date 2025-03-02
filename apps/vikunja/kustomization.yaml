@@ -5,3 +5,4 @@ resources:
   - ./ingress.yaml
   - ./persistentVolume.yaml
   - ./service.yaml
+  - ./secrets.yaml
