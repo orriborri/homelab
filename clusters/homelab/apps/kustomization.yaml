@@ -8,6 +8,7 @@ resources:
   - postgres.yaml
   - homeassistant.yaml
   - actual.yaml
+  - n8n.yaml
   #- wol.yaml
   #- calibre.yaml
   #- add-bot.yaml
