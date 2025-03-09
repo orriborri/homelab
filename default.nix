@@ -11,5 +11,6 @@ pkgs.mkShell {
     pre-commit
     git
     kubernetes-helm
+    k9s
   ];
 }

@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: n8n-data
+  namespace: default
+spec:
+  storageClassName: syno-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: n8n
+  namespace: default
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: n8n.orriborri.com
+spec:
+  type: LoadBalancer
+  selector:
+    app: n8n
+  ports:
+    - name: n8n
+      protocol: TCP
+      port: 80
+      targetPort: 5678
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: n8n
+  namespace: default
+spec:
+  ingressClassName: private
+  rules:
+    - host: n8n.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: n8n
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - n8n.orriborri.com
+      secretName: orriborri-org-tls
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: n8n
+  template:
+    metadata:
+      labels:
+        app: n8n
+    spec:
+      initContainers:
+        - name: init-chmod
+          image: busybox
+          command: ["sh", "-c", "chown -R 1000:1000 /home/node/.n8n"]
+          volumeMounts:
+            - mountPath: /home/node/.n8n
+              name: n8n-data
+      containers:
+        - name: n8n
+          image: n8nio/n8n:latest
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: N8N_PORT
+              value: "5678"
+            - name: NODE_ENV
+              value: "production"
+            - name: N8N_EDITOR_BASE_URL
+              value: "http://n8n.orriborri.com"
+            - name: N8N_SECURE_COOKIE 
+              value: "false"
+          ports:
+            - containerPort: 5678
+          volumeMounts:
+            - mountPath: /home/node/.n8n
+              name: n8n-data
+          resources:
+            limits:
+              cpu: 100m
+              memory: 512Mi
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+      volumes:
+        - name: n8n-data
+          persistentVolumeClaim:
+            claimName: n8n-data
