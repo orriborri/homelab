@@ -91,7 +91,7 @@ Normally, flux will poll your repository for changes. This means there will be a
 
 - Add `notification-receiver.yaml` back in [/clusters/homelab/infrastructure/kustomization.yaml](/clusters/homelab/infrastructure/kustomization.yaml). Commit and push.
 
-- Wait for reconciliation. After reconciliation finishes, you should be able to run `kubectl -n flux-system get receiver`. Note down the receiver URL (i.e. `/hook/...`)
+- Wait for reconciliation. After reconciliation finishes, you should be able to run `kubectl -n flux-system get receiver`. Note down the receiver URL (i.e. `/hook/...`)kubectl -n flux-system get receiver
 
 - On GitHub, navigate to your repository and click on the “Add webhook” button under “Settings/Webhooks”. Fill the form with:
 

@@ -1,4 +1,4 @@
-# FruitieX' homelab
+# Orriborris' homelab (Based on [FruitieX's homelab]()
 
 This repo contains a declarative, GitOps definition of my homelab.
 
@@ -53,7 +53,7 @@ To follow this guide, you need the following:
 
   ```
   # IP address of your control plane node, printed to machine TTY in the `Start Control Plane Node` section.
-  export CONTROL_PLANE_IP="192.168.10.206"
+  export CONTROL_PLANE_IP="192.168.10.10206"
 
   # Path to your talosconfig, created in the `Generate Machine Configurations` section.
   export TALOSCONFIG="_out/talosconfig"
@@ -90,7 +90,7 @@ To follow this guide, you need the following:
 - If you are installing this for the first time, I suggest starting out with a
   clean slate and commenting out all apps and infrastructure manifests before
   proceeding. There's plenty of configuration and secrets that are specific to my setup, and it's maybe a bit much to take it all in at once.
-  
+
   You can add manifests back later one at a time after you've bootstrapped
   a minimal cluster setup with Flux CD.
 
@@ -107,7 +107,7 @@ To follow this guide, you need the following:
   - [/clusters/homelab/cluster-config.yaml](/clusters/homelab/cluster-config.yaml)
 
     Contains configuration values that can be interpolated with `${CONFIG_KEY}` syntax into most other files.
-  
+
     Change the following values:
 
     - `LETSENCRYPT_CLUSTER_ISSUER`: Set this to `letsencrypt-staging` until you have your domain name / DNS / port forwards etc set up correctly. This is to avoid hitting Let's Encrypt's very strict rate limits.
@@ -121,15 +121,15 @@ To follow this guide, you need the following:
     Replace the entire file contents with:
 
     ```
-    apiVersion: v1                                                   
-    kind: Secret                                                     
-    metadata:                                                        
-        namespace: flux-system                                       
-        name: cluster-secrets                                        
-    type: Opaque                                                     
-    stringData:                                                      
+    apiVersion: v1
+    kind: Secret
+    metadata:
+        namespace: flux-system
+        name: cluster-secrets
+    type: Opaque
+    stringData:
         # Domain name of the `podinfo` app ingress
-        PODINFO_DOMAIN_NAME: podinfo.example.org                    
+        PODINFO_DOMAIN_NAME: podinfo.example.org
     ```
 
     Set `PODINFO_DOMAIN_NAME` to some valid domain name of your choice.
@@ -139,7 +139,7 @@ To follow this guide, you need the following:
     `sops --encrypt --in-place clusters/homelab/cluster-secrets.yaml`
 
     If you want to make further changes to the file, run:
-    
+
     `sops clusters/homelab/cluster-secrets.yaml`
 
 ## Bootstrap Flux CD
