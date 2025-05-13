@@ -12,6 +12,19 @@ spec:
       storage: 10Gi
 ---
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres17-data
+  namespace: default
+spec:
+  storageClassName: syno-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: postgres
