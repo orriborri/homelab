@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-upgrade-job
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: pg-upgrade
+          image: pgautoupgrade/pgautoupgrade:17-alpine
+          env:
+            - name: PGOLDVER
+              value: "16"
+            - name: PGNEWVER
+              value: "17"
+            - name: PGAUTO_ONESHOT
+              value: "yes"
+            - name: PGDATA_OLD
+              value: /old/pgdata
+            - name: PGDATA_NEW
+              value: /new/pgdata
+            - name: POSTGRES_PASSWORD
+              value: xxxxxxxxxxxx
+          volumeMounts:
+            - name: old-data
+              mountPath: /old
+            - name: new-data
+              mountPath: /new
+      volumes:
+        - name: old-data
+          persistentVolumeClaim:
+            claimName: postgres-data
+        - name: new-data
+          persistentVolumeClaim:
+            claimName: postgres17-data
