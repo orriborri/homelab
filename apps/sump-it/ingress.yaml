@@ -12,9 +12,9 @@ spec:
   tls:
     - secretName: orriborri-fi-tls
       hosts:
-        - sump.orriborri.fi
+        - sump.orriborri.com
   rules:
-    - host: sump.orriborri.fi
+    - host: sump.orriborri.com
       http:
         paths:
           - path: /
