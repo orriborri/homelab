@@ -15,6 +15,7 @@ resources:
   #- homectl.yaml
   #- hue-mqtt.yaml
   - vikunja.yaml
+  - sump-it.yaml
   - ingress-proxy.yaml
 #- lifx-mqtt.yaml
 #- tuya-mqtt.yaml
