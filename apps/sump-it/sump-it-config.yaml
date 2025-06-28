@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: sump-it-postgres-config
+    namespace: default
+type: Opaque
+stringData:
+    DATABASE_URL: ENC[AES256_GCM,data:wSGHaQACf+Pu9Rgz8uhEDLhsHOoO/04KpXUiWRFE+H4oeIjlQ9oD13sgg0pn4yqerISpuuCI0xyoswOHvQwchkqtnFnukn0dWQ==,iv:N1QyBz6pknpJDh8E85DGLMqVvZEDExSxDQOA/wCX6Sk=,tag:EwUBznTjU1pfuUbh4b0bAQ==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2025-06-28T15:24:31Z"
+    mac: ENC[AES256_GCM,data:nwswE8u7oHtsr5xFXtwao1rv+fXex9qbPHgVKmoK/esKgYUdwvUs3UhxdwAGfQ8Qdx6a9H44XVMFdwwtmW7UONfA6Gjm3IRUnyOcJxUgZhJ4JlcySnSR9/KEUQu8poKxtcT13/QtqRvS6QYeIF/jXOAd/Vlp7ylWUPODPSxKuYI=,iv:QyyJ05u7m1R2Q9ZeCiEi0dRhdg3Zw0NNoNPkjaQBZDs=,tag:idYHf+MsRIYFqT4Rk9m2pw==,type:str]
+    pgp:
+        - created_at: "2025-06-28T15:21:47Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA1X/kZ4Jzp5jAQ//XSuJWZeExOq8HzRPOPs1tNGqs7ZHDXREClGu+VMBet3J
+            3muErJGzV65g6O4BgvSmi9WMkeEWkYj11S9akz+NZ85R4MFplBAFWKDikDclskci
+            bP8itssNsKvhtpneea+PcyY0XSi7h5Qq1x4up8NF+EBD4+XkeLAGzpjhUXYBx0bx
+            UDp9GGtpsFF4LjOWBteQyaxcJm3Lue9VYQizBg8oiZxqFEwtbZaQNsa2HEnPi6iX
+            2QvM4IiJc+HTaAJbzpAoX5ldCTl2KT1COm1y2/JKXkxgtiXdej3JuI2SHxQ5LYW0
+            dnyqZQk2ZkRJJW3up3BuxiAmGoNfBIPWQQGlaM4sdogCzGgTCfF8Mb5bpsG6m0+s
+            06FqkTw0rElphweAk0XgudPaegnVkE8qbsURG+gXNSA1zU9mJbZNwa0bNA4FhhSU
+            /Vm5HIKDC/gIKHGerLobQcJe4k/aZnc0Lhc7UDYV6wPgOJywzSm4JRys9WyuDOC8
+            u2lDWi50onAY+SPC85j20YGNVQuH7Fhs40/Xd4PdSnjAfnVJUisTEoiajg2FCHxF
+            D4kYyYrnfdjkMWOZh6ke3g2h/GmkA0LnZkhjJyU2X9M4rxbxaJl86GM7080IzJJT
+            aMVegMEbmfGByTFTe357sdivsXEW+Lg2s2xODNF4KPcMpU4R1kOv1W3/fDPKL3HU
+            aAEJAhBiG/4egVugfqTRmSWveFewKu9sXJCkRcIWbxKH20U2ERLw5lyAqHiSqpMc
+            nHmtBekzgjKt1u8MbAuY/q2QUbCwVUV5coNUqj3Zv/pkRiuPUhNDC7Oj4Uaw1Ar9
+            c0d9mfGdvSF1
+            =2cnf
+            -----END PGP MESSAGE-----
+          fp: 7A5DC69AD7F7A05AAF22EBD8005B9C45909B266E
+    encrypted_regex: ^(data|stringData)$
+    version: 3.9.0
