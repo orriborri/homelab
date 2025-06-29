@@ -17,4 +17,5 @@ resources:
   - reloader.yaml
   - reflector.yaml
   - grafana.yaml
+  - image-automation.yaml
 #  - influxdb.yaml

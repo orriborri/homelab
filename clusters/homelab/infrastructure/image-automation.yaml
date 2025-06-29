@@ -1,0 +1,14 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: image-automation
+spec:
+  interval: 1h
+  timeout: 3m
+  retryInterval: 10s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./infrastructure/flux/image-automation
+  prune: true
+  wait: true
