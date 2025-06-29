@@ -1,0 +1,23 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: sump-it
+  namespace: flux-system
+spec:
+  image: ghcr.io/orriborri/sump-it
+  interval: 1m
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: sump-it
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: sump-it
+  policy:
+    semver:
+      range: '*'
+  filterTags:
+    pattern: '^main-[a-f0-9]+'
+    extract: '$0'
