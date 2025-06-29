@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: sump-it
-          image: ghcr.io/orriborri/sump-it:main-246454a # {"$imagepolicy": "flux-system:sump-it"}
+          image: ghcr.io/orriborri/sump-it:main-246454a
           imagePullPolicy: Always
           ports:
             - name: http

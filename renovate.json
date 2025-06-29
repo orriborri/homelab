@@ -12,5 +12,17 @@
   },
   "docker": {
     "pinDigests": true
-  }
+  },
+  "packageRules": [
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/orriborri/sump-it"
+      ],
+      "versioning": "loose",
+      "extractVersion": "^(?<version>main-.+)$"
+    }
+  ]
 }
