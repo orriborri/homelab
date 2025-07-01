@@ -1,7 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./deployment.yaml
-  - ./service.yaml
-  - ./ingress.yaml
-  - ./sump-it-config.yaml
+- ./deployment.yaml
+- ./service.yaml
+- ./ingress.yaml
+- ./sump-it-config.yaml
+images:
+- name: sump-it
+  newTag: bf75d24428d2e7163e0c27af273dd6eb9249b7e3
