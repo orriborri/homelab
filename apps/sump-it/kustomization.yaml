@@ -7,4 +7,4 @@ resources:
 - ./sump-it-config.yaml
 images:
 - name: sump-it
-  newTag: 160d99d5c319d42ce8f18a6da5503357626bcdfe
+  newTag: 373f161757c0faf2616b35f5a0bfeb0e0ba806e6
