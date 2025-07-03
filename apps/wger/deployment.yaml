@@ -40,7 +40,7 @@ spec:
             - name: DJANGO_DEBUG
               value: "False"
             - name: WGER_INSTANCE
-              value: "https://${WGER_DOMAIN_NAME}"
+              value: https://wger.orriborri.com
             - name: ALLOW_REGISTRATION
               value: "True"
             - name: ALLOW_GUEST_USERS
