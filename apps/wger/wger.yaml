@@ -55,7 +55,7 @@ spec:
     ingress:
       enabled: true
       ingressClassName: public
-      url: ${WGER_DOMAIN_NAME}
+      url: wger.orriborri.com
       tls: true
       annotations:
         nginx.ingress.kubernetes.io/proxy-body-size: "50m"
