@@ -43,7 +43,7 @@ spec:
           key: WGER_DJANGO_SECRET_KEY
         existingDatabase:
           enabled: true
-          engine: postgresql
+          engine: django.db.backends.postgresql
           host: postgres
           port: 5432
           dbname: wger
