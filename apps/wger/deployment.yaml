@@ -16,7 +16,8 @@ spec:
       initContainers:
         - name: wger-migrate
           image: wger/server:latest
-          command: ["python", "manage.py", "migrate"]
+          workingDir: /home/wger/src
+          command: ["python3", "manage.py", "migrate"]
           env:
             - name: DJANGO_SECRET_KEY
               valueFrom:
