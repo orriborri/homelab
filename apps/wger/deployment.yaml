@@ -23,13 +23,6 @@ spec:
                 secretKeyRef:
                   name: wger-secrets
                   key: DJANGO_SECRET_KEY
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-config
-                  key: POSTGRES_USER
-            - name: DATABASE_URL
-              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/wger"
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -40,6 +33,8 @@ spec:
                 secretKeyRef:
                   name: postgres-config
                   key: POSTGRES_PASSWORD
+            - name: DATABASE_URL
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/wger"
             - name: CACHE_URL
               value: "redis://redis-wger:6379/1"
             - name: DJANGO_DEBUG
