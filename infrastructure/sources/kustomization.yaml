@@ -14,3 +14,4 @@ resources:
   - influxdata.yaml
   - homeassistant.yaml
   - sump-it-image.yaml
+  - wger-helm.yaml

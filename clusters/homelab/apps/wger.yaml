@@ -9,7 +9,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./apps/wger
+  path: ./apps
   prune: true
   wait: true
   postBuild:
