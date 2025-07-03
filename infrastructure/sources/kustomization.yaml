@@ -13,5 +13,5 @@ resources:
   - reloader.yaml
   - influxdata.yaml
   - homeassistant.yaml
-  - sump-it-image.yaml
   - wger-helm.yaml
+  # - sump-it-image.yaml  # Temporarily disabled - ImagePolicy API not available
