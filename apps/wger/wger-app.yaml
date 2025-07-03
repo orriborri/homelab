@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wger
-  namespace: default
+  namespace: wger
 spec:
   replicas: 1
   selector:
@@ -33,7 +33,7 @@ spec:
               mountPath: /home/wger/static
           securityContext:
             runAsUser: 0
-        - name: wger-migrate
+        - name: migrate
           image: wger/server:latest
           workingDir: /home/wger/src
           command: ["python3", "manage.py", "migrate"]
@@ -43,20 +43,13 @@ spec:
                 secretKeyRef:
                   name: wger-secrets
                   key: DJANGO_SECRET_KEY
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-config
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-config
-                  key: POSTGRES_PASSWORD
             - name: DATABASE_URL
-              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/wger"
+              valueFrom:
+                secretKeyRef:
+                  name: wger-secrets
+                  key: DATABASE_URL
             - name: CACHE_URL
-              value: "redis://redis-wger:6379/1"
+              value: "redis://redis:6379/1"
             - name: DJANGO_DEBUG
               value: "False"
             - name: WGER_INSTANCE
@@ -81,20 +74,13 @@ spec:
                 secretKeyRef:
                   name: wger-secrets
                   key: DJANGO_SECRET_KEY
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-config
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-config
-                  key: POSTGRES_PASSWORD
             - name: DATABASE_URL
-              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/wger"
+              valueFrom:
+                secretKeyRef:
+                  name: wger-secrets
+                  key: DATABASE_URL
             - name: CACHE_URL
-              value: "redis://redis-wger:6379/1"
+              value: "redis://redis:6379/1"
             - name: DJANGO_DEBUG
               value: "False"
             - name: WGER_INSTANCE
@@ -138,3 +124,29 @@ spec:
         - name: static-storage
           persistentVolumeClaim:
             claimName: wger-static-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wger-media-pvc
+  namespace: wger
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: syno-storage
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wger-static-pvc
+  namespace: wger
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: syno-storage

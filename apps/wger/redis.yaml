@@ -1,47 +1,59 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-wger
-  namespace: default
+  name: redis
+  namespace: wger
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis-wger
+      app: redis
   template:
     metadata:
       labels:
-        app: redis-wger
+        app: redis
     spec:
       containers:
         - name: redis
-          image: redis:7-alpine
+          image: redis:8-alpine
           ports:
             - containerPort: 6379
-          volumeMounts:
-            - name: redis-storage
-              mountPath: /data
           resources:
             requests:
-              cpu: 50m
-              memory: 64Mi
-            limits:
-              cpu: 200m
+              cpu: 100m
               memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
       volumes:
-        - name: redis-storage
+        - name: redis-data
           persistentVolumeClaim:
-            claimName: redis-wger-pvc
+            claimName: redis-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+  namespace: wger
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: syno-storage
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-wger
-  namespace: default
+  name: redis
+  namespace: wger
 spec:
   selector:
-    app: redis-wger
+    app: redis
   ports:
     - port: 6379
       targetPort: 6379
