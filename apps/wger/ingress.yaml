@@ -11,6 +11,8 @@ spec:
   ingressClassName: public
   tls:
     - secretName: orriborri-com-tls
+      hosts:
+        - wger.orriborri.com
   rules:
     - host: wger.orriborri.com
       http:
