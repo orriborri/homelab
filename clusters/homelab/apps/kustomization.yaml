@@ -24,3 +24,4 @@ resources:
 #- adb-mqtt.yaml
 #- fruitiex-org.yaml
 # - influxdb.yaml
+  - wger.yaml
