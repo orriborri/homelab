@@ -1,0 +1,82 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: wger
+  namespace: default
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: wger
+      version: "0.2.4"
+      sourceRef:
+        kind: HelmRepository
+        name: wger
+        namespace: flux-system
+      interval: 12h
+  values:
+    app:
+      timezone: "Europe/Helsinki"
+      global:
+        image:
+          tag: latest
+        replicas: 1
+      persistence:
+        enabled: true
+        storageClass: syno-storage
+        accessModes:
+          - ReadWriteOnce
+        sizeMedia: 5Gi
+        sizeStatic: 1Gi
+        sizeCeleryBeat: 1Gi
+      resources:
+        requests:
+          memory: 512Mi
+          cpu: 200m
+        limits:
+          memory: 1Gi
+          cpu: 1000m
+      django:
+        secret:
+          name: cluster-secrets
+          key: WGER_DJANGO_SECRET_KEY
+        existingDatabase:
+          enabled: true
+          engine: postgresql
+          host: postgres
+          port: 5432
+          dbname: wger
+          existingSecret:
+            name: postgres-config
+            dbuserKey: POSTGRES_USER
+            dbpwKey: POSTGRES_PASSWORD
+    
+    ingress:
+      enabled: true
+      ingressClassName: public
+      url: ${WGER_DOMAIN_NAME}
+      tls: true
+      annotations:
+        nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+        nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+        nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    
+    service:
+      type: LoadBalancer
+      port: 80
+    
+    # Disable built-in PostgreSQL since we're using existing one
+    postgres:
+      enabled: false
+    
+    # Configure Redis
+    redis:
+      enabled: true
+      auth:
+        enabled: false
+      storage:
+        requestedSize: 1Gi
+        className: syno-storage
+      service:
+        serverPort: 6379
