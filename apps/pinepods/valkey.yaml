@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pinepods-valkey
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pinepods-valkey
+  template:
+    metadata:
+      labels:
+        app: pinepods-valkey
+    spec:
+      containers:
+        - name: valkey
+          image: valkey/valkey:8-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pinepods-valkey
+  namespace: default
+spec:
+  selector:
+    app: pinepods-valkey
+  ports:
+    - name: valkey
+      protocol: TCP
+      port: 6379
+      targetPort: 6379

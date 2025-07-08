@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pinepods-config
+  namespace: default
+data:
+  SEARCH_API_URL: "https://search.pinepods.online/api/search"
+  PEOPLE_API_URL: "https://people.pinepods.online"
+  VALKEY_HOST: "pinepods-valkey"
+  VALKEY_PORT: "6379"
+  DEBUG_MODE: "false"
+  TZ: "UTC"

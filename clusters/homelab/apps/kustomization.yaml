@@ -25,3 +25,4 @@ resources:
 #- fruitiex-org.yaml
 # - influxdb.yaml
   - wger.yaml
+  - pinepods.yaml
