@@ -14,19 +14,6 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: kavita-manga
-  namespace: default
-spec:
-  storageClassName: syno-storage
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 100Gi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
   name: kavita-books
   namespace: default
 spec:

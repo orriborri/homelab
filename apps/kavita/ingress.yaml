@@ -1,13 +1,14 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: kavita
+  name: kavita-ingress
   namespace: default
-  annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
+  ingressClassName: public
+  tls:
+    - secretName: orriborri-com-tls
   rules:
-    - host: kavita.local
+    - host: kavita.orriborri.com
       http:
         paths:
           - path: /
@@ -16,4 +17,4 @@ spec:
               service:
                 name: kavita
                 port:
-                  number: 5000
+                  number: 80

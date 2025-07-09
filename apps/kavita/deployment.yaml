@@ -7,6 +7,8 @@ metadata:
     app: kavita
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: kavita
@@ -17,23 +19,40 @@ spec:
     spec:
       containers:
         - name: kavita
-          image: kizaing/kavita:latest
+          image: docker.io/jvmilazz0/kavita:0.8.7
+          imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5000
           volumeMounts:
-            - name: kavita-config
-              mountPath: /kavita/config
-            - name: kavita-manga
-              mountPath: /manga
-            - name: kavita-books
-              mountPath: /books
+            - mountPath: /kavita/config
+              name: kavita-config
+            - mountPath: /books
+              name: kavita-books
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
       volumes:
         - name: kavita-config
           persistentVolumeClaim:
             claimName: kavita-config
-        - name: kavita-manga
-          persistentVolumeClaim:
-            claimName: kavita-manga
         - name: kavita-books
           persistentVolumeClaim:
             claimName: kavita-books

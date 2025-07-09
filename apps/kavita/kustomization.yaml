@@ -1,2 +1,5 @@
 resources:
-  - release.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+  - persistentVolumes.yaml
