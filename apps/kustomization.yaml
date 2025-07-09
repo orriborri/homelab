@@ -1,0 +1,22 @@
+resources:
+  - actual/
+  - adb-mqtt/
+  - audiobookshelf/
+  - homeassistant/
+  - homectl/
+  - hue-mqtt/
+  - influxdb/
+  - ingress-proxy/
+  - kavita/
+  - lifx-mqtt/
+  - mosquitto/
+  - n8n/
+  - nordpool-mqtt/
+  - pinepods/
+  - podinfo/
+  - postgres/
+  - sump-it/
+  - tuya-mqtt/
+  - twinkly-mqtt/
+  - vikunja/
+  - wger/
