@@ -1,71 +1,118 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kavita-config
+  namespace: default
+spec:
+  storageClassName: syno-storage
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kavita-books
+  namespace: default
+spec:
+  storageClassName: syno-storage
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kavita-ingress
+  namespace: default
+spec:
+  ingressClassName: public
+  tls:
+    - secretName: orriborri-com-tls
+  rules:
+    - host: kavita.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kavita
+                port:
+                  number: 80
+---
+apiVersion: v1
+kind: Service
 metadata:
   name: kavita
   namespace: default
 spec:
-  interval: 5m
-  chart:
+  type: LoadBalancer
+  selector:
+    app: kavita
+  ports:
+    - name: web
+      protocol: TCP
+      port: 80
+      targetPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kavita
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: kavita
+  template:
+    metadata:
+      labels:
+        app: kavita
     spec:
-      chart: kavita
-      version: "12.0.7"
-      sourceRef:
-        kind: HelmRepository
-        name: truecharts
-        namespace: flux-system
-      interval: 5m
-  values:
-    image:
-      repository: docker.io/jvmilazz0/kavita
-      tag: 0.8.7@sha256:b9c671586db2a6a688da3cb4b45f1319cca33b01e6e760c8bf3c19d60101bdf2
-      pullPolicy: IfNotPresent
-    
-    securityContext:
-      container:
-        readOnlyRootFilesystem: false
-        runAsNonRoot: false
-        runAsUser: 0
-        runAsGroup: 0
-    
-    service:
-      main:
-        ports:
-          main:
-            targetPort: 5000
-            port: 10189
-    
-    persistence:
-      config:
-        enabled: true
-        mountPath: "/kavita/config"
-        storageClass: syno-storage
-        accessMode: ReadWriteMany
-        size: 10Gi
-      
-      manga:
-        enabled: true
-        mountPath: "/manga"
-        storageClass: syno-storage
-        accessMode: ReadWriteMany
-        size: 100Gi
-      
-      books:
-        enabled: true
-        mountPath: "/books"
-        storageClass: syno-storage
-        accessMode: ReadWriteMany
-        size: 100Gi
-    
-    ingress:
-      main:
-        enabled: true
-        ingressClassName: public
-        annotations:
-          nginx.ingress.kubernetes.io/ssl-redirect: "true"
-        tls:
-          - secretName: orriborri-com-tls
-        hosts:
-          - host: kavita.orriborri.com
-            paths:
-              - path: /
-                pathType: Prefix
+      containers:
+        - name: kavita
+          image: docker.io/jvmilazz0/kavita:0.8.7
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - mountPath: /kavita/config
+              name: kavita-config
+            - mountPath: /books
+              name: kavita-books
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+      volumes:
+        - name: kavita-config
+          persistentVolumeClaim:
+            claimName: kavita-config
+        - name: kavita-books
+          persistentVolumeClaim:
+            claimName: kavita-books
