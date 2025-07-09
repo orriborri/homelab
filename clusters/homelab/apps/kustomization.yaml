@@ -26,3 +26,4 @@ resources:
 # - influxdb.yaml
   - wger.yaml
   - pinepods.yaml
+  - kavita.yaml
