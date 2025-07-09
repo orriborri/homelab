@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kavita
+  namespace: default
+  labels:
+    app: kavita
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kavita
+  template:
+    metadata:
+      labels:
+        app: kavita
+    spec:
+      containers:
+        - name: kavita
+          image: kizaing/kavita:latest
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: kavita-config
+              mountPath: /kavita/config
+            - name: kavita-manga
+              mountPath: /manga
+            - name: kavita-books
+              mountPath: /books
+      volumes:
+        - name: kavita-config
+          persistentVolumeClaim:
+            claimName: kavita-config
+        - name: kavita-manga
+          persistentVolumeClaim:
+            claimName: kavita-manga
+        - name: kavita-books
+          persistentVolumeClaim:
+            claimName: kavita-books
