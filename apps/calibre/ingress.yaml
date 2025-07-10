@@ -1,0 +1,62 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: calibre-ingress
+  namespace: default
+spec:
+  ingressClassName: public
+  tls:
+    - secretName: orriborri-com-tls
+  rules:
+    - host: calibre.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: calibre
+                port:
+                  number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: calibre-server-ingress
+  namespace: default
+spec:
+  ingressClassName: public
+  tls:
+    - secretName: orriborri-com-tls
+  rules:
+    - host: calibre-server.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: calibre
+                port:
+                  number: 8181
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: calibre-web-ingress
+  namespace: default
+spec:
+  ingressClassName: public
+  tls:
+    - secretName: orriborri-com-tls
+  rules:
+    - host: library.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: calibre-web
+                port:
+                  number: 8083

@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: calibre
+  namespace: default
+  labels:
+    app: calibre
+spec:
+  type: ClusterIP
+  selector:
+    app: calibre
+  ports:
+    - name: desktop
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - name: webserver
+      protocol: TCP
+      port: 8181
+      targetPort: 8181
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calibre-web
+  namespace: default
+  labels:
+    app: calibre-web
+spec:
+  type: ClusterIP
+  selector:
+    app: calibre-web
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8083
+      targetPort: 8083
