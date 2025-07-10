@@ -4,7 +4,7 @@ metadata:
   name: penpot-ingress
   namespace: default
 spec:
-  ingressClassName: public
+  ingressClassName: private
   tls:
     - secretName: orriborri-com-tls
   rules:

@@ -27,6 +27,7 @@ spec:
             - --domain-filter=orriborri.com
             - --provider=cloudflare
             - --cloudflare-dns-records-per-page=5000
+            - --kube-api-timeout=2m
           env:
             - name: CF_API_EMAIL
               value: ${CLOUDFLARE_EMAIL}
