@@ -2,7 +2,7 @@ resources:
   - actual/
   - adb-mqtt/
   - audiobookshelf/
-  - calibre/
+ # - calibre/
   - homeassistant/
   - homectl/
   - hue-mqtt/
@@ -19,5 +19,5 @@ resources:
   - sump-it/
   - tuya-mqtt/
   - twinkly-mqtt/
-  - vikunja/
-  - wger/
+#  - vikunja/
+#  - wger/
