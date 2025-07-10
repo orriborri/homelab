@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: penpot-backend
+  namespace: default
+  labels:
+    app: penpot-backend
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: penpot-backend
+  template:
+    metadata:
+      labels:
+        app: penpot-backend
+    spec:
+      containers:
+        - name: penpot-backend
+          image: penpotapp/backend:latest
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 6060
+          env:
+            - name: PENPOT_FLAGS
+              value: "enable-registration enable-login-with-password"
+            - name: PENPOT_SECRET_KEY
+              value: "my-insecure-key"
+            - name: PENPOT_DATABASE_URI
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/penpot_database"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-config
+                  key: POSTGRES_PASSWORD
+            - name: PENPOT_REDIS_URI
+              value: "redis://penpot-redis:6379/0"
+            - name: PENPOT_ASSETS_STORAGE_BACKEND
+              value: "assets-fs"
+            - name: PENPOT_STORAGE_ASSETS_FS_DIRECTORY
+              value: "/opt/data/assets"
+            - name: PENPOT_TELEMETRY_ENABLED
+              value: "false"
+            - name: PENPOT_PUBLIC_URI
+              value: "https://penpot.orriborri.com"
+          volumeMounts:
+            - mountPath: /opt/data/assets
+              name: assets-data
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 6060
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 6060
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+      volumes:
+        - name: assets-data
+          persistentVolumeClaim:
+            claimName: penpot-assets-data

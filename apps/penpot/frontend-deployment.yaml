@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: penpot-frontend
+  namespace: default
+  labels:
+    app: penpot-frontend
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: penpot-frontend
+  template:
+    metadata:
+      labels:
+        app: penpot-frontend
+    spec:
+      containers:
+        - name: penpot-frontend
+          image: penpotapp/frontend:latest
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 80
+          env:
+            - name: PENPOT_FLAGS
+              value: "enable-registration enable-login-with-password"
+            - name: PENPOT_BACKEND_URI
+              value: "http://penpot-backend:6060"
+            - name: PENPOT_EXPORTER_URI
+              value: "http://penpot-exporter:6061"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5

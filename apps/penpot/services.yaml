@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: penpot-redis
+  namespace: default
+  labels:
+    app: penpot-redis
+spec:
+  type: ClusterIP
+  selector:
+    app: penpot-redis
+  ports:
+    - name: redis
+      protocol: TCP
+      port: 6379
+      targetPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: penpot-backend
+  namespace: default
+  labels:
+    app: penpot-backend
+spec:
+  type: ClusterIP
+  selector:
+    app: penpot-backend
+  ports:
+    - name: http
+      protocol: TCP
+      port: 6060
+      targetPort: 6060
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: penpot-frontend
+  namespace: default
+  labels:
+    app: penpot-frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: penpot-frontend
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: penpot-exporter
+  namespace: default
+  labels:
+    app: penpot-exporter
+spec:
+  type: ClusterIP
+  selector:
+    app: penpot-exporter
+  ports:
+    - name: http
+      protocol: TCP
+      port: 6061
+      targetPort: 6061

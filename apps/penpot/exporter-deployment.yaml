@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: penpot-exporter
+  namespace: default
+  labels:
+    app: penpot-exporter
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: penpot-exporter
+  template:
+    metadata:
+      labels:
+        app: penpot-exporter
+    spec:
+      containers:
+        - name: penpot-exporter
+          image: penpotapp/exporter:latest
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 6061
+          env:
+            - name: PENPOT_PUBLIC_URI
+              value: "http://penpot-frontend"
+            - name: PENPOT_REDIS_URI
+              value: "redis://penpot-redis:6379/0"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 6061
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 6061
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
