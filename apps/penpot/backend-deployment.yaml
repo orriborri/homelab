@@ -29,13 +29,13 @@ spec:
             - name: PENPOT_SECRET_KEY
               value: "my-insecure-key"
             - name: PENPOT_DATABASE_URI
-              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/penpot_database"
-            - name: POSTGRES_USER
+              value: "postgresql://postgres:5432/penpot_database"
+            - name: PENPOT_DATABASE_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: postgres-config
                   key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
+            - name: PENPOT_DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-config
