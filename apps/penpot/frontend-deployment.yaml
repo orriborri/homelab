@@ -22,7 +22,7 @@ spec:
           image: penpotapp/frontend:latest
           imagePullPolicy: "IfNotPresent"
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           env:
             - name: PENPOT_FLAGS
               value: "enable-registration enable-login-with-password"
