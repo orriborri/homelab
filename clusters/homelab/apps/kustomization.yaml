@@ -10,7 +10,8 @@ resources:
   - actual.yaml
   - n8n.yaml
   #- wol.yaml
-  - calibre.yaml
+  #- calibre.yaml
+  - penpot.yaml
   #- add-bot.yaml
   #- homectl.yaml
   #- hue-mqtt.yaml
