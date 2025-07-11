@@ -2,7 +2,7 @@ resources:
   - actual/
   - adb-mqtt/
   - audiobookshelf/
-  - calibre/
+#  - calibre/
   - homeassistant/
   - homectl/
   - hue-mqtt/
@@ -13,6 +13,7 @@ resources:
   - mosquitto/
   - n8n/
   - nordpool-mqtt/
+  - penpot/
   - pinepods/
   - podinfo/
   - postgres/
