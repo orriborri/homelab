@@ -60,20 +60,6 @@ spec:
             limits:
               cpu: 1000m
               memory: 2Gi
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 6060
-            initialDelaySeconds: 60
-            periodSeconds: 30
-            timeoutSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 6060
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
       volumes:
         - name: assets-data
           persistentVolumeClaim:
