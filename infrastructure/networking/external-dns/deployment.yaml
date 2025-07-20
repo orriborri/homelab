@@ -28,6 +28,8 @@ spec:
             - --provider=cloudflare
             - --cloudflare-dns-records-per-page=5000
             - --request-timeout=2m
+            - --events
+            - --log-level=debug
           env:
             - name: CF_API_EMAIL
               value: ${CLOUDFLARE_EMAIL}

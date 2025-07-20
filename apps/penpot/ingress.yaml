@@ -5,6 +5,8 @@ metadata:
   namespace: default
 spec:
   ingressClassName: private
+  tls:
+    - secretName: orriborri-com-tls
   rules:
     - host: penpot.orriborri.com
       http:
