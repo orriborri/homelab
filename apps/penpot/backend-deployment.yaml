@@ -23,13 +23,11 @@ spec:
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 6060
+          envFrom:
+            - secretRef:
+                name: penpot-config
           env:
-            - name: PENPOT_FLAGS
-              value: "enable-registration enable-login-with-password"
-            - name: PENPOT_SECRET_KEY
-              value: "my-insecure-key"
-            - name: PENPOT_DATABASE_URI
-              value: "postgresql://postgres:5432/penpot_database"
+            # Keep database credentials from shared postgres-config
             - name: PENPOT_DATABASE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -40,16 +38,6 @@ spec:
                 secretKeyRef:
                   name: postgres-config
                   key: POSTGRES_PASSWORD
-            - name: PENPOT_REDIS_URI
-              value: "redis://penpot-redis:6379/0"
-            - name: PENPOT_ASSETS_STORAGE_BACKEND
-              value: "assets-fs"
-            - name: PENPOT_STORAGE_ASSETS_FS_DIRECTORY
-              value: "/opt/data/assets"
-            - name: PENPOT_TELEMETRY_ENABLED
-              value: "false"
-            - name: PENPOT_PUBLIC_URI
-              value: "https://penpot.orriborri.com"
           volumeMounts:
             - mountPath: /opt/data/assets
               name: assets-data
