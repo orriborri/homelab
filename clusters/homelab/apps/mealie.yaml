@@ -1,0 +1,29 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: mealie
+spec:
+  interval: 1h
+  timeout: 5m
+  retryInterval: 10s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/mealie
+  prune: true
+  wait: true
+  dependsOn:
+    - name: synology-csi
+    - name: cert-manager
+    - name: ingress-nginx
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg
+  postBuild:
+    substitute: {}
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+      - kind: Secret
+        name: cluster-secrets

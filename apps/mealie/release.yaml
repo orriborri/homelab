@@ -1,0 +1,178 @@
+---
+# Persistent Volume Claim for Mealie data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mealie-data
+  namespace: default
+spec:
+  storageClassName: syno-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mealie
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: mealie
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 9000
+
+---
+# Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mealie-ingress
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: ${LETSENCRYPT_CLUSTER_ISSUER}
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/client-max-body-size: "50m"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - mealie.orriborri.com
+      secretName: mealie-tls
+  rules:
+    - host: mealie.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mealie
+                port:
+                  number: 80
+
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mealie
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mealie
+  template:
+    metadata:
+      labels:
+        app: mealie
+    spec:
+      securityContext:
+        runAsUser: 911
+        runAsGroup: 911
+        fsGroup: 911
+      containers:
+        - name: mealie
+          image: ghcr.io/mealie-recipes/mealie:v1.12.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000
+          env:
+            # Base URL configuration
+            - name: BASE_URL
+              value: "https://mealie.orriborri.com"
+            
+            # Database configuration (SQLite by default)
+            - name: DB_ENGINE
+              value: "sqlite"
+            
+            # Security settings
+            - name: ALLOW_SIGNUP
+              value: "false"
+            - name: AUTO_BACKUP_ENABLED
+              value: "true"
+            
+            # Performance settings
+            - name: MAX_WORKERS
+              value: "1"
+            - name: WEB_CONCURRENCY
+              value: "1"
+            
+            # Feature flags
+            - name: SMTP_HOST
+              value: ""
+            - name: SMTP_PORT
+              value: "587"
+            - name: SMTP_FROM_NAME
+              value: "Mealie"
+            - name: SMTP_AUTH_STRATEGY
+              value: "TLS"
+            - name: SMTP_FROM_EMAIL
+              value: ""
+            
+            # API settings
+            - name: API_PORT
+              value: "9000"
+            - name: API_DOCS
+              value: "true"
+            
+            # Timezone
+            - name: TZ
+              value: "Europe/Stockholm"
+            
+            # Default group settings
+            - name: DEFAULT_GROUP
+              value: "Home"
+            - name: DEFAULT_EMAIL
+              value: "admin@mealie.com"
+            - name: DEFAULT_PASSWORD
+              value: "MyPassword"
+            
+            # File upload limits
+            - name: MAX_FILE_SIZE
+              value: "50"
+            
+          volumeMounts:
+            - name: mealie-data
+              mountPath: /app/data
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /api/app/about
+              port: 9000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/app/about
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: mealie-data
+          persistentVolumeClaim:
+            claimName: mealie-data
