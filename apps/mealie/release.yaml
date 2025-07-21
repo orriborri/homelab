@@ -42,13 +42,13 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
     nginx.ingress.kubernetes.io/client-max-body-size: "50m"
 spec:
-  ingressClassName: nginx
+  ingressClassName: public
   tls:
     - hosts:
-        - mealie.orriborri.com
+        - ${MEALIE_DOMAIN_NAME}
       secretName: mealie-tls
   rules:
-    - host: mealie.orriborri.com
+    - host: ${MEALIE_DOMAIN_NAME}
       http:
         paths:
           - path: /
@@ -91,7 +91,7 @@ spec:
           env:
             # Base URL configuration
             - name: BASE_URL
-              value: "https://mealie.orriborri.com"
+              value: "https://${MEALIE_DOMAIN_NAME}"
             
             # Database configuration (SQLite by default)
             - name: DB_ENGINE

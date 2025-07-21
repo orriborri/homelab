@@ -1,3 +1,5 @@
 {
-  "nixEnvSelector.nixFile": "${workspaceFolder}/default.nix"
+  "nixEnvSelector.nixFile": "${workspaceFolder}/default.nix",
+ 
+  "chat.mcp.enabled": true
 }
