@@ -10,8 +10,8 @@ resources:
   - ingress-proxy/
   - kavita/
   - lifx-mqtt/
-  - mosquitto/
   - mealie/
+  - mosquitto/
   - n8n/
   - nordpool-mqtt/
   - penpot/
