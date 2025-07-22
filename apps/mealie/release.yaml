@@ -126,13 +126,6 @@ spec:
             - name: TZ
               value: "Europe/Stockholm"
             
-            # Default group settings
-            - name: DEFAULT_GROUP
-              value: "Home"
-            - name: DEFAULT_EMAIL
-              value: "admin@mealie.com"
-            - name: DEFAULT_PASSWORD
-              value: "MyPassword"
             
             # File upload limits
             - name: MAX_FILE_SIZE
