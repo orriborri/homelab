@@ -94,7 +94,7 @@ spec:
             
             # Security settings
             - name: ALLOW_SIGNUP
-              value: "false"
+              value: "true"
             - name: AUTO_BACKUP_ENABLED
               value: "true"
             
