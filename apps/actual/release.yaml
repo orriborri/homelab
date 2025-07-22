@@ -70,6 +70,11 @@ spec:
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5006
+          env:
+            - name: ACTUAL_PORT
+              value: "5006"
+            - name: ACTUAL_HOSTNAME
+              value: "0.0.0.0"
           volumeMounts:
             - mountPath: /data
               name: actual-data
