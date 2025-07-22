@@ -42,6 +42,10 @@ metadata:
     nginx.ingress.kubernetes.io/client-max-body-size: "50m"
 spec:
   ingressClassName: public
+  tls:
+    - hosts:
+        - ${MEALIE_DOMAIN_NAME}
+      secretName: orriborri-com-tls
   rules:
     - host: ${MEALIE_DOMAIN_NAME}
       http:
