@@ -38,15 +38,10 @@ metadata:
   name: mealie-ingress
   namespace: default
   annotations:
-    cert-manager.io/cluster-issuer: ${LETSENCRYPT_CLUSTER_ISSUER}
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
     nginx.ingress.kubernetes.io/client-max-body-size: "50m"
 spec:
   ingressClassName: public
-  tls:
-    - hosts:
-        - ${MEALIE_DOMAIN_NAME}
-      secretName: mealie-tls
   rules:
     - host: ${MEALIE_DOMAIN_NAME}
       http:
@@ -91,7 +86,7 @@ spec:
           env:
             # Base URL configuration
             - name: BASE_URL
-              value: "https://${MEALIE_DOMAIN_NAME}"
+              value: "http://${MEALIE_DOMAIN_NAME}"
             
             # Database configuration (SQLite by default)
             - name: DB_ENGINE

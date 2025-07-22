@@ -12,5 +12,6 @@ pkgs.mkShell {
     git
     kubernetes-helm
     k9s
+    go
   ];
 }
