@@ -16,6 +16,7 @@ spec:
     - name: synology-csi
     - name: cert-manager
     - name: ingress-nginx-private
+    - name: postgres
   decryption:
     provider: sops
     secretRef:

@@ -81,6 +81,10 @@ spec:
         runAsUser: 911
         runAsGroup: 911
         fsGroup: 911
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox
+          command: ["sh", "-c", "until nc -z postgres 5432; do echo waiting for postgres; sleep 1; done"]
       containers:
         - name: mealie
           image: ghcr.io/mealie-recipes/mealie:v3.0.2
@@ -92,9 +96,25 @@ spec:
             - name: BASE_URL
               value: "http://${MEALIE_DOMAIN_NAME}"
             
-            # Database configuration (SQLite by default)
+            # Database configuration (PostgreSQL using shared instance)
             - name: DB_ENGINE
-              value: "sqlite"
+              value: "postgres"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-config
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_SERVER
+              value: "postgres"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DB
+              value: "mealie_database"
             
             # Security settings
             - name: ALLOW_SIGNUP
@@ -108,17 +128,6 @@ spec:
             - name: WEB_CONCURRENCY
               value: "1"
             
-            # Feature flags
-            - name: SMTP_HOST
-              value: ""
-            - name: SMTP_PORT
-              value: "587"
-            - name: SMTP_FROM_NAME
-              value: "Mealie"
-            - name: SMTP_AUTH_STRATEGY
-              value: "TLS"
-            - name: SMTP_FROM_EMAIL
-              value: ""
             
             # API settings
             - name: API_PORT
@@ -128,7 +137,7 @@ spec:
             
             # Timezone
             - name: TZ
-              value: "Europe/Stockholm"
+              value: "Europe/Helsinki"
             
             
             # File upload limits
