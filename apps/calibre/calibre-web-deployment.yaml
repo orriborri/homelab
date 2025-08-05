@@ -42,10 +42,10 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 256Mi
+              memory: 128Mi
             limits:
               cpu: 500m
-              memory: 1Gi
+              memory: 512Mi
       volumes:
         - name: calibre-web-config
           persistentVolumeClaim:
