@@ -25,7 +25,7 @@ resources:
 #- adb-mqtt.yaml
 #- fruitiex-org.yaml
 # - influxdb.yaml
-  - wger.yaml
-  - pinepods.yaml
+#  - wger.yaml
+#  - pinepods.yaml
   - kavita.yaml
   - mealie.yaml
