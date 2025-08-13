@@ -9,7 +9,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 130Gi
+      storage: 150Gi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
