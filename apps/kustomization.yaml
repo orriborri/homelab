@@ -6,7 +6,7 @@ resources:
   - influxdb/
   - ingress-proxy/
   - kavita/
-  - mealie/
+ # - mealie/
   - mosquitto/
   - n8n/
   - penpot/
