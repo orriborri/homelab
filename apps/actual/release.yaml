@@ -4,7 +4,7 @@ metadata:
   name: actual-data
   namespace: default
 spec:
-  storageClassName: syno-storage
+  storageClassName: homelab-nfs
   accessModes:
     - ReadWriteOnce
   resources:
