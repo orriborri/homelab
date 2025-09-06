@@ -25,3 +25,7 @@ spec:
         - nfsvers=3
         - timeo=600
         - retrans=3
+    persistence:
+      enabled: false
+    storageClass:
+      pathPattern: "${.PVC.namespace}/${.PVC.name}"
