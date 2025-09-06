@@ -18,6 +18,7 @@ spec:
     storageClass:
       name: homelab-nfs
       reclaimPolicy: Retain
+      pathPattern: "${.PVC.namespace}/${.PVC.name}"
     nfs:
       server: 192.168.1.244
       path: /volume2/cluster
@@ -27,5 +28,3 @@ spec:
         - retrans=3
     persistence:
       enabled: false
-    storageClass:
-      pathPattern: "${.PVC.namespace}/${.PVC.name}"
