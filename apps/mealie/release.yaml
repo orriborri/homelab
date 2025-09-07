@@ -3,10 +3,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mealie-data
+  name: mealie-data-v2
   namespace: default
 spec:
-  storageClassName: syno-storage
+  storageClassName: homelab-nfs
   accessModes:
     - ReadWriteOnce
   resources:
@@ -176,4 +176,4 @@ spec:
       volumes:
         - name: mealie-data
           persistentVolumeClaim:
-            claimName: mealie-data
+            claimName: mealie-data-v2
