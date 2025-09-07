@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: audiobookshelf-podcast-data
+  name: audiobookshelf-podcast-data-v2
   namespace: default
 spec:
-  storageClassName: syno-storage
+  storageClassName: homelab-nfs
   accessModes:
     - ReadWriteMany
   resources:
@@ -14,10 +14,10 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: audiobookshelf-audiobooks-data
+  name: audiobookshelf-audiobooks-data-v2
   namespace: default
 spec:
-  storageClassName: syno-storage
+  storageClassName: homelab-nfs
   accessModes:
     - ReadWriteMany
   resources:
@@ -27,10 +27,10 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: audiobookshelf-metadata-data
+  name: audiobookshelf-metadata-data-v2
   namespace: default
 spec:
-  storageClassName: syno-storage
+  storageClassName: homelab-nfs
   accessModes:
     - ReadWriteMany
   resources:
@@ -40,10 +40,10 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: audiobookshelf-config-data
+  name: audiobookshelf-config-data-v2
   namespace: default
 spec:
-  storageClassName: syno-storage
+  storageClassName: homelab-nfs
   accessModes:
     - ReadWriteMany
   resources:

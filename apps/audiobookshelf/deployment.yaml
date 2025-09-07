@@ -39,13 +39,13 @@ spec:
       volumes:
         - name: audiobookshelf-podcast-data
           persistentVolumeClaim:
-            claimName: audiobookshelf-podcast-data
+            claimName: audiobookshelf-podcast-data-v2
         - name: audiobookshelf-audiobooks-data
           persistentVolumeClaim:
-            claimName: audiobookshelf-audiobooks-data
+            claimName: audiobookshelf-audiobooks-data-v2
         - name: audiobookshelf-metadata-data
           persistentVolumeClaim:
-            claimName: audiobookshelf-metadata-data
+            claimName: audiobookshelf-metadata-data-v2
         - name: audiobookshelf-config-data
           persistentVolumeClaim:
-            claimName: audiobookshelf-config-data
+            claimName: audiobookshelf-config-data-v2
