@@ -180,7 +180,7 @@ machine:
     # Used to provide instructions for installations.
     install:
         disk: /dev/sda # The disk used for installations.
-        image: ghcr.io/siderolabs/installer:v1.8.3 # Allows for supplying the image used to perform the installation.
+        image: ghcr.io/siderolabs/installer:v1.11.1 # Allows for supplying the image used to perform the installation.
         # Allows for supplying additional system extension images to install on top of base Talos image.
         extensions:
             - image: ghcr.io/siderolabs/iscsi-tools:v0.1.4 # System extension image.
