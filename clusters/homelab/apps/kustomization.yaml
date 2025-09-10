@@ -11,7 +11,7 @@ resources:
  # - n8n.yaml
   #- wol.yaml
 #  - calibre.yaml
-  - penpot.yaml
+# - penpot.yaml
   #- add-bot.yaml
   #- homectl.yaml
   #- hue-mqtt.yaml
