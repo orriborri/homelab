@@ -1,16 +1,16 @@
 resources:
   - actual/
   - audiobookshelf/
- # - calibre/
+  - calibre/
   - homeassistant/
   - influxdb/
   - ingress-proxy/
-#  - kavita/
- # - mealie/
+  - kavita/
+  - mealie/
   - mosquitto/
- # - n8n/
- # - penpot/
- # - pinepods/
+  - n8n/
+  - penpot/
+  - pinepods/
   - podinfo/
   - postgres/
   - sump-it/
