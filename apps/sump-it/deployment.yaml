@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: sump-it
-          image: ghcr.io/orriborri/sump-it:main-e500a3e
+          image: ghcr.io/orriborri/sump-it:sha-373d51d
           imagePullPolicy: Always
           ports:
             - name: http
