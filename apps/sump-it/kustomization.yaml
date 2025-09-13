@@ -7,4 +7,4 @@ resources:
 - ./sump-it-config.yaml
 images:
 - name: ghcr.io/orriborri/sump-it
-  newTag: sha-08ebc99
+  newName: sha-9e14e46
