@@ -8,4 +8,4 @@ resources:
 images:
 - name: ghcr.io/orriborri/sump-it
   newName: ghcr.io/orriborri/sump-it
-  newTag: sha-c43af98
+  newTag: sha-042352d
