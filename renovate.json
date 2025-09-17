@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended",
     ":automergeDigest",
+    ":automergeMinor",
     ":semanticCommits",
     ":prHourlyLimitNone",
     ":prConcurrentLimitNone"
