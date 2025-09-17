@@ -8,17 +8,27 @@
     ":prHourlyLimitNone",
     ":prConcurrentLimitNone"
   ],
+
+  // ✅ Let GitHub perform the merge once PR is mergeable
+  "platformAutomerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "squash",
+
   "kubernetes": {
     "managerFilePatterns": [
       "/\\.yaml$/"
     ]
   },
+
   "packageRules": [
     {
-      "matchCategories": [
-        "docker"
-      ],
+      "matchCategories": ["docker"],
       "pinDigests": true
+    },
+    {
+      // (belt & suspenders) Explicitly auto-merge non-major everywhere
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "automerge": true
     }
   ]
 }
