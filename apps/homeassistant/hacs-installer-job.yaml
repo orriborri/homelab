@@ -1,0 +1,94 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hacs-installer
+  namespace: default
+  annotations:
+    # This ensures the job runs only once and is cleaned up after success
+    batch.kubernetes.io/job-tracking: "true"
+spec:
+  ttlSecondsAfterFinished: 86400  # Clean up after 24 hours
+  template:
+    metadata:
+      labels:
+        app: hacs-installer
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: hacs-installer
+        image: alpine:3.19
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          echo "Installing dependencies..."
+          apk add --no-cache wget unzip curl
+          
+          echo "Checking if HACS is already installed..."
+          if [ -d "/config/custom_components/hacs" ]; then
+            echo "HACS is already installed. Checking version..."
+            if [ -f "/config/custom_components/hacs/manifest.json" ]; then
+              INSTALLED_VERSION=$(grep '"version"' /config/custom_components/hacs/manifest.json | cut -d'"' -f4)
+              echo "Installed HACS version: $INSTALLED_VERSION"
+            fi
+            
+            # Get latest version from GitHub API
+            LATEST_VERSION=$(curl -s https://api.github.com/repos/hacs/integration/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+            echo "Latest HACS version: $LATEST_VERSION"
+            
+            if [ "$INSTALLED_VERSION" = "$LATEST_VERSION" ]; then
+              echo "HACS is already up to date. Exiting."
+              exit 0
+            else
+              echo "Updating HACS from $INSTALLED_VERSION to $LATEST_VERSION..."
+              rm -rf /config/custom_components/hacs
+            fi
+          else
+            echo "HACS not found. Installing..."
+          fi
+          
+          echo "Creating custom_components directory..."
+          mkdir -p /config/custom_components
+          
+          echo "Downloading latest HACS release..."
+          cd /tmp
+          wget -O hacs.zip https://github.com/hacs/integration/releases/latest/download/hacs.zip
+          
+          echo "Extracting HACS..."
+          unzip -q hacs.zip -d /config/custom_components/
+          
+          echo "Cleaning up..."
+          rm hacs.zip
+          
+          echo "Setting proper ownership and permissions..."
+          chown -R 568:568 /config/custom_components/hacs
+          chmod -R 755 /config/custom_components/hacs
+          
+          echo "HACS installation completed successfully!"
+          echo "Files installed in /config/custom_components/hacs:"
+          ls -la /config/custom_components/hacs/
+          
+          echo "Next steps:"
+          echo "1. Restart Home Assistant"
+          echo "2. Go to Settings → Devices & Services → Add Integration"
+          echo "3. Search for 'HACS' and add it"
+          echo "4. Follow the GitHub authentication setup process"
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        securityContext:
+          runAsUser: 568
+          runAsGroup: 568
+          fsGroup: 568
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: home-assistant-home-assistant-0

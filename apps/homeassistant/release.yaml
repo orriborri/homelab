@@ -55,37 +55,6 @@ spec:
       type: LoadBalancer
       port: 80
       targetPort: 8123
-    # Add HACS initContainer
-    initContainers:
-      hacs-installer:
-        image: busybox:latest
-        command:
-          - /bin/sh
-          - -c
-          - |
-            # Create custom_components directory if it doesn't exist
-            mkdir -p /config/custom_components
-            
-            # Download and install HACS if not already present
-            if [ ! -d "/config/custom_components/hacs" ]; then
-              echo "Installing HACS..."
-              # Download HACS
-              wget -O /tmp/hacs.zip https://github.com/hacs/integration/releases/latest/download/hacs.zip
-              # Extract to custom_components
-              cd /config/custom_components
-              unzip /tmp/hacs.zip
-              rm /tmp/hacs.zip
-              echo "HACS installed successfully!"
-            else
-              echo "HACS already installed, skipping..."
-            fi
-        volumeMounts:
-          - name: config
-            mountPath: /config
-        securityContext:
-          runAsUser: 568
-          runAsGroup: 568
-          fsGroup: 568
     configuration:
       enabled: true
       templateConfig: |-
