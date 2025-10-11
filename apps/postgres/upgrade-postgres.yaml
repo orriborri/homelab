@@ -12,7 +12,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: pg-upgrade
-          image: pgautoupgrade/pgautoupgrade:17-alpine
+          image: pgautoupgrade/pgautoupgrade:18-alpine
           env:
             - name: PGOLDVER
               value: "16"
