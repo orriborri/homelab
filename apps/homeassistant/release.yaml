@@ -50,7 +50,8 @@ spec:
     persistence:
       enabled: true
       accessMode: ReadWriteMany
-      storageClass: homelab-nfs
+      storageClass: syno-storage 
+      size: 5Gi
     service:
       type: LoadBalancer
       port: 80
