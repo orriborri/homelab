@@ -19,20 +19,20 @@ spec:
   values:
     persistence:
       enabled: true
-      storageClass: syno-storage
-      accessMode: ReadWriteOnce
+      storageClass: homelab-nfs
+      accessMode: ReadWriteMany
       size: 10Gi
     ingress:
       enabled: true
       ingressClassName: public
       hosts:
-        - host: homeassistant.orriborri.com
+        - host: ha.orriborri.com
           paths:
             - path: /
               pathType: Prefix
       tls:
         - hosts:
-            - homeassistant.orriborri.com
+            - ha.orriborri.com
           secretName: orriborri-com-tls
     resources:
       requests:
