@@ -2,7 +2,7 @@ resources:
   - actual/
   - audiobookshelf/
   - calibre/
-  - homeassistant/
+  #- homeassistant/
   - influxdb/
   - ingress-proxy/
   - kavita/
