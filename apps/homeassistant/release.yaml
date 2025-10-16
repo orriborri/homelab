@@ -28,9 +28,12 @@ spec:
       hosts:
         - host: homeassistant.orriborri.com
           paths:
-            - /
+            - path: /
+              pathType: Prefix
       tls:
-        - secretName: orriborri-com-tls
+        - hosts:
+            - homeassistant.orriborri.com
+          secretName: orriborri-com-tls
     resources:
       requests:
         cpu: 100m
