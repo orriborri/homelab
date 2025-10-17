@@ -25,7 +25,6 @@ spec:
     ingress:
       enabled: true
       ingressClassName: public
-      hosts:
         - host: ha.orriborri.com
           paths:
             - path: /
