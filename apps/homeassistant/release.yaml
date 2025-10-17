@@ -22,19 +22,19 @@ spec:
       storageClass: homelab-nfs
       accessMode: ReadWriteMany
       size: 10Gi
-  # Trigger redeploy for ingress recreation
-  ingress:
-      enabled: true
-      ingressClassName: public
-      hosts:
-        - host: ha.orriborri.com
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - hosts:
-            - ha.orriborri.com
-          secretName: orriborri-com-tls
+    homeAssistant:
+      ingress:
+        enabled: true
+        ingressClassName: public
+        hosts:
+          - host: ha.orriborri.com
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - ha.orriborri.com
+            secretName: orriborri-com-tls
     resources:
       requests:
         cpu: 100m
