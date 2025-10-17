@@ -22,7 +22,8 @@ spec:
       storageClass: homelab-nfs
       accessMode: ReadWriteMany
       size: 10Gi
-    ingress:
+  # Trigger redeploy for ingress recreation
+  ingress:
       enabled: true
       ingressClassName: public
       hosts:
