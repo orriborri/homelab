@@ -11,7 +11,7 @@ spec:
       version: "*"
       sourceRef:
         kind: HelmRepository
-        name: small-hack-home-assistant
+        name: pajikos-home-assistant
         namespace: flux-system
   interval: 1h
   install:
@@ -22,19 +22,18 @@ spec:
       storageClass: homelab-nfs
       accessMode: ReadWriteMany
       size: 10Gi
-    homeAssistant:
-      ingress:
-        enabled: true
-        ingressClassName: public
-        hosts:
-          - host: ha.orriborri.com
-            paths:
-              - path: /
-                pathType: Prefix
-        tls:
-          - hosts:
-              - ha.orriborri.com
-            secretName: orriborri-com-tls
+    ingress:
+      enabled: true
+      ingressClassName: public
+      hosts:
+        - host: ha.orriborri.com
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - ha.orriborri.com
+          secretName: orriborri-com-tls
     resources:
       requests:
         cpu: 100m
