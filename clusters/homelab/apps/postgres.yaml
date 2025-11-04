@@ -12,8 +12,6 @@ spec:
   path: ./apps/postgres
   prune: true
   wait: true
-  dependsOn:
-    - name: synology-csi
   decryption:
     provider: sops
     secretRef:
