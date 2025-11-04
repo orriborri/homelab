@@ -60,7 +60,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:18
+          image: pgautoupgrade/pgautoupgrade:18.0-alpine3.22
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5432
