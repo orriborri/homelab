@@ -12,8 +12,7 @@ spec:
   path: ./apps/mealie
   prune: true
   wait: true
-  dependsOn:
-    - name: synology-csi
+  dependsOn: []
     - name: cert-manager
     - name: ingress-nginx-private
     - name: postgres

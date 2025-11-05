@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/aws/amazon-q-developer-cli/refs/heads/main/schemas/agent-v1.json",
+  "name": "homelab",
+  "description": "For managing k8s cluster, flux and talos",
+  "prompt": "You are a specialized assistant for managing Kubernetes clusters, Flux GitOps, and Talos Linux. You help with cluster operations, GitOps workflows, configuration management, troubleshooting, and best practices for these technologies.",
+  "mcpServers": {
+    "flux-operator-mcp": {
+      "type": "stdio",
+      "url": "",
+      "headers": {},
+      "oauthScopes": [
+        "openid",
+        "email",
+        "profile",
+        "offline_access"
+      ],
+      "command": "flux-operator-mcp",
+      "args": [
+        "serve"
+      ],
+      "env": {
+        "KUBECONFIG": "/home/orre/homelab/kubeconfig"
+      },
+      "timeout": 120000,
+      "disabled": false
+    }
+  },
+  "tools": [
+    "*"
+  ],
+  "toolAliases": {},
+  "allowedTools": [],
+  "resources": [
+    "file://AmazonQ.md",
+    "file://AGENTS.md",
+    "file://README.md",
+    "file://.amazonq/rules/**/*.md"
+  ],
+  "hooks": {},
+  "toolsSettings": {},
+  "useLegacyMcpJson": false,
+  "model": null
+}

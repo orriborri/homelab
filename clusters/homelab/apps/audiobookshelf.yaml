@@ -12,8 +12,7 @@ spec:
   path: ./apps/audiobookshelf
   prune: true
   wait: true
-  dependsOn:
-    - name: synology-csi
+  dependsOn: []
   decryption:
     provider: sops
     secretRef:

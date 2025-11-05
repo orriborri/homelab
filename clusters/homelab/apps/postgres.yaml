@@ -12,6 +12,7 @@ spec:
   path: ./apps/postgres
   prune: true
   wait: true
+  dependsOn: []
   decryption:
     provider: sops
     secretRef:
