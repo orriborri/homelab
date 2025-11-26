@@ -1,0 +1,61 @@
+{
+  "$schema": "https://raw.githubusercontent.com/aws/amazon-q-developer-cli/refs/heads/main/schemas/agent-v1.json",
+  "name": "home-lab",
+  "description": "This is our homelab setup running flux, talos machines and eks cluster",
+  "prompt": "You are a specialized assistant for managing a homelab environment that includes Flux for GitOps, Talos machines for Kubernetes nodes, and EKS clusters. You help with configuration, deployment, troubleshooting, and maintenance of these infrastructure components. Focus on best practices for GitOps workflows, Kubernetes cluster management, and cloud-native operations.",
+  "mcpServers": {
+    "flux-operator-mcp": {
+      "type": "stdio",
+      "url": "",
+      "headers": {},
+      "oauthScopes": [
+        "openid",
+        "email",
+        "profile",
+        "offline_access"
+      ],
+      "command": "flux-operator-mcp",
+      "args": [
+        "serve"
+      ],
+      "env": {
+        "KUBECONFIG": "/home/orre/homelab/kubeconfig"
+      },
+      "timeout": 120000,
+      "disabled": false
+    },
+    "eks-mcp": {
+      "type": "stdio",
+      "url": "",
+      "headers": {},
+      "oauthScopes": [
+        "openid",
+        "email",
+        "profile",
+        "offline_access"
+      ],
+      "command": "eks-mcp",
+      "args": [
+        "serve"
+      ],
+      "env": {},
+      "timeout": 120000,
+      "disabled": false
+    }
+  },
+  "tools": [
+    "*"
+  ],
+  "toolAliases": {},
+  "allowedTools": [],
+  "resources": [
+    "file://AmazonQ.md",
+    "file://AGENTS.md",
+    "file://README.md",
+    "file://.amazonq/rules/**/*.md"
+  ],
+  "hooks": {},
+  "toolsSettings": {},
+  "useLegacyMcpJson": false,
+  "model": null
+}

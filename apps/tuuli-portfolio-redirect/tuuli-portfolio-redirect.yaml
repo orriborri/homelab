@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redirect-dummy
+  namespace: default
+spec:
+  selector:
+    app: redirect-dummy
+  ports:
+  - port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redirect-dummy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redirect-dummy
+  template:
+    metadata:
+      labels:
+        app: redirect-dummy
+    spec:
+      containers:
+      - name: pause
+        image: registry.k8s.io/pause:3.10
+---
+# Dummy backend is never hit - ingress-nginx handles redirect before routing
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tuuli-portfolio-redirect
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/permanent-redirect: "https://1drv.ms/p/c/f90c7327857394f1/Eb8gRPL9D6dKhw6Dncc2k9wB7FV3Ni9PvuvkgWE77XjSyA?e=q8sG8d"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: tuuli.vetelainen.fi
+    http:
+      paths:
+      - path: /portfolio
+        pathType: Prefix
+        backend:
+          service:
+            name: redirect-dummy
+            port:
+              number: 80

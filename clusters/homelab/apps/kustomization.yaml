@@ -29,3 +29,4 @@ resources:
 #  - pinepods.yaml
   #- kavita.yaml
   - mealie.yaml
+  - tuuli-portfolio-redirect.yaml
