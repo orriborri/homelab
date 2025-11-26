@@ -37,7 +37,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/permanent-redirect: "https://1drv.ms/p/c/f90c7327857394f1/Eb8gRPL9D6dKhw6Dncc2k9wB7FV3Ni9PvuvkgWE77XjSyA?e=q8sG8d"
 spec:
-  ingressClassName: nginx
+  ingressClassName: public
   rules:
   - host: tuuli.vetelainen.fi
     http:
