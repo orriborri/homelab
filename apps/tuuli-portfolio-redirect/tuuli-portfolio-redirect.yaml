@@ -89,6 +89,13 @@ metadata:
   namespace: default
 spec:
   ingressClassName: public
+  tls:
+  - hosts:
+    - tuuli.orriborri.com
+    secretName: orriborri-com-tls
+  - hosts:
+    - tuuli.vetelainen.fi
+    secretName: vetelainen-fi-tls
   rules:
   - host: tuuli.vetelainen.fi
     http:
