@@ -22,6 +22,15 @@ data:
         </iframe>
     </body>
     </html>
+  default.conf: |
+    server {
+        listen 80;
+        server_name _;
+        root /usr/share/nginx/html;
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+    }
 ---
 apiVersion: v1
 kind: Service
@@ -57,10 +66,21 @@ spec:
         volumeMounts:
         - name: html
           mountPath: /usr/share/nginx/html
+        - name: config
+          mountPath: /etc/nginx/conf.d
       volumes:
       - name: html
         configMap:
           name: portfolio-html
+          items:
+          - key: index.html
+            path: index.html
+      - name: config
+        configMap:
+          name: portfolio-html
+          items:
+          - key: default.conf
+            path: default.conf
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
