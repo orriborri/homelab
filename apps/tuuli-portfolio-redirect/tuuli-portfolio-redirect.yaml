@@ -49,3 +49,13 @@ spec:
             name: redirect-dummy
             port:
               number: 80
+  - host: tuuli.orriborri.com
+    http:
+      paths:
+      - path: /portfolio
+        pathType: Prefix
+        backend:
+          service:
+            name: redirect-dummy
+            port:
+              number: 80
