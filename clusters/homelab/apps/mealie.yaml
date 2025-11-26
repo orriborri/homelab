@@ -12,7 +12,7 @@ spec:
   path: ./apps/mealie
   prune: true
   wait: true
-  dependsOn: []
+  dependsOn:
     - name: cert-manager
     - name: ingress-nginx-private
     - name: postgres
