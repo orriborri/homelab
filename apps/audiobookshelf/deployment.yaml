@@ -18,10 +18,10 @@ spec:
           image: ghcr.io/advplyr/audiobookshelf:latest
           resources:
             requests:
-              memory: 512Mi
-              cpu: 200m
+              memory: 256Mi
+              cpu: 100m
             limits:
-              memory: 2Gi
-              cpu: 1000m
+              memory: 512Mi
+              cpu: 500m
           ports:
             - containerPort: 80

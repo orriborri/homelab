@@ -19,8 +19,8 @@ spec:
       - --kubelet-preferred-address-types=InternalIP
     resources:
       requests:
+        memory: 32Mi
+        cpu: 25m
+      limits:
         memory: 64Mi
         cpu: 50m
-      limits:
-        memory: 128Mi
-        cpu: 100m
