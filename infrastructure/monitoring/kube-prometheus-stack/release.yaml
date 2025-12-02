@@ -25,6 +25,13 @@ spec:
           - secretName: orriborri-com-tls
             hosts:
               - grafana.orriborri.com
+      resources:
+        requests:
+          memory: 256Mi
+          cpu: 100m
+        limits:
+          memory: 512Mi
+          cpu: 250m
     alertmanager:
       ingress:
         enabled: true
@@ -43,6 +50,13 @@ spec:
               resources:
                 requests:
                   storage: 10Gi
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
+          limits:
+            memory: 512Mi
+            cpu: 250m
     prometheus:
       ingress:
         enabled: true
@@ -62,3 +76,10 @@ spec:
               resources:
                 requests:
                   storage: 50Gi
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 250m
+          limits:
+            memory: 1Gi
+            cpu: 500m
