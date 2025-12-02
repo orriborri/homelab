@@ -4,19 +4,27 @@ metadata:
   name: kube-prometheus-stack
   namespace: kube-prometheus-stack
 spec:
-  interval: 99999h
-  timeout: 5m
+  interval: 1h
   chart:
     spec:
       chart: kube-prometheus-stack
-      version: "*"
+      version: 45.0.0
       sourceRef:
         kind: HelmRepository
         name: prometheus-community
         namespace: flux-system
   values:
     grafana:
-      enabled: true
+      adminPassword: "admin" # Replace with a secure password
+      ingress:
+        enabled: true
+        ingressClassName: public
+        hosts:
+          - grafana.orriborri.com
+        tls:
+          - secretName: orriborri-com-tls
+            hosts:
+              - grafana.orriborri.com
     alertmanager:
       ingress:
         enabled: true
@@ -44,6 +52,7 @@ spec:
         hosts:
           - prometheus.orriborri.com
       prometheusSpec:
+        serviceMonitorSelectorNilUsesHelmValues: false
         storageSpec:
           volumeClaimTemplate:
             spec:
