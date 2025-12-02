@@ -8,7 +8,6 @@ resources:
   - nfs-subdir-external-provisioner.yaml
   - crds.yaml
   - kube-prometheus-stack.yaml
-  - ../monitoring/kube-prometheus-stack
   - external-dns.yaml
   - ingress-nginx-public.yaml
   - ingress-nginx-private.yaml
