@@ -1,0 +1,12 @@
+# ...existing code...
+      containers:
+        - name: actual
+          # ...existing code...
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+# ...existing code...

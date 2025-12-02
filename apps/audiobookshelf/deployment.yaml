@@ -4,6 +4,7 @@ metadata:
   name: audiobookshelf
   namespace: default
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: audiobookshelf
@@ -11,41 +12,16 @@ spec:
     metadata:
       labels:
         app: audiobookshelf
-    spec: # Fix the indentation here
+    spec:
       containers:
-        - name: audiobookshelf
-          image: ghcr.io/advplyr/audiobookshelf:2.31.0
-          imagePullPolicy: IfNotPresent
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
+        - name: audiobookshelf-container
+          image: ghcr.io/advplyr/audiobookshelf:latest
           resources:
             requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 500m
               memory: 512Mi
-          volumeMounts:
-            - name: audiobookshelf-podcast-data
-              mountPath: /podcasts
-            - name: audiobookshelf-audiobooks-data
-              mountPath: /audiobooks
-            - name: audiobookshelf-metadata-data
-              mountPath: /metadata
-            - name: audiobookshelf-config-data
-              mountPath: /config
-      volumes:
-        - name: audiobookshelf-podcast-data
-          persistentVolumeClaim:
-            claimName: audiobookshelf-podcast-data-v2
-        - name: audiobookshelf-audiobooks-data
-          persistentVolumeClaim:
-            claimName: audiobookshelf-audiobooks-data-v2
-        - name: audiobookshelf-metadata-data
-          persistentVolumeClaim:
-            claimName: audiobookshelf-metadata-data-v2
-        - name: audiobookshelf-config-data
-          persistentVolumeClaim:
-            claimName: audiobookshelf-config-data-v2
+              cpu: 200m
+            limits:
+              memory: 2Gi
+              cpu: 1000m
+          ports:
+            - containerPort: 80
