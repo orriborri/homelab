@@ -1,3 +1,24 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: grafana
 spec:
   interval: 1h
-  timeout: 10m # Increased from 5m (if it was 5m)
+  timeout: 10m  # Increased timeout
+  chart:
+    spec:
+      chart: grafana
+      version: 10.3.0
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  values:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
