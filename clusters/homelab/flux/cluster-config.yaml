@@ -4,5 +4,5 @@ metadata:
   name: cluster-config
   namespace: flux-system
 data:
-  NFS_SERVER: "192.168.1.100"  # Replace with your Synology NAS IP
-  NFS_PATH: "/volume1/kubernetes"  # Replace with your NFS export path
+  NFS_SERVER: "192.168.1.244"  #Replace with your Synology NAS IP
+  NFS_PATH: "/volume2/HomeLab" # Replace with your NFS export path
