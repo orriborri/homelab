@@ -1,0 +1,7 @@
+spec:
+  values:
+    nfs:
+      server: ${NFS_SERVER} # Correct format
+      path: ${NFS_PATH} # Correct format
+      # If you have a password with $ in it, escape it:
+      # password: "my$$password"  # Double $$ to escape

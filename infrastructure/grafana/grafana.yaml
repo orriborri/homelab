@@ -1,0 +1,3 @@
+spec:
+  interval: 1h
+  timeout: 10m # Increased from 5m (if it was 5m)
