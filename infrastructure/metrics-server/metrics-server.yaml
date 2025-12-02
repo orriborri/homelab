@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: metrics-server
-      version: 3.13.0  # Changed from 3.12.0 to match pulled version
+      version: 3.13.0 # Changed from 3.12.0 to match pulled version
       sourceRef:
         kind: HelmRepository
         name: metrics-server
