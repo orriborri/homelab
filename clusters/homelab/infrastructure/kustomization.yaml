@@ -12,7 +12,7 @@ resources:
   - ingress-nginx-public.yaml
   - ingress-nginx-private.yaml
   - metallb.yaml
-  - metrics-server.yaml
+  # - metrics-server.yaml
   - reloader.yaml
   - reflector.yaml
   - grafana.yaml
