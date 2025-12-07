@@ -2,7 +2,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: metrics-server
-  namespace: kube-system
+  namespace: metrics-server
 spec:
   interval: 1h
   timeout: 10m # Increased from 5m
