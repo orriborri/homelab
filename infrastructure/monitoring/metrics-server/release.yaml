@@ -5,7 +5,7 @@ metadata:
   namespace: metrics-server
 spec:
   interval: 1h
-  timeout: 3m
+  timeout: 5m
   chart:
     spec:
       chart: metrics-server
@@ -15,5 +15,7 @@ spec:
         name: metrics-server
         namespace: flux-system
   values:
+    args:
+      - --kubelet-insecure-tls
     apiService:
       insecureSkipTLSVerify: true
