@@ -28,5 +28,6 @@ resources:
 #  - wger.yaml
 #  - pinepods.yaml
   #- kavita.yaml
+  - jellyfin.yaml
   - mealie.yaml
   - tuuli-portfolio-redirect.yaml
