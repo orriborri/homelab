@@ -26,6 +26,3 @@ spec:
   sourceRef:
     kind: OCIRepository
     name: capacitor
-  postBuild:
-    substitute:
-      cpu_request: "50m"
