@@ -5,7 +5,7 @@ metadata:
   name: jellyfin-config
   namespace: default
 spec:
-  storageClassName: nfs-client
+  storageClassName: homelab-nfs
   accessModes:
     - ReadWriteOnce
   resources:
@@ -19,7 +19,7 @@ metadata:
   name: jellyfin-media
   namespace: default
 spec:
-  storageClassName: nfs-client
+  storageClassName: homelab-nfs
   accessModes:
     - ReadWriteMany
   resources:
