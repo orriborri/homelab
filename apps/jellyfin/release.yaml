@@ -51,7 +51,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: ${LETSENCRYPT_CLUSTER_ISSUER}
 spec:
-  ingressClassName: nginx
+  ingressClassName: private
   tls:
     - hosts:
         - jellyfin.orriborri.com
