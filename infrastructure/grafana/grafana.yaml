@@ -22,3 +22,9 @@ spec:
       limits:
         cpu: 500m
         memory: 512Mi
+    persistence:
+      enabled: true
+      storageClassName: nfs-client
+      size: 10Gi
+      accessModes:
+        - ReadWriteOnce
