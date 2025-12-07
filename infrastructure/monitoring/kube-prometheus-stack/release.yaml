@@ -30,7 +30,7 @@ spec:
           memory: 128Mi
           cpu: 50m
         limits:
-          memory: 256Mi
+          memory: 200Mi
           cpu: 200m
     alertmanager:
       ingress:
@@ -81,5 +81,5 @@ spec:
             memory: 256Mi
             cpu: 100m
           limits:
-            memory: 512Mi
-            cpu: 250m
+            memory: 400Mi
+            cpu: 200m
