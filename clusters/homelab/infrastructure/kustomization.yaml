@@ -14,8 +14,8 @@ resources:
   - metallb.yaml
   - metrics-server.yaml
   - reloader.yaml
-  # reflector.yaml
-  - grafana.yaml
+  - reflector.yaml
+  # - grafana.yaml
   - capacitor.yaml
   - capacitor-loadbalancer.yaml
   # - image-automation.yaml  # Commented out - directory doesn't exist
