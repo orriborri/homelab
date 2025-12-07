@@ -67,18 +67,14 @@ spec:
             - containerPort: 5432
           env:
             - name: PGDATA
-              value: /data
+              value: /var/lib/postgresql/data
             - name: POSTGRES_INITDB_ARGS
               value: "--auth-host=scram-sha-256"
-            - name: PGAUTO_UPGRADE
-              value: "yes"
-            - name: PGUSER
-              value: "postgres"
           envFrom:
             - secretRef:
                 name: postgres-config
           volumeMounts:
-            - mountPath: /data
+            - mountPath: /var/lib/postgresql/data
               name: postgres-data
           resources:
             requests:
