@@ -25,3 +25,25 @@ spec:
               cpu: 500m
           ports:
             - containerPort: 80
+          volumeMounts:
+            - name: audiobookshelf-podcast-data
+              mountPath: /podcasts
+            - name: audiobookshelf-audiobooks-data
+              mountPath: /audiobooks
+            - name: audiobookshelf-metadata-data
+              mountPath: /metadata
+            - name: audiobookshelf-config-data
+              mountPath: /config
+      volumes:
+        - name: audiobookshelf-podcast-data
+          persistentVolumeClaim:
+            claimName: audiobookshelf-podcast-data-v2
+        - name: audiobookshelf-audiobooks-data
+          persistentVolumeClaim:
+            claimName: audiobookshelf-audiobooks-data-v2
+        - name: audiobookshelf-metadata-data
+          persistentVolumeClaim:
+            claimName: audiobookshelf-metadata-data-v2
+        - name: audiobookshelf-config-data
+          persistentVolumeClaim:
+            claimName: audiobookshelf-config-data-v2
