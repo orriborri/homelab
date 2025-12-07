@@ -4,14 +4,8 @@ kind: Ingress
 metadata:
   name: capacitor-ingress
   namespace: flux-system
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
-  ingressClassName: nginx-public
-  tls:
-    - hosts:
-        - capacitor.orriborri.com
-      secretName: capacitor-tls
+  ingressClassName: nginx-private
   rules:
     - host: capacitor.orriborri.com
       http:
