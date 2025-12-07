@@ -61,13 +61,15 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: pgautoupgrade/pgautoupgrade:18.1-alpine3.22
+          image: postgres:17-alpine
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5432
           env:
             - name: PGDATA
               value: /data/pgdata
+            - name: POSTGRES_INITDB_ARGS
+              value: "--auth-host=scram-sha-256"
           envFrom:
             - secretRef:
                 name: postgres-config
