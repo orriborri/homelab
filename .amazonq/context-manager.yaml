@@ -1,0 +1,31 @@
+contextManager:
+  strategy: "dynamic-loading"
+  
+  # Load context on-demand based on query
+  dynamicLoading:
+    enabled: true
+    maxContextSize: 8000
+    
+  # Context categories for smart loading
+  categories:
+    cluster_status:
+      - kubectl get nodes -o wide
+      - kubectl get pods -A --field-selector=status.phase!=Running
+      - flux get all -A
+    
+    troubleshooting:
+      - kubectl get events -A --field-selector type=Warning --sort-by='.lastTimestamp'
+      - flux logs --tail 10
+    
+    app_configs:
+      pattern: "apps/{app_name}/**/*.yaml"
+      loadOnDemand: true
+    
+    infrastructure:
+      pattern: "infrastructure/**/*.yaml"
+      loadOnDemand: true
+
+  # Auto-cleanup and caching
+  cache:
+    ttl: "30m"
+    maxEntries: 50

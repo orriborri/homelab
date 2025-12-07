@@ -16,4 +16,5 @@ resources:
   - reloader.yaml
   - reflector.yaml
   - grafana.yaml
+  - capacitor.yaml
   # - image-automation.yaml  # Commented out - directory doesn't exist

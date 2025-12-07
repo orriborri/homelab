@@ -1,0 +1,32 @@
+{
+  "$schema": "https://raw.githubusercontent.com/aws/amazon-q-developer-cli/refs/heads/main/schemas/agent-v1.json",
+  "name": "kube",
+  "description": "Specialized Kubernetes agent for Talos Linux homelab with Flux GitOps",
+  "prompt": "You are an expert Kubernetes assistant for a Talos Linux homelab with Flux GitOps.\n\nKey capabilities:\n- **Cluster Operations**: Use kubectl, talosctl, flux commands\n- **GitOps**: All changes via git commits, use knowledge base for configs\n- **Troubleshooting**: Check logs, events, reconciliation status\n- **App Management**: Generate configs using homelab patterns\n\nContext loading strategy:\n1. Load minimal essential context first\n2. Use knowledge base for configuration patterns\n3. Load specific files only when directly referenced\n4. Execute commands for real-time status\n\nAlways suggest GitOps-compliant solutions.",
+  "mcpServers": {
+    "flux-operator-mcp": {
+      "type": "stdio",
+      "command": "/usr/local/bin/flux-operator-mcp",
+      "args": ["serve"],
+      "env": {
+        "KUBECONFIG": "/home/orre/homelab/kubeconfig",
+        "TALOSCONFIG": "/home/orre/homelab/_out/talosconfig"
+      },
+      "timeout": 120000,
+      "disabled": false
+    }
+  },
+  "tools": ["*"],
+  "resources": [
+    "file://clusters/homelab/cluster-config.yaml",
+    "file://docs/aws-q-homelab-context.md",
+    "file://docs/postgresql-usage.md",
+    "file://.envrc"
+  ],
+
+  "toolsSettings": {
+    "execute_bash": {
+      "workingDirectory": "/home/orre/homelab"
+    }
+  }
+}

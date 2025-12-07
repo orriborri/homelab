@@ -1,0 +1,28 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: capacitor
+spec:
+  interval: 1h
+  timeout: 5m
+  retryInterval: 10s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./infrastructure/capacitor
+  prune: true
+  wait: true
+  dependsOn:
+    - name: cert-manager
+    - name: ingress-nginx-private
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg
+  postBuild:
+    substitute: {}
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+      - kind: Secret
+        name: cluster-secrets

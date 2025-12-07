@@ -1,0 +1,29 @@
+{
+  "agents": {
+    "kube-expert": {
+      "name": "Kubernetes Expert",
+      "description": "Specialized agent for Kubernetes, Flux CD, and homelab infrastructure management",
+      "instructions": "You are a Kubernetes expert specialized in Talos Linux, Flux CD GitOps, and homelab infrastructure. Use the knowledge base to reference configurations and provide minimal, production-ready solutions.",
+      "knowledgeBase": {
+        "enabled": true,
+        "sources": ["homelab-infrastructure"]
+      },
+      "tools": [
+        "get_kubernetes_resources",
+        "get_kubernetes_logs", 
+        "apply_kubernetes_manifest",
+        "reconcile_flux_kustomization",
+        "get_flux_instance"
+      ],
+      "context": {
+        "maxTokens": 4000,
+        "prioritize": [
+          "current_task",
+          "error_messages", 
+          "resource_status"
+        ]
+      }
+    }
+  },
+  "defaultAgent": "kube-expert"
+}

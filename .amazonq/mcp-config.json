@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "homelab-kb": {
+      "command": "node",
+      "args": ["-e", "console.log('Using knowledge base instead of static files')"],
+      "description": "Homelab knowledge base integration",
+      "disabled": true
+    }
+  },
+  "knowledgeIntegration": {
+    "enabled": true,
+    "autoSearch": true,
+    "contextWindow": 2000
+  }
+}
