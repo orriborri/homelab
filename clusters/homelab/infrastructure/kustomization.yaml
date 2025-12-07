@@ -17,5 +17,5 @@ resources:
   - reflector.yaml
   - grafana.yaml
   - capacitor.yaml
-  - capacitor-ingress.yaml
+  - capacitor-loadbalancer.yaml
   # - image-automation.yaml  # Commented out - directory doesn't exist
