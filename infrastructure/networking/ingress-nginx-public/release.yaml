@@ -27,6 +27,10 @@ spec:
       extraArgs:
         ingress-class: public
         controller-class: "k8s.io/public-ingress-nginx"
+      resources:
+        requests:
+          cpu: 50m
+          memory: 90Mi
       service:
         type: "LoadBalancer"
         annotations:
