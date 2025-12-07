@@ -61,7 +61,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:17-alpine
+          image: pgautoupgrade/pgautoupgrade:18.1-alpine3.22
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5432
@@ -70,6 +70,8 @@ spec:
               value: /data/pgdata
             - name: POSTGRES_INITDB_ARGS
               value: "--auth-host=scram-sha-256"
+            - name: PGAUTO_UPGRADE
+              value: "yes"
           envFrom:
             - secretRef:
                 name: postgres-config
