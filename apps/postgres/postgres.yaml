@@ -75,8 +75,11 @@ spec:
             - mountPath: /data
               name: postgres-data
           resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
             limits:
-              cpu: 1000m
+              cpu: 500m
               memory: 512Mi
       
       volumes:
