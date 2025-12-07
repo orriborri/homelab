@@ -100,6 +100,9 @@ spec:
               mountPath: /config
             - name: jellyfin-media
               mountPath: /media
+            - name: existing-media
+              mountPath: /existing-media
+              readOnly: true
           resources:
             requests:
               cpu: 200m
@@ -126,3 +129,8 @@ spec:
         - name: jellyfin-media
           persistentVolumeClaim:
             claimName: jellyfin-media
+        - name: existing-media
+          nfs:
+            server: 192.168.1.244
+            path: /volume2/Media
+            readOnly: true
