@@ -9,6 +9,7 @@ resources:
   - mealie/
   - mosquitto/
   - n8n/
+  - neolink/
   - penpot/
   - pinepods/
   - podinfo/

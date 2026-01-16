@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: neolink
+  namespace: neolink
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: neolink
+  template:
+    metadata:
+      labels:
+        app: neolink
+    spec:
+      containers:
+        - name: neolink
+          image: quantumentangledandy/neolink:latest
+          ports:
+            - name: rtsp
+              containerPort: 8554
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /etc/neolink/config.toml
+              subPath: config.toml
+              readOnly: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: config
+          secret:
+            secretName: neolink-config
