@@ -31,3 +31,4 @@ resources:
   - jellyfin.yaml
   - mealie.yaml
   - tuuli-portfolio-redirect.yaml
+  - neolink.yaml
