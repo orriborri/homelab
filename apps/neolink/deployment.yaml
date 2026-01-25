@@ -22,7 +22,7 @@ spec:
               protocol: TCP
           volumeMounts:
             - name: config
-              mountPath: /etc/neolink/config.toml
+              mountPath: /etc/neolink.toml
               subPath: config.toml
               readOnly: true
           resources:
