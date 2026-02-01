@@ -52,7 +52,7 @@ spec:
     spec:
       containers:
         - name: podinfo
-          image: ghcr.io/stefanprodan/podinfo:6.9.4@sha256:b1e974022d6603c8ceea4a05c6ff9d9f4e6bf6a6590fb740251811283458c4ea
+          image: ghcr.io/stefanprodan/podinfo:6.10.0@sha256:c78ef84125743b9492b59c20e6638d46d737c089baec3ae6fa026520b60e7d4c
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
