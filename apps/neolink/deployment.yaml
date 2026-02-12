@@ -15,7 +15,12 @@ spec:
     spec:
       containers:
         - name: neolink
-          image: quantumentangledandy/neolink:latest
+          image: quantumentangledandy/neolink:v0.6.2
+          env:
+            - name: NEO_LINK_MODE
+              value: "mqtt-rtsp"
+            - name: HOME
+              value: "/tmp"
           ports:
             - name: rtsp
               containerPort: 8554

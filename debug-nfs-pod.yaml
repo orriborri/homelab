@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
   - name: debug
-    image: alpine:latest
+    image: alpine:3.23
     command: ["/bin/sh", "-c", "sleep 3600"]
     volumeMounts:
     - name: nfs-volume

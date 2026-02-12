@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: pinepods
-          image: madeofpendletonwool/pinepods:latest
+          image: madeofpendletonwool/pinepods:v0.6.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8040

@@ -40,7 +40,7 @@ spec:
     spec:
       containers:
         - name: myapp
-          image: myapp:latest
+          image: myapp:1.0.0
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 8080

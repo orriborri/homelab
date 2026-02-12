@@ -34,7 +34,7 @@ spec:
             runAsUser: 0  # Run as root to change ownership
       containers:
         - name: penpot-backend
-          image: penpotapp/backend:latest
+          image: penpotapp/backend:2.13.2
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 6060

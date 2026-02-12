@@ -65,13 +65,3 @@ spec:
           use_x_forwarded_for: true
           trusted_proxies:
             - 10.244.0.0/16
-        
-        mqtt:
-          broker: mqtt.orriborri.com
-          port: 1883
-          discovery: true
-          
-        camera:
-          - platform: mqtt
-            name: "Front Camera"
-            topic: neolink/front_camera

@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: calibre
-          image: lscr.io/linuxserver/calibre:latest
+          image: lscr.io/linuxserver/calibre:v9.2.1-ls385
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 8080

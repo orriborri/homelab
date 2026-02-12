@@ -77,7 +77,7 @@ spec:
               name: n8n-data
       containers:
         - name: n8n
-          image: n8nio/n8n:latest
+          image: n8nio/n8n:2.7.4
           imagePullPolicy: "IfNotPresent"
           env:
             - name: N8N_PORT

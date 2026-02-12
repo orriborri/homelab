@@ -453,11 +453,11 @@ cluster:
                 apiVersion: pod-security.admission.config.k8s.io/v1alpha1
                 defaults:
                     audit: restricted
-                    audit-version: latest
+                    audit-version: v1.35
                     enforce: baseline
-                    enforce-version: latest
+                    enforce-version: v1.35
                     warn: restricted
-                    warn-version: latest
+                    warn-version: v1.35
                 exemptions:
                     namespaces:
                         - kube-system
