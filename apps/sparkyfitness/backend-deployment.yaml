@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sparkyfitness-server
+  namespace: sparkyfitness
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sparkyfitness-server
+  template:
+    metadata:
+      labels:
+        app: sparkyfitness-server
+    spec:
+      containers:
+      - name: server
+        image: codewithcj/sparkyfitness_server:latest
+        ports:
+        - containerPort: 3010
+        env:
+        - name: SPARKY_FITNESS_LOG_LEVEL
+          value: "ERROR"
+        - name: ALLOW_PRIVATE_NETWORK_CORS
+          value: "false"
+        - name: SPARKY_FITNESS_DB_HOST
+          value: "sparkyfitness-db"
+        - name: SPARKY_FITNESS_DB_PORT
+          value: "5432"
+        - name: SPARKY_FITNESS_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: sparkyfitness-secrets
+              key: SPARKY_FITNESS_DB_NAME
+        - name: SPARKY_FITNESS_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: sparkyfitness-secrets
+              key: SPARKY_FITNESS_DB_USER
+        - name: SPARKY_FITNESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sparkyfitness-secrets
+              key: SPARKY_FITNESS_DB_PASSWORD
+        - name: SPARKY_FITNESS_APP_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: sparkyfitness-secrets
+              key: SPARKY_FITNESS_APP_DB_USER
+        - name: SPARKY_FITNESS_APP_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sparkyfitness-secrets
+              key: SPARKY_FITNESS_APP_DB_PASSWORD
+        - name: SPARKY_FITNESS_API_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: sparkyfitness-secrets
+              key: SPARKY_FITNESS_API_ENCRYPTION_KEY
+        - name: BETTER_AUTH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: sparkyfitness-secrets
+              key: BETTER_AUTH_SECRET
+        - name: SPARKY_FITNESS_FRONTEND_URL
+          value: "https://sparkyfitness.orriborri.com"
+        - name: SPARKY_FITNESS_DISABLE_SIGNUP
+          value: "false"
+        - name: SPARKY_FITNESS_FORCE_EMAIL_LOGIN
+          value: "true"
+        - name: NODE_ENV
+          value: "production"
+        - name: TZ
+          value: "Etc/UTC"
+        volumeMounts:
+        - name: backup
+          mountPath: /app/SparkyFitnessServer/backup
+        - name: uploads
+          mountPath: /app/SparkyFitnessServer/uploads
+      volumes:
+      - name: backup
+        persistentVolumeClaim:
+          claimName: sparkyfitness-backup-pvc
+      - name: uploads
+        persistentVolumeClaim:
+          claimName: sparkyfitness-uploads-pvc

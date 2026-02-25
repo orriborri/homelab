@@ -1,0 +1,25 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: sparkyfitness
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  path: ./apps/sparkyfitness
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: sparkyfitness-db
+      namespace: sparkyfitness
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: sparkyfitness-server
+      namespace: sparkyfitness
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: sparkyfitness-frontend
+      namespace: sparkyfitness

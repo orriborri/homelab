@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sparkyfitness
+  namespace: sparkyfitness
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  ingressClassName: nginx-private
+  tls:
+  - hosts:
+    - sparkyfitness.orriborri.com
+    secretName: orriborri-com-tls
+  rules:
+  - host: sparkyfitness.orriborri.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sparkyfitness-frontend
+            port:
+              number: 80

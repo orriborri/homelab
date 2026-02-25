@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sparkyfitness-frontend
+  namespace: sparkyfitness
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sparkyfitness-frontend
+  template:
+    metadata:
+      labels:
+        app: sparkyfitness-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: codewithcj/sparkyfitness:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: SPARKY_FITNESS_FRONTEND_URL
+          value: "https://sparkyfitness.orriborri.com"
+        - name: SPARKY_FITNESS_SERVER_HOST
+          value: "sparkyfitness-server"
+        - name: SPARKY_FITNESS_SERVER_PORT
+          value: "3010"
