@@ -11,7 +11,7 @@ resources:
  # - n8n.yaml
   #- wol.yaml
 #  - calibre.yaml
-#pi - penpot.yaml
+
   #- add-bot.yaml
   #- homectl.yaml
   #- hue-mqtt.yaml
@@ -26,7 +26,7 @@ resources:
 #- fruitiex-org.yaml
 # - influxdb.yaml
 #  - wger.yaml
-#  - pinepods.yaml
+
   #- kavita.yaml
   - jellyfin.yaml
   - mealie.yaml
