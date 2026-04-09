@@ -83,7 +83,7 @@ spec:
         fsGroup: 911
       initContainers:
         - name: wait-for-postgres
-          image: busybox
+          image: busybox:1.37.0
           command: ["sh", "-c", "until nc -z postgres 5432; do echo waiting for postgres; sleep 1; done"]
       containers:
         - name: mealie

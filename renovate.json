@@ -17,8 +17,21 @@
       "/\\.yaml$/"
     ]
   },
+  "flux": {
+    "managerFilePatterns": [
+      "/\\.yaml$/"
+    ]
+  },
   "packageRules": [
     {
+      "description": "Pin Flux/Helm chart versions instead of leaving them floating",
+      "matchDatasources": [
+        "helm"
+      ],
+      "rangeStrategy": "pin"
+    },
+    {
+      "description": "Pin Docker image digests for immutable deployments",
       "matchCategories": [
         "docker"
       ],

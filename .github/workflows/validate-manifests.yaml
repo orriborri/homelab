@@ -1,0 +1,48 @@
+name: validate-manifests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-manifests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v5
+
+      - name: Install kubectl
+        run: |
+          curl -fsSL -o kubectl "https://dl.k8s.io/release/v1.34.0/bin/linux/amd64/kubectl"
+          install -m 0755 kubectl /usr/local/bin/kubectl
+          kubectl version --client
+
+      - name: Render apps base
+        run: |
+          mkdir -p .artifacts
+          kubectl kustomize apps > .artifacts/apps-base.yaml
+
+      - name: Render cluster apps
+        run: |
+          kubectl kustomize clusters/homelab/apps > .artifacts/cluster-apps.yaml
+
+      - name: Render cluster infrastructure
+        run: |
+          kubectl kustomize clusters/homelab/infrastructure > .artifacts/cluster-infrastructure.yaml
+
+      - name: Upload rendered manifests
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-manifests
+          path: .artifacts/
+          if-no-files-found: error

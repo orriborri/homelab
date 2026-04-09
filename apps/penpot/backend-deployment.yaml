@@ -25,7 +25,7 @@ spec:
       # Add init container to fix permissions
       initContainers:
         - name: fix-permissions
-          image: busybox
+          image: busybox:1.37.0
           command: ["sh", "-c", "chown -R 1001:1001 /opt/data/assets && chmod -R 755 /opt/data/assets"]
           volumeMounts:
             - mountPath: /opt/data/assets
@@ -34,7 +34,7 @@ spec:
             runAsUser: 0  # Run as root to change ownership
       containers:
         - name: penpot-backend
-          image: penpotapp/backend:2.13.2
+          image: penpotapp/backend:2.13.3
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 6060
