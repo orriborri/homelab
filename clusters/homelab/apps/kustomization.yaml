@@ -34,3 +34,4 @@ resources:
   - neolink.yaml
   - znc.yaml
   - sparkyfitness.yaml
+  - kia-poller.yaml
