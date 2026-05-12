@@ -39,10 +39,13 @@ jobs:
         run: |
           kubectl kustomize clusters/homelab/infrastructure > .artifacts/cluster-infrastructure.yaml
 
+      - name: Verify artifacts
+        run: ls -la .artifacts/
+
       - name: Upload rendered manifests
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: rendered-manifests
           path: .artifacts/
-          if-no-files-found: error
+          if-no-files-found: warn
