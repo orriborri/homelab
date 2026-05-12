@@ -8,6 +8,7 @@
     ":prHourlyLimitNone",
     ":prConcurrentLimitNone"
   ],
+  "dependencyDashboardApproval": false,
   "platformAutomerge": true,
   "ignoreTests": true,
   "automergeType": "pr",
