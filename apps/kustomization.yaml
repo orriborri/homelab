@@ -10,8 +10,7 @@ resources:
   - mosquitto/
   - n8n/
   - neolink/
-  - penpot/
-  - pinepods/
+
   - podinfo/
   - postgres/
   - sump-it/
