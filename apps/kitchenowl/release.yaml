@@ -89,7 +89,10 @@ spec:
                   name: kitchenowl-secret
                   key: JWT_SECRET_KEY
             - name: FRONT_URL
-              value: "https://food.orriborri.com"
+              valueFrom:
+                secretKeyRef:
+                  name: kitchenowl-secret
+                  key: FRONT_URL
             - name: TZ
               value: "Europe/Helsinki"
           volumeMounts:
