@@ -43,10 +43,10 @@ spec:
   ingressClassName: public
   tls:
     - hosts:
-        - ${KITCHENOWL_DOMAIN_NAME}
+        - food.orriborri.com
       secretName: orriborri-com-tls
   rules:
-    - host: ${KITCHENOWL_DOMAIN_NAME}
+    - host: food.orriborri.com
       http:
         paths:
           - path: /
@@ -89,7 +89,7 @@ spec:
                   name: kitchenowl-secret
                   key: JWT_SECRET_KEY
             - name: FRONT_URL
-              value: "https://${KITCHENOWL_DOMAIN_NAME}"
+              value: "https://food.orriborri.com"
             - name: TZ
               value: "Europe/Helsinki"
           volumeMounts:
