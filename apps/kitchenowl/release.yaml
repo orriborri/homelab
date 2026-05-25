@@ -1,0 +1,122 @@
+---
+# Persistent Volume Claim for KitchenOwl data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kitchenowl-data
+  namespace: default
+spec:
+  storageClassName: homelab-nfs
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: kitchenowl
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: kitchenowl
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+
+---
+# Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kitchenowl-ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+spec:
+  ingressClassName: public
+  tls:
+    - hosts:
+        - ${KITCHENOWL_DOMAIN_NAME}
+      secretName: orriborri-com-tls
+  rules:
+    - host: ${KITCHENOWL_DOMAIN_NAME}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kitchenowl
+                port:
+                  number: 80
+
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kitchenowl
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: kitchenowl
+  template:
+    metadata:
+      labels:
+        app: kitchenowl
+    spec:
+      containers:
+        - name: kitchenowl
+          image: tombursch/kitchenowl:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: kitchenowl-secret
+                  key: JWT_SECRET_KEY
+            - name: FRONT_URL
+              value: "https://${KITCHENOWL_DOMAIN_NAME}"
+            - name: TZ
+              value: "Europe/Helsinki"
+          volumeMounts:
+            - name: kitchenowl-data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+      volumes:
+        - name: kitchenowl-data
+          persistentVolumeClaim:
+            claimName: kitchenowl-data
