@@ -35,3 +35,4 @@ resources:
   - znc.yaml
   - sparkyfitness.yaml
   - kia-poller.yaml
+  - kitchenowl.yaml
