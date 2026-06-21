@@ -70,7 +70,7 @@ spec:
     spec:
       initContainers:
         - name: init-chmod
-          image: busybox:1.37.0
+          image: busybox:1.38.0
           command: ["sh", "-c", "chown -R 1000:1000 /home/node/.n8n"]
           volumeMounts:
             - mountPath: /home/node/.n8n
