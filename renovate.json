@@ -9,7 +9,9 @@
     ":prHourlyLimitNone",
     ":prConcurrentLimitNone"
   ],
+  "dependencyDashboard": true,
   "dependencyDashboardApproval": false,
+  "recreateWhen": "always",
   "platformAutomerge": true,
   "ignoreTests": true,
   "automergeType": "pr",
