@@ -30,9 +30,9 @@ resources:
   #- kavita.yaml
   - jellyfin.yaml
   - mealie.yaml
-  - tuuli-portfolio-redirect.yaml
-  - neolink.yaml
-  - znc.yaml
+  #- tuuli-portfolio-redirect.yaml
+  #- neolink.yaml
+  #- znc.yaml
   - sparkyfitness.yaml
   - kia-poller.yaml
   - kitchenowl.yaml
