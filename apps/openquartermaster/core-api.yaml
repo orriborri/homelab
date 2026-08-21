@@ -1,0 +1,91 @@
+---
+# OQM Core API Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: oqm-core-api
+  namespace: openquartermaster
+spec:
+  type: ClusterIP
+  selector:
+    app: oqm-core-api
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+    - name: management
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
+---
+# OQM Core API Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oqm-core-api
+  namespace: openquartermaster
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: oqm-core-api
+  template:
+    metadata:
+      labels:
+        app: oqm-core-api
+    spec:
+      containers:
+        - name: core-api
+          image: ebprod/oqm-core-api:6.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 9090
+              name: management
+          env:
+            # MongoDB connection
+            - name: QUARKUS_MONGODB_CONNECTION_STRING
+              value: "mongodb://oqm-mongodb:27017"
+            - name: QUARKUS_MONGODB_CREDENTIALS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: oqm-mongodb-secret
+                  key: MONGO_INITDB_ROOT_USERNAME
+            - name: QUARKUS_MONGODB_CREDENTIALS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: oqm-mongodb-secret
+                  key: MONGO_INITDB_ROOT_PASSWORD
+            # Kafka connection
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "oqm-kafka:9092"
+            # Keycloak/OIDC
+            - name: QUARKUS_OIDC_AUTH_SERVER_URL
+              value: "http://oqm-keycloak:8080/realms/oqm"
+            - name: QUARKUS_OIDC_CLIENT_ID
+              value: "oqm-core-api"
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /q/health/live
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /q/health/ready
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
