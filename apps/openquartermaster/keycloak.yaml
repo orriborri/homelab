@@ -1,0 +1,194 @@
+---
+# PostgreSQL for Keycloak - PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: oqm-keycloak-db-data
+  namespace: openquartermaster
+spec:
+  storageClassName: nfs-client
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+# PostgreSQL for Keycloak - Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: oqm-keycloak-db
+  namespace: openquartermaster
+spec:
+  type: ClusterIP
+  selector:
+    app: oqm-keycloak-db
+  ports:
+    - name: postgres
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+# PostgreSQL for Keycloak - Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oqm-keycloak-db
+  namespace: openquartermaster
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: oqm-keycloak-db
+  template:
+    metadata:
+      labels:
+        app: oqm-keycloak-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: oqm-keycloak-db-secret
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - keycloak
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - keycloak
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: oqm-keycloak-db-data
+---
+# Keycloak PVC for themes/extensions
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: oqm-keycloak-data
+  namespace: openquartermaster
+spec:
+  storageClassName: nfs-client
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Keycloak Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: oqm-keycloak
+  namespace: openquartermaster
+spec:
+  type: ClusterIP
+  selector:
+    app: oqm-keycloak
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+# Keycloak Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oqm-keycloak
+  namespace: openquartermaster
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: oqm-keycloak
+  template:
+    metadata:
+      labels:
+        app: oqm-keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:25.0
+          imagePullPolicy: IfNotPresent
+          args:
+            - start-dev
+          ports:
+            - containerPort: 8080
+          env:
+            - name: KC_DB
+              value: "postgres"
+            - name: KC_DB_URL
+              value: "jdbc:postgresql://oqm-keycloak-db:5432/keycloak"
+            - name: KC_DB_USERNAME
+              value: "keycloak"
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: oqm-keycloak-secret
+                  key: KC_DB_PASSWORD
+            - name: KC_HOSTNAME_STRICT
+              value: "false"
+            - name: KC_PROXY_HEADERS
+              value: "xforwarded"
+            - name: KC_HTTP_ENABLED
+              value: "true"
+          envFrom:
+            - secretRef:
+                name: oqm-keycloak-secret
+          volumeMounts:
+            - name: keycloak-data
+              mountPath: /opt/keycloak/data
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+      volumes:
+        - name: keycloak-data
+          persistentVolumeClaim:
+            claimName: oqm-keycloak-data

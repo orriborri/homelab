@@ -1,0 +1,81 @@
+---
+# Ingress for OQM Base Station (main UI)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oqm-base-station-ingress
+  namespace: openquartermaster
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+spec:
+  ingressClassName: private
+  tls:
+    - hosts:
+        - oqm.orriborri.com
+      secretName: orriborri-com-tls
+  rules:
+    - host: oqm.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: oqm-base-station
+                port:
+                  number: 80
+---
+# Ingress for OQM Core API (for direct API access)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oqm-api-ingress
+  namespace: openquartermaster
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+spec:
+  ingressClassName: private
+  tls:
+    - hosts:
+        - oqm-api.orriborri.com
+      secretName: orriborri-com-tls
+  rules:
+    - host: oqm-api.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: oqm-core-api
+                port:
+                  number: 80
+---
+# Ingress for Keycloak (needed for auth redirects)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oqm-keycloak-ingress
+  namespace: openquartermaster
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+spec:
+  ingressClassName: private
+  tls:
+    - hosts:
+        - oqm-auth.orriborri.com
+      secretName: orriborri-com-tls
+  rules:
+    - host: oqm-auth.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: oqm-keycloak
+                port:
+                  number: 8080
