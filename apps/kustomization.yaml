@@ -11,6 +11,7 @@ resources:
   - mosquitto/
   - n8n/
   - neolink/
+  - openquartermaster/
 
   - podinfo/
   - postgres/

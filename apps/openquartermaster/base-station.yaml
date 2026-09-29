@@ -1,0 +1,73 @@
+---
+# OQM Base Station (Web UI) Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: oqm-base-station
+  namespace: openquartermaster
+spec:
+  type: ClusterIP
+  selector:
+    app: oqm-base-station
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+# OQM Base Station Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oqm-base-station
+  namespace: openquartermaster
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: oqm-base-station
+  template:
+    metadata:
+      labels:
+        app: oqm-base-station
+    spec:
+      containers:
+        - name: base-station
+          image: ebprod/oqm-core-base-station:1.19.2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            # Core API URL (internal service)
+            - name: OQM_CORE_API_URL
+              value: "http://oqm-core-api"
+            # Keycloak OIDC configuration
+            - name: KEYCLOAK_URL
+              value: "http://oqm-keycloak:8080"
+            - name: KEYCLOAK_REALM
+              value: "oqm"
+            - name: KEYCLOAK_CLIENT_ID
+              value: "oqm-base-station"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5

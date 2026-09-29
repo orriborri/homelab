@@ -1,0 +1,90 @@
+---
+# Redpanda (Kafka-compatible) for OQM message broker
+# Using Redpanda as it's lighter weight than full Apache Kafka
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: oqm-redpanda-data
+  namespace: openquartermaster
+spec:
+  storageClassName: nfs-client
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+# Redpanda Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: oqm-kafka
+  namespace: openquartermaster
+spec:
+  type: ClusterIP
+  selector:
+    app: oqm-redpanda
+  ports:
+    - name: kafka
+      protocol: TCP
+      port: 9092
+      targetPort: 9092
+    - name: admin
+      protocol: TCP
+      port: 9644
+      targetPort: 9644
+---
+# Redpanda Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oqm-redpanda
+  namespace: openquartermaster
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: oqm-redpanda
+  template:
+    metadata:
+      labels:
+        app: oqm-redpanda
+    spec:
+      containers:
+        - name: redpanda
+          image: docker.redpanda.com/redpandadata/redpanda:v24.1.7
+          imagePullPolicy: IfNotPresent
+          command:
+            - rpk
+            - redpanda
+            - start
+            - --smp=1
+            - --memory=512M
+            - --overprovisioned
+            - --kafka-addr=0.0.0.0:9092
+            - --advertise-kafka-addr=oqm-kafka:9092
+          ports:
+            - containerPort: 9092
+            - containerPort: 9644
+          volumeMounts:
+            - name: redpanda-data
+              mountPath: /var/lib/redpanda/data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 768Mi
+          readinessProbe:
+            httpGet:
+              path: /v1/status/ready
+              port: 9644
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: redpanda-data
+          persistentVolumeClaim:
+            claimName: oqm-redpanda-data
