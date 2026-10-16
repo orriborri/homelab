@@ -1,23 +1,59 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-Configuration is declarative and tracked per cluster. `clusters/homelab/` holds the root `kustomization.yaml`, shared values in `cluster-config.yaml`, and encrypted secrets in `cluster-secrets.yaml`; apply-wide patches live under `infrastructure/`, while workload overlays under `apps/` mirror the services exposed in `apps/` at the repo root. Talos- and kube-related artifacts (`talosconfig`, `kubeconfig`, `_out/`) are generated and should not be hand-edited. Use `docs/` for operational notes and `scripts/` for helper automation.
+
+This repository defines a Talos Kubernetes homelab through Flux GitOps.
+
+- `apps/<app>/`: workload manifests, Helm releases, and local `kustomization.yaml` files.
+- `infrastructure/`: networking, storage, monitoring, sources, and shared controllers.
+- `clusters/homelab/`: Flux entrypoint, application/infrastructure reconciliation definitions, shared configuration, and encrypted secrets.
+- `clusters/homelab/flux-system/`: Flux bootstrap manifests; `gotk-components.yaml` is maintained by the update workflow.
+- `docs/`: configuration and operational guides, plus documentation images.
+- `scripts/` and `debug/`: maintenance helpers and diagnostic manifests.
+- Root Talos YAML files: node configuration and machine patches.
+
+When adding a workload, register its manifests in its local Kustomization and its Flux definition in `clusters/homelab/apps/kustomization.yaml`.
 
 ## Build, Test, and Development Commands
-- `nix-shell`: loads the pinned Kubernetes/Talos tooling defined in `default.nix`.
-- `source .envrc`: exports `TALOSCONFIG`, `KUBECONFIG`, GitHub, and SOPS variables for every subsequent command.
-- `talosctl gen config homelab-cluster https://$CONTROL_PLANE_IP:6443 --output-dir _out --config-patch @talos-machine-patch.yaml`: regenerates machine configs whenever control-plane addressing or Talos patches change.
-- `kubectl kustomize clusters/homelab/apps`: renders the full app stack for quick inspection or piping into validation tools.
-- `flux reconcile kustomization flux-system --with-source --kubeconfig ./kubeconfig`: forces Flux to pull and apply the latest manifests after a merge.
+
+- `nix-shell`: load the tools declared in `default.nix`, including kubectl, Flux, Helm, SOPS, and pre-commit.
+- `pre-commit install`: install the configured commit and commit-message hooks.
+- `pre-commit run --all-files`: run the configured secret checks.
+- `kubectl kustomize apps/<app>`: render a workload locally; repeat for changed infrastructure directories.
+- `kubectl kustomize clusters/homelab`: check the cluster entrypoint renders.
+- `flux get all -A` and `kubectl get pods -A`: inspect reconciliation and runtime health on the configured cluster.
+
+There is no application build or local development server; Flux deploys the committed manifests.
 
 ## Coding Style & Naming Conventions
-Favor Kubernetes-native YAML with two-space indentation, list items aligned, and comments kept minimal and actionable. Directory names stay lower-hyphen-case (`apps/steam-lancache`, `clusters/homelab/flux-system`). Kustomization names must match their folder to keep Flux diffs readable. Keys in `cluster-config.yaml` and file-scoped patches should be upper snake case (`LETSENCRYPT_CLUSTER_ISSUER`). Never commit decrypted secrets—encrypt via SOPS, and suffix new secret files with `.yaml` placed beside their consuming kustomization.
+
+Use two-space YAML indentation and preserve nearby formatting. Prefer lowercase, hyphenated Kubernetes names and descriptive filenames such as `deployment.yaml`, `service.yaml`, and `release.yaml`. Keep shared substitution keys uppercase, referenced as `${CONFIG_KEY}`. Follow existing Flux dependency and SOPS decryption patterns. No dedicated formatting or YAML lint hook is configured.
 
 ## Testing Guidelines
-Preflight changes locally before opening a PR: `kubectl apply --server-side --dry-run=client -k clusters/homelab/infrastructure` to confirm schema validity, then `kubectl kustomize clusters/homelab/apps | flux diff kustomization apps --kubeconfig ./kubeconfig` (adjust target as needed) to preview what Flux will modify. After deploying, run `flux get kustomizations -n flux-system` to check reconcilers and look for drift. Maintain practical coverage by adding smoke tests or health probes for each workload, and document manual validation steps in `docs/`.
+
+There is no automated unit-test framework or coverage target. Validate every changed Kustomization and review rendered resources, namespaces, storage settings, and substitutions. Local rendering does not perform Flux post-build substitution or SOPS decryption. For deployed changes, record Flux readiness and pod health; diagnostic manifests live in `debug/`.
 
 ## Commit & Pull Request Guidelines
-Recent history (`Add TLS certificates for both domains`, `Fix nginx config for /portfolio path`) shows the preferred style: short, imperative subjects under 70 characters. Each PR should link to any tracked issue, summarize what changed, and note operational follow-ups (e.g., “requires `sops` re-encryption” or “run `flux reconcile`”). Include screenshots or command output when touching ingress, dashboards, or other user-facing resources so reviewers can confirm before applying.
 
-## Secrets & Configuration Tips
-Keep shared config in `cluster-config.yaml` and reference via `${CONFIG_KEY}`. Sensitive variants belong in `cluster-secrets.yaml`; edit with `sops clusters/homelab/cluster-secrets.yaml` and re-encrypt using `sops --encrypt --in-place`. When rotating credentials, commit the encrypted file plus any Talos patch updates and note the rotation procedure in the PR to help other operators reproduce it.
+Use Conventional Commits, enforced by the commit-message hook: `feat(sparkyfitness): add deployment manifests` or `chore(deps): update image tag`. History also contains legacy free-form messages. Keep changes focused. PR descriptions should explain affected workloads, configuration prerequisites, validation performed, and operational impact; link relevant issues.
+
+## Security & Configuration
+
+Edit secrets with `sops path/to/secrets.yaml`; commit encrypted values only. Keep credentials, kubeconfig, and `.envrc` local. Consult `docs/sops.md` before changing encryption. Review maintenance scripts before running them because some reset or modify live cluster resources.
+
+## Agent skills
+
+### Issue tracker
+
+Track issues and specs in GitHub Issues for `orriborri/homelab`.
+Read `docs/agents/issue-tracker.md` before working with tickets.
+
+### Triage labels
+
+Use the five canonical triage labels.
+Read `docs/agents/triage-labels.md` before triaging issues.
+
+### Domain docs
+
+Use a single-context layout: root `GLOSSARY.md` and `docs/adr/`.
+Read `docs/agents/domain.md` before exploring the repository.
