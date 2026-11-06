@@ -10,3 +10,5 @@ resources:
   - infrastructure/reflector.yaml
   - infrastructure/reloader.yaml
   - infrastructure/metrics-server.yaml
+  - infrastructure/cert-manager.yaml
+  - infrastructure/metallb.yaml
