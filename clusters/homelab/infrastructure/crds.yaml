@@ -14,7 +14,7 @@ spec:
   wait: true
   dependsOn:
     - name: cert-manager
-    - name: metallb
+    - name: reflector
   # healthChecks:
   #   - apiVersion: apps/v1
   #     kind: Deployment
