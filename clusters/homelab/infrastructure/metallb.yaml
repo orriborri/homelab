@@ -13,7 +13,7 @@ spec:
   dependsOn:
     - name: sources
   prune: true
-  wait: false
+  wait: true
   decryption:
     provider: sops
     secretRef:

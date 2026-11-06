@@ -21,7 +21,7 @@ spec:
         name: public
         enabled: true
         default: false
-        # controllerValue: "k8s.io/public-ingress-nginx"
+        controllerValue: "k8s.io/public-ingress-nginx"
       ingressClass: public
       ingressClassByName: true
       extraArgs:
