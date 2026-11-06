@@ -7,3 +7,6 @@ resources:
   - cluster-secrets.yaml
   - infrastructure/sources.yaml
   - infrastructure/nfs-subdir-external-provisioner.yaml
+  - infrastructure/reflector.yaml
+  - infrastructure/reloader.yaml
+  - infrastructure/metrics-server.yaml
