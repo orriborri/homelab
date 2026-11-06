@@ -12,3 +12,6 @@ resources:
   - infrastructure/metrics-server.yaml
   - infrastructure/cert-manager.yaml
   - infrastructure/metallb.yaml
+  - infrastructure/metallb-config.yaml
+  - infrastructure/ingress-nginx-public.yaml
+  - infrastructure/ingress-nginx-private.yaml
