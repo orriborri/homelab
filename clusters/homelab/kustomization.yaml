@@ -15,3 +15,4 @@ resources:
   - infrastructure/metallb-config.yaml
   - infrastructure/ingress-nginx-public.yaml
   - infrastructure/ingress-nginx-private.yaml
+  - apps/podinfo.yaml
