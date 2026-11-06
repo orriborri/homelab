@@ -20,8 +20,8 @@ spec:
               name: cloudflare-api-token-secret
               key: api-token
         selector:
-          dnsNames:
-            - "*.orriborri.com"
+          dnsZones:
+            - orriborri.com
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -44,5 +44,5 @@ spec:
               name: cloudflare-api-token-secret
               key: api-token
         selector:
-          dnsNames:
-            - "*.orriborri.com"
+          dnsZones:
+            - orriborri.com

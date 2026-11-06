@@ -16,3 +16,4 @@ resources:
   - infrastructure/ingress-nginx-public.yaml
   - infrastructure/ingress-nginx-private.yaml
   - apps/podinfo.yaml
+  - infrastructure/crds.yaml
