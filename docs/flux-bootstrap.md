@@ -1,8 +1,8 @@
 # Flux bootstrap
 
-The new Talos cluster starts with Flux reconciling only its own controllers.
-`clusters/homelab/kustomization.yaml` includes `flux-system`; the infrastructure
-and application registration files remain in Git for staged activation.
+Flux reconciles its own controllers, shared cluster configuration, encrypted
+cluster secrets, Helm repository sources, and the NFS provisioner. Other infrastructure and
+application registrations remain in Git for staged activation.
 
 ## Bootstrap settings
 
@@ -30,19 +30,17 @@ Kubernetes Secrets; token and private-key values are not committed.
 
 ## Activate infrastructure and applications later
 
-The encrypted configuration cannot yet be decrypted with the available local
-keyring. Before restoring workload registrations:
+Before restoring more workload registrations:
 
 1. Import the private GPG key that decrypts the repository's SOPS files, or replace
    their contents and encrypt them with an available key. See [SOPS](sops.md).
 2. Provision its private key as Secret `sops-gpg` in namespace `flux-system`.
 3. Review `cluster-config.yaml`, decrypt and review `cluster-secrets.yaml`, and
    provision `cluster-secrets` before enabling the substitution patch below.
-4. Restore `cluster-config.yaml` and `cluster-secrets.yaml` to the root
-   Kustomization, while retaining `flux-system`.
-5. Restore the following patch in `clusters/homelab/flux-system/kustomization.yaml`.
-   Keep it outside generated `gotk-sync.yaml` so bootstrap does not overwrite it.
-6. Enable infrastructure registrations in dependency order, then applications,
+4. Ensure the root Flux Kustomization has SOPS decryption configured. The Git
+   patch is in `clusters/homelab/flux-system/kustomization.yaml`; a fresh
+   bootstrap must configure decryption before it can apply encrypted resources.
+5. Enable infrastructure registrations in dependency order, then applications,
    after checking NAS storage, DNS, external credentials, and address allocations.
 
 ```yaml
@@ -58,11 +56,6 @@ patches:
           provider: sops
           secretRef:
             name: sops-gpg
-        postBuild:
-          substitute: {}
-          substituteFrom:
-            - kind: Secret
-              name: cluster-secrets
 ```
 
 Do not enable all existing registrations merely to test Flux. They include real
@@ -78,6 +71,7 @@ kubectl --kubeconfig .talos-local/kubeconfig -n flux-system \
   get gitrepositories,kustomizations
 ```
 
-Both the `flux-system` GitRepository and Kustomization should report `Ready=True`
-at the current Git revision. All four controller deployments should be available.
-No homelab workloads are expected at this bootstrap stage.
+The `flux-system` GitRepository, root Kustomization, `sources`, and
+`nfs-subdir-external-provisioner` Kustomizations
+should report `Ready=True` at the current Git revision. All four controller
+deployments should be available. No homelab applications are enabled yet.

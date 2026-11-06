@@ -4,6 +4,15 @@ resources:
   - gotk-components.yaml
   - gotk-sync.yaml
 
-# This stage has no encrypted resources or cluster-secret substitutions.
-# Restore the SOPS/substitution patch before enabling workloads; see
-# docs/flux-bootstrap.md. Keep customizations out of generated gotk-sync.yaml.
+patches:
+  - patch: |
+      apiVersion: kustomize.toolkit.fluxcd.io/v1
+      kind: Kustomization
+      metadata:
+        name: flux-system
+        namespace: flux-system
+      spec:
+        decryption:
+          provider: sops
+          secretRef:
+            name: sops-gpg
