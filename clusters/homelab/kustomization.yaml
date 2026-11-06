@@ -2,6 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: flux-system
 resources:
-  # Bootstrap stage: reconcile Flux before enabling encrypted infrastructure/apps.
-  # See docs/flux-bootstrap.md for the activation prerequisites.
   - flux-system
+  - cluster-config.yaml
+  - cluster-secrets.yaml
+  - infrastructure/sources.yaml
+  - infrastructure/nfs-subdir-external-provisioner.yaml

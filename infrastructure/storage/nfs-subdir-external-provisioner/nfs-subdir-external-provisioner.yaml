@@ -25,6 +25,7 @@ spec:
       path: ${NFS_PATH}
     storageClass:
       name: nfs-client
+      provisionerName: homelab.local/nfs-subdir-external-provisioner
       defaultClass: false
       accessModes: ReadWriteMany
       reclaimPolicy: Delete

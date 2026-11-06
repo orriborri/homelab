@@ -1,0 +1,10 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: homelab-nfs
+provisioner: homelab.local/nfs-subdir-external-provisioner
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+parameters:
+  archiveOnDelete: "true"

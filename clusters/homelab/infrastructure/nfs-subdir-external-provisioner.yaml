@@ -11,6 +11,8 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./infrastructure/storage/nfs-subdir-external-provisioner
+  dependsOn:
+    - name: sources
   prune: true
   wait: true
   decryption:
