@@ -2,9 +2,12 @@
 
 This guide explains how to use the shared PostgreSQL instance in your homelab for new applications.
 
+Reviewed against manifests on 2026-10-31; actual server version, database contents,
+and live storage bindings remain unverified. See the [storage discrepancy](documentation-audit.md).
+
 ## Overview
 
-Your homelab uses a centralized PostgreSQL 17 instance that can be shared across multiple applications. This approach:
+Your homelab uses a centralized PostgreSQL 18 instance that can be shared across multiple applications. This approach:
 - Reduces resource consumption
 - Simplifies database management
 - Maintains data isolation through separate databases
@@ -16,9 +19,9 @@ Your homelab uses a centralized PostgreSQL 17 instance that can be shared across
 - **Service Name**: `postgres`
 - **Namespace**: `default`
 - **Port**: `5432`
-- **Version**: PostgreSQL 17
-- **Storage**: Uses `syno-storage` storage class
-- **External Access**: `postgres.orriborri.com` (LoadBalancer)
+- **Version**: PostgreSQL 18
+- **Storage**: Uses `homelab-nfs` storage class; the mounted PVC is `postgres17-data`
+- **Access**: ClusterIP service; no external LoadBalancer is configured. The hostname annotation alone does not provide external connectivity.
 
 ### Existing Credentials
 Database credentials are stored in the encrypted `postgres-config` secret:
@@ -43,7 +46,7 @@ data:
 
 ### Step 2: Reference Existing Credentials
 
-In your application's deployment, reference the existing `postgres-config` secret:
+These examples assume the `default` namespace. In another namespace, use `postgres.default.svc.cluster.local` and provide credentials in that namespace. The example reuses `postgres-config`; prefer a dedicated application role for new integrations:
 
 ```yaml
 # In deployment.yaml
@@ -62,7 +65,7 @@ env:
 
 ### Step 3: Database Creation
 
-The application will automatically create its database on first startup if it supports it. Most modern applications handle this automatically when they can't find their target database.
+Create the database before starting the application unless its documented startup behavior explicitly creates it. Creating tables or running migrations does not necessarily create the database itself.
 
 Alternatively, you can manually create the database:
 
@@ -77,7 +80,7 @@ CREATE DATABASE your_app_database_name;
 
 ## Example: Complete Application Setup
 
-Here's how Pinepods was configured as a reference:
+The following is an illustrative Pinepods-style configuration. Pinepods is not currently registered in this repository:
 
 ### Application Secrets (`pinepods-secrets.yaml`)
 ```yaml
@@ -130,16 +133,16 @@ spec:
 ## Security Best Practices
 
 ### 1. Use Existing Credentials
-- **Always** use the `postgres-config` secret for database authentication
-- **Never** create separate PostgreSQL credentials for each application
-- This maintains consistency and leverages existing SOPS encryption
+- The shared instance currently exposes credentials through `postgres-config` in `default`.
+- Prefer a dedicated database role with only the permissions each application needs; sharing a superuser does not isolate access between databases.
+- Secrets are namespace-scoped: applications in another namespace need an appropriate secret in their own namespace. Encrypt credentials with SOPS.
 
 ### 2. Encrypt Application Secrets
 All application secrets should be encrypted with SOPS:
 
 ```bash
 # Encrypt your secrets file
-sops --encrypt --in-place apps/your-app/secrets.yaml
+sops --encrypt --pgp "$SOPS_PGP_FP" --in-place apps/your-app/secrets.yaml
 ```
 
 ### 3. Database Isolation
@@ -154,8 +157,9 @@ sops --encrypt --in-place apps/your-app/secrets.yaml
 # From within cluster
 kubectl exec -it deployment/postgres -- psql -U postgres
 
-# From external (if needed)
-psql -h postgres.orriborri.com -U postgres
+# From your workstation, first forward the ClusterIP service in another terminal:
+kubectl -n default port-forward service/postgres 5432:5432
+psql -h 127.0.0.1 -U postgres
 ```
 
 ### Common Operations
@@ -203,7 +207,7 @@ The PostgreSQL instance should be backed up regularly. Consider:
 ### Application Connection Issues
 1. **Verify environment variables**: `kubectl exec -it deployment/your-app -- env | grep DB_`
 2. **Check secret exists**: `kubectl get secret postgres-config`
-3. **Test connection from app pod**: `kubectl exec -it deployment/your-app -- ping postgres`
+3. **Test database connectivity**: use a PostgreSQL client to connect to `postgres.default.svc.cluster.local:5432`; ICMP ping does not test the database service.
 
 ## Migration from Separate PostgreSQL
 
@@ -212,7 +216,7 @@ If you have applications currently using separate PostgreSQL instances:
 ### 1. Backup Data
 ```bash
 # Dump from old instance
-kubectl exec -it deployment/old-postgres -- pg_dump -U postgres old_database > backup.sql
+kubectl exec deployment/old-postgres -- pg_dump -U postgres old_database > backup.sql
 ```
 
 ### 2. Create Database in Shared Instance
@@ -222,11 +226,8 @@ kubectl exec -it deployment/postgres -- psql -U postgres -c "CREATE DATABASE new
 
 ### 3. Restore Data
 ```bash
-# Copy backup to postgres pod
-kubectl cp backup.sql postgres-pod:/tmp/backup.sql
-
 # Restore to new database
-kubectl exec -it deployment/postgres -- psql -U postgres -d new_database < /tmp/backup.sql
+kubectl exec -i deployment/postgres -- psql -U postgres -d new_database < backup.sql
 ```
 
 ### 4. Update Application Configuration
@@ -241,14 +242,14 @@ kubectl exec -it deployment/postgres -- psql -U postgres -d new_database < /tmp/
 
 ## Resources
 
-- **PostgreSQL Documentation**: https://www.postgresql.org/docs/17/
+- **PostgreSQL Documentation**: https://www.postgresql.org/docs/18/
 - **Kubernetes PostgreSQL**: https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/
 - **SOPS Documentation**: https://github.com/mozilla/sops
 
 ## Example Applications Using This Pattern
 
-- ✅ **Pinepods**: Podcast management (`pinepods_database`)
-- ✅ **[Add your applications here as you migrate them]**
+- Pinepods examples above are illustrative; verify application manifests before adopting them.
+- Sparkyfitness currently runs its own PostgreSQL deployment in the `sparkyfitness` namespace.
 
 ---
 

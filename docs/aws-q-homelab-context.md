@@ -3,6 +3,9 @@
 ## Overview
 This document provides Amazon Q with the necessary context and patterns to generate proper Kubernetes application configurations for the homelab cluster running on Talos Linux with Flux CD GitOps.
 
+Reviewed against repository manifests on 2026-10-31. Templates require adaptation;
+physical topology and deployed health have not been verified.
+
 ## Cluster Architecture Context
 
 ### Infrastructure Stack
@@ -10,8 +13,8 @@ This document provides Amazon Q with the necessary context and patterns to gener
 - **GitOps**: Flux CD reconciling from Git repository
 - **Ingress**: ingress-nginx with cert-manager for Let's Encrypt certificates
 - **Storage**: 
-  - `syno-storage` StorageClass for Synology NAS via synology-csi
-  - `nfs-client` StorageClass for NFS mounts
+  - `syno-storage` is defined in retained Synology CSI manifests, but that controller is not currently registered
+  - `nfs-client` StorageClass for NFS mounts (active provisioner); a separate unreferenced release.yaml describes `homelab-nfs`
 - **Load Balancing**: MetalLB for LoadBalancer services
 - **DNS**: external-dns with Cloudflare integration
 - **Monitoring**: kube-prometheus-stack (Prometheus, Grafana, AlertManager)
@@ -62,10 +65,8 @@ spec:
   path: ./apps/<app-name>
   prune: true
   wait: true
-  dependsOn:
-    - name: synology-csi  # For apps requiring persistent storage
-    # - name: metallb     # For apps requiring LoadBalancer
-    # - name: cert-manager # For apps requiring TLS certificates
+  dependsOn: []  # Add only required, registered Flux Kustomizations.
+  # For dynamic NFS storage, consider nfs-subdir-external-provisioner.
   decryption:
     provider: sops
     secretRef:
@@ -101,7 +102,7 @@ metadata:
   name: <app-name>-data
   namespace: default
 spec:
-  storageClassName: syno-storage  # or nfs-client
+  storageClassName: nfs-client  # Active provisioner; verify suitability for your app
   accessModes:
     - ReadWriteOnce
   resources:
@@ -135,7 +136,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: ${LETSENCRYPT_CLUSTER_ISSUER}
 spec:
-  ingressClassName: nginx
+  ingressClassName: public  # Use private for internal ingress
   tls:
     - hosts:
         - <app-name>.orriborri.com
@@ -240,8 +241,8 @@ containers:
 
 ## Storage Guidelines
 
-### Storage Classes Available:
-- **syno-storage**: Synology NAS CSI (recommended for databases, persistent data)
+### Storage Class Configuration:
+- **syno-storage**: Defined in retained Synology CSI manifests; provisioning is not enabled by current registrations.
 - **nfs-client**: NFS subdir provisioner (for shared storage)
 
 ### Storage Sizing Guidelines:
@@ -259,7 +260,7 @@ containers:
 
 ### Port Configuration
 - Ensure container ports match service targetPort
-- Validate port numbers are within valid range (0-65535)
+- Validate service and container port numbers are within valid range (1-65535)
 - Check for port conflicts
 
 ## Adding New Apps Workflow

@@ -1,5 +1,10 @@
 # Further configuration
 
+Reviewed against repository manifests on 2026-10-31. See the
+[current component inventory](components.md) for enabled registrations. These
+instructions describe configuration changes; they do not confirm deployed health.
+Components already registered do not need to be added again.
+
 ## Configuration approaches
 
 For each app and infrastructure manifest, make sure you understand roughly what you are about to deploy and what configuration values the deployment will use.
@@ -8,7 +13,7 @@ There are a few different approaches to configuration in the k8s ecosystem. In t
 
 - ### Bare deployments
 
-  A `kind: Deployment` manifest instructs the cluster to deploy a container directly from e.g. Docker Hub or another container registry. For example, the [hue-mqtt](/apps/hue-mqtt/hue-mqtt.yaml) app.
+  A `kind: Deployment` manifest instructs the cluster to deploy a container directly from e.g. Docker Hub or another container registry. For example, the [podinfo](/apps/podinfo/podinfo.yaml) app.
 
   - Advantages: Very simple to write yourself for quick deployments of container images.
 
@@ -52,11 +57,11 @@ MetalLB allows k8s services to appear under their own unique IP address in your 
 
 ## external-dns
 
-[external-dns](https://github.com/kubernetes-sigs/external-dns) keeps the DNS records of supported DNS servers in sync with IP addresses of your services. This repo is configured uses Cloudfront DNS, refer to the [external-dns documentation](https://kubernetes-sigs.github.io/external-dns) on what other providers are supported and how to configure them.
+[external-dns](https://github.com/kubernetes-sigs/external-dns) keeps the DNS records of supported DNS servers in sync with IP addresses of your services. The [deployment](/infrastructure/networking/external-dns/deployment.yaml) uses Cloudflare with domain filters for `orriborri.com` and `vetelainen.fi`, refer to the [external-dns documentation](https://kubernetes-sigs.github.io/external-dns) on what other providers are supported and how to configure them.
 
 - Search for `external-dns.alpha.kubernetes.io/hostname` annotations in the repo.
 
-  This annotation sets the hostname/domain name that external dns will publish to Cloudfront.
+  This annotation sets the hostname/domain name that external dns will publish to Cloudflare.
   Can be set to multiple values by comma separating them.
 
 - Set `CLOUDFLARE_EMAIL` and `EXTERNAL_DNS_CLOUDFLARE_API_TOKEN` in your [/clusters/homelab/cluster-secrets.yaml](/clusters/homelab/cluster-secrets.yaml) file.
@@ -67,7 +72,7 @@ MetalLB allows k8s services to appear under their own unique IP address in your 
 
 - Add `external-dns.yaml` back in [/clusters/homelab/infrastructure/kustomization.yaml](/clusters/homelab/infrastructure/kustomization.yaml). Commit and push.
 
-- You should now start seeing DNS records appear in Pi-hole's admin web interface under Local DNS -> DNS Records.
+- Check the managed zone's DNS records in Cloudflare and inspect `kubectl -n external-dns logs deployment/external-dns`. Objects annotated with `external-dns.alpha.kubernetes.io/exclude: "true"` are excluded.
 
 ## Flux CD notification receiver
 
@@ -91,13 +96,13 @@ Normally, flux will poll your repository for changes. This means there will be a
 
 - Add `notification-receiver.yaml` back in [/clusters/homelab/infrastructure/kustomization.yaml](/clusters/homelab/infrastructure/kustomization.yaml). Commit and push.
 
-- Wait for reconciliation. After reconciliation finishes, you should be able to run `kubectl -n flux-system get receiver`. Note down the receiver URL (i.e. `/hook/...`)kubectl -n flux-system get receiver
+- Wait for reconciliation. After reconciliation finishes, you should be able to run `kubectl -n flux-system get receiver`. Note down the receiver URL (i.e. `/hook/...`).
 
 - On GitHub, navigate to your repository and click on the “Add webhook” button under “Settings/Webhooks”. Fill the form with:
 
   - Payload URL: combine `FLUX_NOTIFICATION_DOMAIN_NAME` and the hook URL from above:
 
-    `http://<FLUX_NOTIFICATION_DOMAIN_NAME>/<ReceiverURL>`
+    `https://<FLUX_NOTIFICATION_DOMAIN_NAME><ReceiverURL>` (the receiver URL already starts with `/`).
 
   - Secret: use the `token` string from above
 
@@ -105,7 +110,7 @@ Normally, flux will poll your repository for changes. This means there will be a
 
 ## Flux CD notification provider
 
-Flux can forward reconciliation errors to various chat apps, I'm personally using Discord for this.
+Discord provider and alert manifests exist, but `notification-provider.yaml` is not currently registered in the infrastructure Kustomization. Enable it only after configuring the webhook secret.
 
 - Create a Discord server for your homelab
 
@@ -143,23 +148,16 @@ Flux can forward reconciliation errors to various chat apps, I'm personally usin
 
 - Add `ingress-nginx-public.yaml` and/or `ingress-nginx-private.yaml` back in [/clusters/homelab/infrastructure/kustomization.yaml](/clusters/homelab/infrastructure/kustomization.yaml). Commit and push.
 
-- If kustomizations containing ingresses fail with `x509: certificate signed by unknown authority` errors, run:
-
-  ```
-  ns=ingress-nginx-public
-  CA=$(kubectl -n $ns get secret ingress-nginx-admission -ojsonpath='{.data.ca}')
-  kubectl patch validatingwebhookconfigurations ingress-nginx-admission -n $ns --type='json' -p='[{"op": "add", "path": "/webhooks/0/clientConfig/caBundle", "value":"'$CA'"}]'
-  ```
-
-  NOTE: Depending on if you get this error for the public or private instance of ingress-nginx, you may need to adjust `ns` accordingly.
-
-  Source: https://fabianlee.org/2022/01/29/nginx-ingress-nginx-controller-admission-error-x509-certificate-signed-by-unknown-authority/
+- For admission webhook certificate failures, inspect the actual webhook and
+  service names before taking recovery action. The old hard-coded patch command
+  was removed because those generated names and certificate sources were not
+  verified against the deployed Helm release.
 
 ## cert-manager
 
 [cert-manager](https://cert-manager.io/) obtains and renews Let's Encrypt certificates.
 
-This repo configures cert-manager is both HTTP01 and DNS01 challenge solvers.
+The [ClusterIssuers](/infrastructure/crds/cluster-issuers.yaml) configure HTTP01 using the public ingress and Cloudflare DNS01 selected for `*.orriborri.com`. Adapt that selector if changing domains.
 DNS01 allows requesting wildcard certificates that can be shared by all your
 subdomains (including private services).
 
@@ -181,6 +179,9 @@ DNS provider in order to prove ownership of a domain.
 - Add `cert-manager.yaml` and `crds.yaml` back in [/clusters/homelab/infrastructure/kustomization.yaml](/clusters/homelab/infrastructure/kustomization.yaml). Commit and push.
 
 ## synology-csi
+
+This component is not currently registered in the cluster infrastructure list.
+The following describes the retained manifests, not the active storage setup.
 
 [synology-csi](https://github.com/SynologyOpenSource/synology-csi) is a Container Storage Interface driver for Synology NAS. It
 automatically manages iSCSI targets and LUNs so you don't need to create them by
@@ -214,7 +215,7 @@ creating and mounting iSCSI targets from a Synology NAS.
 
 - Add `synology-csi.yaml` back in [/clusters/homelab/infrastructure/kustomization.yaml](/clusters/homelab/infrastructure/kustomization.yaml). Commit and push.
 
-- You should now be able to create PersistentVolumeClaims and mount them as volumes into containers. See [/apps/postgres/postgres.yaml](/apps/postgres/postgres.yaml) for an example.
+- You should now be able to create PersistentVolumeClaims and mount them as volumes into containers. Choose a StorageClass deliberately; the active PostgreSQL PVCs request `homelab-nfs`, which is not created by the registered NFS provisioner. See the [audit](documentation-audit.md) before making storage changes.
 
 - Use `kubectl get pvc` and `kubectl get pv` to list PersistentVolumeClaims and PersistentVolumes respectively.
 
@@ -227,24 +228,48 @@ creating and mounting iSCSI targets from a Synology NAS.
 
 ## nfs-subdir-external-provisioner
 
-You can also opt to use NFS with [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) instead of iSCSI. It's a bit easier to configure,
-however there may be various pitfalls involved especially if used as storage for
-database servers.
+NFS provisioning is currently enabled. The local
+[Kustomization](/infrastructure/storage/nfs-subdir-external-provisioner/kustomization.yaml)
+includes only `nfs-subdir-external-provisioner.yaml`.
 
-- Configure your NFS server to allow connections from the IP address range that your cluster nodes use.
-
-- Edit [/infrastructure/storage/nfs-subdir-external-provisioner/release.yaml](/infrastructure/storage/nfs-subdir-external-provisioner/release.yaml) to match your NFS server setup
-
-  - Change `nfs.server` so it points at your NAS hostname or IP address
-  - Change `nfs.path` to the path you want to mount on your NAS
-
-- Add `nfs-subdir-external-provisioner.yaml` back in [/clusters/homelab/infrastructure/kustomization.yaml](/clusters/homelab/infrastructure/kustomization.yaml). Commit and push.
+- Set `NFS_SERVER` and `NFS_PATH` in the shared substitution configuration. Permit
+  access from cluster nodes on the NFS server.
+- Edit the [active manifest](/infrastructure/storage/nfs-subdir-external-provisioner/nfs-subdir-external-provisioner.yaml)
+  to change chart values. The neighboring `release.yaml` is unused by this path;
+  editing it will not change the reconciled release.
+- The active StorageClass is `nfs-client`, is not the default, and sets
+  `reclaimPolicy: Delete` with `archiveOnDelete: true`. Review storage lifecycle
+  before deleting claims. Static workload volumes have their own policies.
+- Inspect `kubectl get storageclass` and `kubectl get pvc -A` after reconciliation.
 
 ## Apps
 
 Use the existing app manifests as examples on how to create new ones if needed.
 
 You can install apps from Helm charts as well, remember to add the HelmRepository to [/infrastructure/sources](/infrastructure/sources) if it doesn't already exist, and include the manifest
-in [/infrastructure/sources/kustomization.yaml](/infrastructure/sources/kustomization.yaml) as well. Then create a `kind: HelmRelease` manifest under apps, include it in a `kustomization.yaml` as well as in [/clusters/homelab/apps/kustomization.yaml](/clusters/homelab/apps/kustomization.yaml).
+in [/infrastructure/sources/kustomization.yaml](/infrastructure/sources/kustomization.yaml) as well. Then create a `kind: HelmRelease` manifest under `apps/<app>/` and include it in that directory's `kustomization.yaml`. Create a separate Flux `kind: Kustomization` under `clusters/homelab/apps/` pointing to `./apps/<app>`, following the existing decryption, substitution, and dependency patterns. Register that Flux manifest in [/clusters/homelab/apps/kustomization.yaml](/clusters/homelab/apps/kustomization.yaml).
 
 Look at example HelmRelease manifests by searching for `kind: HelmRelease` under /infrastructure.
+
+## Validation
+
+Before committing a change, render each changed workload and the cluster entrypoint:
+
+```sh
+kubectl kustomize apps/<app>
+kubectl kustomize clusters/homelab
+pre-commit run --all-files
+```
+
+Repeat rendering for changed infrastructure directories that contain a local
+Kustomization. Local rendering does not perform Flux substitutions or SOPS
+decryption and does not render Helm chart resources. Some Flux paths, such as
+`infrastructure/crds`, contain plain manifests without a local Kustomization.
+
+After deploying, check reconciliation and runtime health separately:
+
+```sh
+flux get all -A
+kubectl get pods -A
+kubectl get events -A --field-selector type=Warning
+```

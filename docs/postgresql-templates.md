@@ -1,5 +1,9 @@
 # PostgreSQL Quick Reference Templates
 
+Examples below assume the `default` namespace. For another namespace, use
+`postgres.default.svc.cluster.local` and a Secret in the application namespace.
+See [SOPS prerequisites](sops.md) before encrypting new files.
+
 ## New Application Database Setup
 
 ### 1. Application Secrets Template
@@ -48,14 +52,14 @@ envFrom:
 ### 3. Encrypt Secrets
 ```bash
 # After creating your secrets file:
-sops --encrypt --in-place apps/YOUR_APP/secrets.yaml
+sops --encrypt --pgp "$SOPS_PGP_FP" --in-place apps/YOUR_APP/secrets.yaml
 ```
 
 ## Database Names Used
 
 Keep track of database names to avoid conflicts:
 
-- `pinepods_database` - Pinepods podcast management
+- `pinepods_database` - illustrative example; Pinepods is not currently registered
 - `YOUR_APP_database` - Add your app here
 
 ## Common Environment Variable Names
@@ -76,17 +80,17 @@ Some applications prefer a single connection string:
 DATABASE_URL: "postgresql://username:password@postgres:5432/database_name"
 ```
 
-For these applications, you might need to construct the URL in the deployment:
+For these applications, you might need to construct the URL in the deployment. As described by [Kubernetes](https://kubernetes.io/docs/tasks/inject-data-application/define-interdependent-environment-variables/), referenced variables must be defined earlier in `env`, and credentials containing URL-special characters require URL encoding:
 ```yaml
 env:
-  - name: DATABASE_URL
-    value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
   - name: DB_USER
     valueFrom:
       secretKeyRef:
         name: postgres-config
         key: POSTGRES_USER
-  # ... other DB vars
+  # Define DB_PASSWORD, DB_HOST, DB_PORT and DB_NAME here before DATABASE_URL.
+  - name: DATABASE_URL
+    value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
 ```
 
 ## Quick Commands

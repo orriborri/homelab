@@ -1,8 +1,29 @@
-# Orriborris' homelab (Based on [FruitieX's homelab]()
+# Orriborri's homelab
+
+Based on [FruitieX's homelab](https://github.com/FruitieX/homelab).
 
 This repo contains a declarative, GitOps definition of my homelab.
 
 ![Photo of my homelab](/docs/homelab.jpg)
+
+## Documentation status
+
+Reviewed against the repository manifests on 2026-10-31. This describes desired
+configuration, not verified cluster health. The installation instructions below
+are a historical bootstrap guide; a clean rebuild, current hardware inventory,
+router configuration, and recovery time have not been verified.
+
+The three-node Talos cluster was installed and verified on 2026-11-04. See the
+[Talos on Proxmox setup record](docs/talos-proxmox-setup.md) for its actual VM
+layout, versions, private configuration paths, installation steps, and health
+checks. Flux and application deployment remain separate next steps.
+
+- [Current components and enabled workloads](docs/components.md)
+- [Configuration and workload registration](docs/configuration.md)
+- [DNS and routing](docs/dns.md)
+- [Encrypted secrets](docs/sops.md)
+- [PostgreSQL usage](docs/postgresql-usage.md)
+- [Documentation audit and remaining checks](docs/documentation-audit.md)
 
 ## Components
 
@@ -11,9 +32,9 @@ In summary, the homelab is built up using:
 - [A mini PC](https://store.minisforum.de/collections/alle-produkte-1/products/minisforum-venus-series-um560?variant=41392983572663), [NAS](https://www.synology.com/en-us/support/download/DS420+?version=7.1#system) and some [UniFi](https://eu.store.ui.com/products/unifi-dream-machine) network infrastructure
 - [Kubernetes](https://kubernetes.io/), running on virtual [Talos Linux](https://www.talos.dev/) nodes in [Proxmox VE](https://www.proxmox.com/en/proxmox-ve)
 - [Flux CD](https://fluxcd.io/) reconciling cluster configuration from this git repo
-- [MetalLB](https://metallb.universe.tf/) & [external-dns](https://github.com/kubernetes-sigs/external-dns) expose apps on separate IP addresses with associated DNS records
+- [MetalLB](https://metallb.universe.tf/) assigns LoadBalancer service addresses; [external-dns](https://github.com/kubernetes-sigs/external-dns) manages selected service and ingress records in Cloudflare
 - [ingress-nginx](https://github.com/kubernetes/ingress-nginx) & [cert-manager](https://cert-manager.io/) reverse proxy subdomain HTTP requests with auto-renewing [Let's Encrypt](https://letsencrypt.org/) certificates
-- [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) & [synology-csi](https://github.com/SynologyOpenSource/synology-csi) provide persistent storage on NAS
+- [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) & [synology-csi](https://github.com/SynologyOpenSource/synology-csi) have NAS storage manifests; NFS is enabled and Synology CSI is currently unregistered
 - [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus) provides detailed metrics
 
 [More detailed writeup](/docs/components.md)
@@ -24,7 +45,7 @@ To follow this guide, you need the following:
 
 - One or more x86_64 hosts to run this on.
 - The [nix package manager](https://nixos.org/download.html).
-- [A fork of this repo](https://github.com/FruitieX/homelab/fork).
+- [A fork of this repo](https://github.com/orriborri/homelab/fork).
 - A GitHub personal access token with repo permissions. This is needed by Flux to read your (possibly private) repo and push some initial manifests. See the GitHub documentation on [creating a personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
 - A GPG key for encrypting & decrypting secrets with Mozilla SOPS. Follow [this guide](https://fluxcd.io/flux/guides/mozilla-sops/#generate-a-gpg-key) until `Store the key fingerprint as an environment variable`.
 - NFS or iSCSI mounts on a NAS if any of your workloads need persistent storage.
@@ -36,6 +57,10 @@ To follow this guide, you need the following:
 
 ## Setting up the cluster
 
+For the installation completed on 2026-11-04, follow the
+[current Talos on Proxmox setup record](docs/talos-proxmox-setup.md). The steps
+below are retained as the historical bootstrap guide.
+
 - Install [Proxmox VE](https://www.proxmox.com/en/downloads/category/iso-images-pve) on your host(s). Optional but recommended: [set up `pve-no-subscription` updates repo](https://www.virtualizationhowto.com/2022/08/proxmox-update-no-subscription-repository-configuration/)
 
 - Spin up any number of VM:s and [install Talos Linux](https://www.talos.dev/v1.3/talos-guides/install/virtualized-platforms/proxmox/) on each of them. My toy cluster (running on one physical machine only mind you) runs:
@@ -43,7 +68,9 @@ To follow this guide, you need the following:
   - One control plane node with 4 GB RAM
   - Two worker nodes with 8 GB RAM each
 
-  NOTE: If you want iSCSI support, you need to apply the included `talos-machine-patch.yaml` like so:
+  Historical iSCSI example: the included `talos-machine-patch.yaml` pins an old
+  extension image. Check compatibility with your installed Talos release before
+  using this command; it is not a verified current installation procedure:
 
   ```
   talosctl gen config homelab-cluster https://$CONTROL_PLANE_IP:6443 --output-dir _out --config-patch @talos-machine-patch.yaml
@@ -53,7 +80,7 @@ To follow this guide, you need the following:
 
   ```
   # IP address of your control plane node, printed to machine TTY in the `Start Control Plane Node` section.
-  export CONTROL_PLANE_IP="192.168.10.10206"
+  export CONTROL_PLANE_IP="192.0.2.10" # Example only: use your control-plane IP
 
   # Path to your talosconfig, created in the `Generate Machine Configurations` section.
   export TALOSCONFIG="_out/talosconfig"
@@ -134,9 +161,10 @@ To follow this guide, you need the following:
 
     Set `PODINFO_DOMAIN_NAME` to some valid domain name of your choice.
 
-    Now it's time to encrypt the file using Mozilla SOPS:
+    Keep replacement secrets local until encrypted. The root `.sops.yaml` selects
+  fields to encrypt but does not configure a recipient. Encrypt using your key:
 
-    `sops --encrypt --in-place clusters/homelab/cluster-secrets.yaml`
+    `sops --encrypt --pgp "$SOPS_PGP_FP" --in-place clusters/homelab/cluster-secrets.yaml`
 
     If you want to make further changes to the file, run:
 

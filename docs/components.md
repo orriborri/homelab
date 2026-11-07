@@ -1,64 +1,68 @@
-## Components
+# Homelab components
 
-I make use of the following pieces of software and infrastructure:
+Reviewed against repository manifests on 2026-10-31. “Enabled” means registered
+in the cluster Kustomizations; it does not establish live readiness.
 
-### Hardware
+## Reconciliation
 
-- Minisforum UM580 (Ryzen 7 5800H)
-- Synology DS420+ NAS
-- UniFi Dream Machine router + various UniFi switches and access points
+[Flux tracks `main`](../clusters/homelab/flux-system/gotk-sync.yaml) in
+`orriborri/homelab` and reconciles `clusters/homelab`. The GitRepository polls
+every minute; the root Kustomization has a ten-minute interval. A configured
+[GitHub receiver](../infrastructure/flux/notification-receiver/kustomization.yaml)
+can request earlier reconciliation if the external webhook is installed.
 
-### Kubernetes
+The [cluster entrypoint](../clusters/homelab/kustomization.yaml) includes shared
+configuration, encrypted secrets, infrastructure, and applications. Child Flux
+Kustomizations select workload paths, SOPS decryption, substitutions, and dependencies.
+Files elsewhere in the repository are not necessarily reconciled.
 
-- Convenient way to run a bunch of services in containers
-- You can easily scale out by adding more nodes (e.g. old hardware)
-- Searching for Kubernetes related error messages online often brings up useful help
-- Large ecosystem of readily available packages and solutions
-  - Surprisingly little in terms of configuration can accomplish complex things
+## Enabled infrastructure
 
-### Proxmox VE
+The source of truth is the [infrastructure registration list](../clusters/homelab/infrastructure/kustomization.yaml).
 
-- Virtual machine management platform (among other things)
-- Makes it possible to perform reinstalls and spin up various toy environments without physical access to the hardware each time.
+| Area | Registered components |
+| --- | --- |
+| Sources | Helm and image sources |
+| Networking | MetalLB, external-dns, public and private ingress-nginx |
+| Certificates | cert-manager and custom resources under `infrastructure/crds` |
+| Storage | NFS subdirectory provisioner (`nfs-client` StorageClass) |
+| Monitoring | kube-prometheus-stack, Grafana, metrics-server |
+| Controllers and UI | Reloader, Reflector, Capacitor and its LoadBalancer |
+| Flux notifications | GitHub receiver |
 
-### Talos Linux
+Synology CSI, Discord notification provider, Loki, InfluxDB, and image automation
+have files but are not registered in this list. Renovate configuration is stored
+in the repository; successful update automation is not verified by this audit.
 
-- Linux distro specifically designed for running a Kubernetes cluster
-- Minimal configuration involved in getting cluster up and running
+## Enabled applications
 
-### Flux CD
+The [application registration list](../clusters/homelab/apps/kustomization.yaml)
+includes podinfo, Audiobookshelf, Mosquitto, PostgreSQL, Home Assistant, Actual,
+Sump-it, ingress-proxy, Jellyfin, Mealie, SparkyFitness, kia-poller, and KitchenOwl.
+Other application directories and commented registrations are retained examples
+or disabled workloads.
 
-- Cluster configuration is described by a declarative configuration in a git
-  repository (this one)
-  - `git push` automatically reconciles cluster to match new configuration
-  - Rollbacks normally amount to running `git revert`
-- Discord notifications on reconciliation errors
-- Auto updates with Renovate
-- Safely commit secrets to git thanks to Mozilla SOPS
-- In case of emergency, redeployment of the entire cluster (including OS
-  installations, assuming configuration is already adapted to environment) takes < 30 min
+## Networking and storage
 
-### MetalLB & external-dns
+[MetalLB's pool](../infrastructure/crds/metallb-config.yaml) is `192.168.11.0/24`.
+The public ingress requests `192.168.11.1`, and the private ingress requests
+`192.168.11.99`. Router forwarding and LAN reachability require separate verification.
 
-- Services get their own IP addresses allocated in my home network under a separate subnet
-  - Every container can use whatever TCP/UDP ports it wants, there are no collisions
-  - It's possible to run multiple duplicate services on their default ports
-- Every service gets their IP address added to Cloudfront DNS records
-  - For example, the `podinfo` hostname resolves the podinfo service, reachable both inside the cluster and from my home network
+[external-dns](../infrastructure/networking/external-dns/deployment.yaml) uses
+Cloudflare, watches services and ingresses, filters to `orriborri.com` and
+`vetelainen.fi`, and excludes objects annotated with
+`external-dns.alpha.kubernetes.io/exclude: "true"`.
 
-### ingress-nginx & cert-manager
+The [active NFS manifest](../infrastructure/storage/nfs-subdir-external-provisioner/nfs-subdir-external-provisioner.yaml)
+uses `${NFS_SERVER}` and `${NFS_PATH}` and creates `nfs-client`. The neighboring
+`release.yaml` is not included by its local Kustomization. Some workloads use
+static volumes; inspect their manifests before assuming dynamic provisioning.
 
-- HTTP services will have their subdomains reverse proxied automatically
-  - For example, accessing `podinfo.example.org` will hit the `ingress-nginx` service (thanks to wildcard CNAME & router port forwarding)
-  - `ingress-nginx` will check the `Host` HTTP header and proxy the request to the `podinfo` service
-- All subdomains get auto-renewing Let's Encrypt certificates
+## Physical platform
 
-### nfs-subdir-external-provisioner, synology-csi
+The historical inventory lists a Minisforum UM580, Synology DS420+, UniFi
+networking, and Talos virtual machines on Proxmox VE. Hardware, VM counts,
+resource allocations, backups, and recovery times cannot be established from
+these Kubernetes manifests and have not been verified.
 
-- iSCSI/NFS mounts on separate NAS for persistent storage
-  - Nothing of value resides on the compute nodes' disks and as such they can be considered "throwaways"
-
-### kube-prometheus-stack
-
-- Detailed Grafana dashboards & metrics
-
+See [configuration](configuration.md) for changes and local validation.
