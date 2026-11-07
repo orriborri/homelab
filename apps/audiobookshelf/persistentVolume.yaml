@@ -1,10 +1,91 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: audiobookshelf-podcasts
+spec:
+  capacity:
+    storage: 150Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  mountOptions:
+    - nfsvers=4.1
+  nfs:
+    server: 192.168.1.244
+    path: /volume2/cluster/default-audiobookshelf-podcast-data-v2-pvc-6b18b7be-a9e3-4cc7-8158-0a77d6fc9f03
+  claimRef:
+    namespace: default
+    name: audiobookshelf-podcast-data-v2
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: audiobookshelf-audiobooks
+spec:
+  capacity:
+    storage: 65Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  mountOptions:
+    - nfsvers=4.1
+  nfs:
+    server: 192.168.1.244
+    path: /volume2/cluster/default-audiobookshelf-audiobooks-data-v2-pvc-1f87f9fc-a786-4841-a4b4-83729161c4dd
+  claimRef:
+    namespace: default
+    name: audiobookshelf-audiobooks-data-v2
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: audiobookshelf-metadata
+spec:
+  capacity:
+    storage: 25Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  mountOptions:
+    - nfsvers=4.1
+  nfs:
+    server: 192.168.1.244
+    path: /volume2/cluster/default-audiobookshelf-metadata-data-v2-pvc-89c43218-f28a-4c4e-8f33-23f694891f9f
+  claimRef:
+    namespace: default
+    name: audiobookshelf-metadata-data-v2
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: audiobookshelf-config
+spec:
+  capacity:
+    storage: 25Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  mountOptions:
+    - nfsvers=4.1
+  nfs:
+    server: 192.168.1.244
+    path: /volume2/cluster/default-audiobookshelf-config-data-v2-pvc-f53e11e0-13a3-40de-a864-938d4b266536
+  claimRef:
+    namespace: default
+    name: audiobookshelf-config-data-v2
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: audiobookshelf-podcast-data-v2
   namespace: default
 spec:
-  storageClassName: homelab-nfs
+  storageClassName: ""
+  volumeName: audiobookshelf-podcasts
   accessModes:
     - ReadWriteMany
   resources:
@@ -17,7 +98,8 @@ metadata:
   name: audiobookshelf-audiobooks-data-v2
   namespace: default
 spec:
-  storageClassName: homelab-nfs
+  storageClassName: ""
+  volumeName: audiobookshelf-audiobooks
   accessModes:
     - ReadWriteMany
   resources:
@@ -30,12 +112,13 @@ metadata:
   name: audiobookshelf-metadata-data-v2
   namespace: default
 spec:
-  storageClassName: homelab-nfs
+  storageClassName: ""
+  volumeName: audiobookshelf-metadata
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 25Gi # Increased from 20Gi to 25Gi
+      storage: 25Gi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -43,7 +126,8 @@ metadata:
   name: audiobookshelf-config-data-v2
   namespace: default
 spec:
-  storageClassName: homelab-nfs
+  storageClassName: ""
+  volumeName: audiobookshelf-config
   accessModes:
     - ReadWriteMany
   resources:

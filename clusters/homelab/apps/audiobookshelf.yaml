@@ -12,7 +12,8 @@ spec:
   path: ./apps/audiobookshelf
   prune: true
   wait: true
-  dependsOn: []
+  dependsOn:
+    - name: ingress-nginx-public
   decryption:
     provider: sops
     secretRef:
