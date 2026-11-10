@@ -3,6 +3,7 @@ resources:
   - audiobookshelf/
   - calibre/
   - homeassistant/
+  - grocy/
   - influxdb/
   - ingress-proxy/
   - kavita/

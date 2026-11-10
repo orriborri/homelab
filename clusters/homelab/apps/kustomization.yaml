@@ -36,3 +36,4 @@ resources:
   - sparkyfitness.yaml
   - kia-poller.yaml
   - kitchenowl.yaml
+  - grocy.yaml
