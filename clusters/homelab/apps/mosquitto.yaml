@@ -4,12 +4,14 @@ metadata:
   name: mosquitto
 spec:
   interval: 1h
-  timeout: 3m
+  timeout: 10m
   retryInterval: 10s
   sourceRef:
     kind: GitRepository
     name: flux-system
   path: ./apps/mosquitto
+  dependsOn:
+    - name: synology-csi
   prune: true
   wait: true
   decryption:

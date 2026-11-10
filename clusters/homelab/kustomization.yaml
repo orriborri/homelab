@@ -18,3 +18,6 @@ resources:
   - apps/podinfo.yaml
   - apps/audiobookshelf.yaml
   - infrastructure/crds.yaml
+  - infrastructure/synology-csi.yaml
+  - infrastructure/observability.yaml
+  - apps/mosquitto.yaml

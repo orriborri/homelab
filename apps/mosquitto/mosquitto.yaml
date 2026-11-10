@@ -4,7 +4,8 @@ metadata:
   name: mqtt
   namespace: default
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: mqtt.orriborri.com
+    external-dns.alpha.kubernetes.io/exclude: "true"
+    metallb.universe.tf/loadBalancerIPs: 192.168.11.4
 spec:
   type: LoadBalancer
   selector:
@@ -13,7 +14,36 @@ spec:
     - name: mqtt
       protocol: TCP
       port: 1883
-      targetPort: 1883
+      targetPort: mqtt
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mosquitto-config
+  namespace: default
+data:
+  mosquitto.conf: |
+    listener 1883
+    allow_anonymous false
+    password_file /mosquitto/auth/passwd
+    persistence true
+    persistence_location /mosquitto/data/
+    autosave_interval 60
+    log_dest stdout
+    connection_messages true
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mosquitto-data
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: syno-storage
+  resources:
+    requests:
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -21,6 +51,9 @@ metadata:
   name: mosquitto
   namespace: default
 spec:
+  replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: mosquitto
@@ -29,19 +62,77 @@ spec:
       labels:
         app: mosquitto
     spec:
+      securityContext:
+        runAsUser: 1883
+        runAsGroup: 1883
+        runAsNonRoot: true
+        fsGroup: 1883
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 60
+      initContainers:
+        - name: prepare-auth
+          image: eclipse-mosquitto:2@sha256:38c0da4f2ef84284d47b3b3eeea1cb3bdeabe81ee10caf0cd5c5ff61ee3ea408
+          command: [sh, -ec, 'cp /source/passwd /auth/passwd; chmod 600 /auth/passwd']
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: auth-source
+              mountPath: /source
+              readOnly: true
+            - name: auth
+              mountPath: /auth
       containers:
         - name: mosquitto
-          image: eclipse-mosquitto:2.0@sha256:81a6193ae693942a3231cd3ac52875b02b7e3a19da671b2fb4b55cc874c5b279
-          command: ["mosquitto"]
-          args: ["-c", "/mosquitto-no-auth.conf"]
+          image: eclipse-mosquitto:2@sha256:38c0da4f2ef84284d47b3b3eeea1cb3bdeabe81ee10caf0cd5c5ff61ee3ea408
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          command: ["/usr/sbin/mosquitto"]
+          args: ["-c", "/mosquitto/config/mosquitto.conf"]
           ports:
-            - containerPort: 1883
+            - name: mqtt
+              containerPort: 1883
+          readinessProbe:
+            tcpSocket:
+              port: mqtt
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: mqtt
+            initialDelaySeconds: 15
+            periodSeconds: 20
           resources:
             requests:
-              cpu: 50m
-              memory: 128Mi
+              cpu: 25m
+              memory: 64Mi
             limits:
-              cpu: 100m
               memory: 256Mi
----
-
+          volumeMounts:
+            - name: config
+              mountPath: /mosquitto/config
+              readOnly: true
+            - name: auth
+              mountPath: /mosquitto/auth
+              readOnly: true
+            - name: data
+              mountPath: /mosquitto/data
+      volumes:
+        - name: config
+          configMap:
+            name: mosquitto-config
+        - name: auth
+          emptyDir:
+            medium: Memory
+        - name: auth-source
+          secret:
+            secretName: mosquitto-auth
+            defaultMode: 0440
+        - name: data
+          persistentVolumeClaim:
+            claimName: mosquitto-data

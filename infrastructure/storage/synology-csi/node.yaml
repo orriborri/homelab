@@ -59,6 +59,10 @@ spec:
       hostPID: true
       serviceAccount: csi-node-sa
       hostNetwork: true
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
       containers:
         - name: csi-driver-registrar
           securityContext:
@@ -96,7 +100,7 @@ spec:
             - --log-level=info
           env:
             - name: CSI_ENDPOINT
-              value: unix://csi/csi.sock
+              value: unix:///csi/csi.sock
             - name: KUBE_NODE_NAME
               valueFrom:
                 fieldRef:

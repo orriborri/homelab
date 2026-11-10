@@ -13,11 +13,11 @@ physical topology and deployed health have not been verified.
 - **GitOps**: Flux CD reconciling from Git repository
 - **Ingress**: ingress-nginx with cert-manager for Let's Encrypt certificates
 - **Storage**: 
-  - `syno-storage` is defined in retained Synology CSI manifests, but that controller is not currently registered
+  - `syno-storage` provides verified Synology iSCSI storage; CSI registration is included in the root cluster entrypoint
   - `nfs-client` StorageClass for NFS mounts (active provisioner); a separate unreferenced release.yaml describes `homelab-nfs`
 - **Load Balancing**: MetalLB for LoadBalancer services
 - **DNS**: external-dns with Cloudflare integration
-- **Monitoring**: kube-prometheus-stack (Prometheus, Grafana, AlertManager)
+- **Monitoring**: Replacement observability stack (Prometheus, Grafana, Alertmanager, Loki, Alloy); see `docs/observability.md` for verified deployment status and external integrations.
 
 ### Configuration Substitution System
 The cluster uses Flux's postBuild substitution feature with:
@@ -242,7 +242,7 @@ containers:
 ## Storage Guidelines
 
 ### Storage Class Configuration:
-- **syno-storage**: Defined in retained Synology CSI manifests; provisioning is not enabled by current registrations.
+- **syno-storage**: Verified Synology iSCSI provisioning; explicitly selected, with Retain reclaim policy. CSI registration is included in the root cluster entrypoint.
 - **nfs-client**: NFS subdir provisioner (for shared storage)
 
 ### Storage Sizing Guidelines:

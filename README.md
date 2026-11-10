@@ -16,8 +16,13 @@ router configuration, and recovery time have not been verified.
 The three-node Talos cluster was installed and verified on 2026-11-04. See the
 [Talos on Proxmox setup record](docs/talos-proxmox-setup.md) for its actual VM
 layout, versions, private configuration paths, installation steps, and health
-checks. Flux and application deployment remain separate next steps.
+checks. Follow-up checks on 2026-11-08 confirmed Flux and applications running,
+and Synology iSCSI provisioning, mounting, and data persistence across both
+workers. The CSI driver was applied directly; its repository registration and
+installer changes are recorded in this repository. See the setup record for the tested scope.
 
+- [Metrics, logs, dashboards, and external monitoring](docs/observability.md)
+- [MQTT broker and Pi client migration](docs/mqtt.md)
 - [Current components and enabled workloads](docs/components.md)
 - [Configuration and workload registration](docs/configuration.md)
 - [DNS and routing](docs/dns.md)
@@ -34,8 +39,8 @@ In summary, the homelab is built up using:
 - [Flux CD](https://fluxcd.io/) reconciling cluster configuration from this git repo
 - [MetalLB](https://metallb.universe.tf/) assigns LoadBalancer service addresses; [external-dns](https://github.com/kubernetes-sigs/external-dns) manages selected service and ingress records in Cloudflare
 - [ingress-nginx](https://github.com/kubernetes/ingress-nginx) & [cert-manager](https://cert-manager.io/) reverse proxy subdomain HTTP requests with auto-renewing [Let's Encrypt](https://letsencrypt.org/) certificates
-- [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) & [synology-csi](https://github.com/SynologyOpenSource/synology-csi) have NAS storage manifests; NFS is enabled and Synology CSI is currently unregistered
-- [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus) provides detailed metrics
+- [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) & [synology-csi](https://github.com/SynologyOpenSource/synology-csi) have NAS storage manifests; NFS and Synology iSCSI are deployed; CSI registration is included in the root cluster entrypoint
+- [Observability](docs/observability.md): Prometheus, Grafana, Alertmanager, Loki, and Alloy provide metrics, dashboards, alerts, and pod logs
 
 [More detailed writeup](/docs/components.md)
 

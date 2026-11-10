@@ -3,7 +3,8 @@
 Reviewed against repository manifests on 2026-10-31. See the
 [current component inventory](components.md) for enabled registrations. These
 instructions describe configuration changes; they do not confirm deployed health.
-Components already registered do not need to be added again.
+Components already registered do not need to be added again. The Synology CSI
+section includes live verification from 2026-11-08 and GitOps registration.
 
 ## Configuration approaches
 
@@ -41,7 +42,7 @@ These notes explain how I make use of each of the services and how to configure 
 
 MetalLB allows k8s services to appear under their own unique IP address in your home network.
 
-- [/infrastructure/crds/metallb-config.yaml](/infrastructure/crds/metallb-config.yaml)
+- [/infrastructure/networking/metallb/config/metallb-config.yaml](/infrastructure/networking/metallb/config/metallb-config.yaml)
 
   Set the IP address pool that MetalLB should use when exposing services to your home network.
 
@@ -180,51 +181,61 @@ DNS provider in order to prove ownership of a domain.
 
 ## synology-csi
 
-This component is not currently registered in the cluster infrastructure list.
-The following describes the retained manifests, not the active storage setup.
+Deployed and verified on 2026-11-08. The controller and node plugins run in
+`synology-csi`; all three nodes have `iscsi-tools v0.2.0` and a running
+`ext-iscsid` service. The existing SOPS-encrypted credentials were decrypted using
+Flux's key and applied without changing the encrypted source. Local GPG keys
+could not decrypt this file. Do not replace the working credentials as part of
+normal setup; use [SOPS](sops.md) when credentials need editing.
 
-[synology-csi](https://github.com/SynologyOpenSource/synology-csi) is a Container Storage Interface driver for Synology NAS. It
-automatically manages iSCSI targets and LUNs so you don't need to create them by
-hand.
+The [storage class](../infrastructure/storage/synology-csi/storage-class.yaml)
+`syno-storage` uses Synology `192.168.1.244`, `/volume1`, iSCSI, and ext4.
+It allows expansion and retains volumes when claims are deleted. It is not a
+default class: request it explicitly, for example:
 
-synology-csi makes it possible have persistent storage in your containers by
-creating and mounting iSCSI targets from a Synology NAS.
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: application-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: syno-storage
+  resources:
+    requests:
+      storage: 1Gi
+```
 
-- Replace the contents of [/infrastructure/storage/synology-csi/client-info.yaml](/infrastructure/storage/synology-csi/client-info.yaml) with:
+A dedicated test volume passed provisioning, attach, mount, write/read on worker
+1, and reading the same data after reattachment to worker 2. The temporary pod,
+claim, volume, and test class were removed. This verifies both workers; a workload
+mount on the control plane was not tested. Existing application volumes use NFS
+and were not migrated.
 
-  ```
-  apiVersion: v1
-  kind: Secret
-  metadata:
-      name: client-info-secret
-      namespace: synology-csi
-  stringData:
-      client-info.yaml: |
-          ---
-          clients:
-            - host: <hostname or IP of synology NAS>
-              port: 5000
-              https: false
-              username: <username>
-              password: <password>
-  ```
+The node plugin has a control-plane toleration and uses
+`unix:///csi/csi.sock`. The driver was applied directly for verification. Its
+[Flux registration](../clusters/homelab/infrastructure/kustomization.yaml) is
+included in the root cluster entrypoint. Verify Flux reconciliation after
+publishing changes before relying on GitOps to manage them.
 
-  See [/docs/sops.md](/docs/sops.md) for more information on how to store secrets.
+For operational checks, use the local cluster configuration:
 
-  Remember to encrypt the secrets file before you commit.
+```bash
+kubectl --kubeconfig .talos-local/kubeconfig -n synology-csi get pods -o wide
+kubectl --kubeconfig .talos-local/kubeconfig get csidrivers,storageclasses,pv
+kubectl --kubeconfig .talos-local/kubeconfig get pvc -A
+kubectl --kubeconfig .talos-local/kubeconfig -n synology-csi logs \
+  synology-csi-controller-0 -c csi-plugin --tail=50
+talosctl --talosconfig .talos-local/talosconfig \
+  --nodes 192.168.10.21,192.168.10.22,192.168.10.23 services
+```
 
-- Add `synology-csi.yaml` back in [/clusters/homelab/infrastructure/kustomization.yaml](/clusters/homelab/infrastructure/kustomization.yaml). Commit and push.
-
-- You should now be able to create PersistentVolumeClaims and mount them as volumes into containers. Choose a StorageClass deliberately; the active PostgreSQL PVCs request `homelab-nfs`, which is not created by the registered NFS provisioner. See the [audit](documentation-audit.md) before making storage changes.
-
-- Use `kubectl get pvc` and `kubectl get pv` to list PersistentVolumeClaims and PersistentVolumes respectively.
-
-- Debugging tips if containers are stuck waiting for volumes forever:
-  - List all synology-csi pods: `kubectl get pod -n synology-csi`
-  - Follow logs from a particular pod: `kubectl logs pod/synology-csi-controller-0 -n synology-csi --all-containers -f`
-  - See if you can find relevant any error messages
-  - Check in the Synology NAS' SAN Manager if the iSCSI targets & LUNs get created, if not then there may be some authentication/permission problems with your Synology user account.
-  - More info: https://github.com/SynologyOpenSource/synology-csi
+Initial `ext-iscsid` logs reported missing `/etc/iscsi/iscsid.conf` options;
+subsequent successful iSCSI login and volume tests established working access.
+The Talos service listing reports `?` for the daemon health field, so the running
+service alone is not a storage test. See the [setup record](talos-proxmox-setup.md)
+for the pinned installer and upgrade command.
 
 ## nfs-subdir-external-provisioner
 
@@ -273,3 +284,11 @@ flux get all -A
 kubectl get pods -A
 kubectl get events -A --field-selector type=Warning
 ```
+
+## Observability
+
+Use the [observability guide](observability.md) for the replacement Prometheus,
+Grafana, Alertmanager, Loki, and Alloy stack, storage requirements, access, and
+verification. The old separate Grafana and loki-stack definitions were removed.
+Home Assistant VM and Pi monitoring require external configuration and are tracked
+separately in that guide.

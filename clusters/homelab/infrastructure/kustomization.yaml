@@ -6,8 +6,9 @@ resources:
   - cert-manager.yaml
   - notification-receiver.yaml
   - nfs-subdir-external-provisioner.yaml
+  - synology-csi.yaml
   - crds.yaml
-  - kube-prometheus-stack.yaml
+  - observability.yaml
   - external-dns.yaml
   - ingress-nginx-public.yaml
   - ingress-nginx-private.yaml
@@ -15,7 +16,6 @@ resources:
   - metrics-server.yaml
   - reloader.yaml
   - reflector.yaml
-  - grafana.yaml
   - capacitor.yaml
   - capacitor-loadbalancer.yaml
   # - image-automation.yaml  # Commented out - directory doesn't exist
