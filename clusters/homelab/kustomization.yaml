@@ -20,4 +20,6 @@ resources:
   - infrastructure/crds.yaml
   - infrastructure/synology-csi.yaml
   - infrastructure/observability.yaml
+  - infrastructure/influxdb.yaml
   - apps/mosquitto.yaml
+  - apps/hermes.yaml

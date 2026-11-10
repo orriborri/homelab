@@ -5,25 +5,48 @@ metadata:
   namespace: influxdb
 spec:
   interval: 1h
-  timeout: 5m
+  timeout: 15m
   chart:
     spec:
       chart: influxdb2
-      version: "*"
+      version: 2.1.2
       sourceRef:
         kind: HelmRepository
         name: influxdata
         namespace: flux-system
   values:
+    fullnameOverride: influxdb
+    image:
+      tag: 2.8.0@sha256:e6d293bedc5800bc5f7f61af6335d90a355c78be88fa41e591431ff44df553a5
     adminUser:
       existingSecret: influxdb-auth
+      user: admin
+      organization: homelab
+      bucket: homeassistant
+      retention_policy: 2160h
     persistence:
       enabled: true
       storageClass: syno-storage
       size: 10Gi
-    ingress:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 1Gi
+    startupProbe:
       enabled: true
-      className: private
-      tls: true
-      secretName: orriborri-com-tls
-      hostname: influxdb.orriborri.com
+      path: /health
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 30
+    service:
+      type: LoadBalancer
+      port: 8086
+      targetPort: 8086
+      annotations:
+        metallb.universe.tf/loadBalancerIPs: 192.168.11.5
+        external-dns.alpha.kubernetes.io/exclude: "true"
+    ingress:
+      enabled: false

@@ -9,6 +9,7 @@ resources:
   - synology-csi.yaml
   - crds.yaml
   - observability.yaml
+  - influxdb.yaml
   - external-dns.yaml
   - ingress-nginx-public.yaml
   - ingress-nginx-private.yaml

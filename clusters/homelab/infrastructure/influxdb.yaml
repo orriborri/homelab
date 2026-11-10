@@ -4,12 +4,15 @@ metadata:
   name: influxdb
 spec:
   interval: 1h
-  timeout: 3m
+  timeout: 15m
   retryInterval: 10s
   sourceRef:
     kind: GitRepository
     name: flux-system
   path: ./infrastructure/monitoring/influxdb
+  dependsOn:
+    - name: sources
+    - name: synology-csi
   prune: true
   wait: true
   decryption:
