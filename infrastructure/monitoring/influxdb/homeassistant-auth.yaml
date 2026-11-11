@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: influxdb-homeassistant
+    namespace: influxdb
+stringData:
+    bucket_id: ENC[AES256_GCM,data:VEVgBLpxOZBXgmDP1FsFuw==,iv:BUAHgy07pQ1E+7q8ZAFkdQp49N0DE5C4pqOaVOe82gM=,tag:Wr0sj+wBT5+zdG/vSkoOLA==,type:str]
+    organization_id: ENC[AES256_GCM,data:fni2uVOa1x0IDl3RQCAnWg==,iv:und7sn/Q+e6TaX45ELAcNcOiqkK9RsfV85lRhjlbkNM=,tag:0G86cPoXTMnfOb5s1iy0Mg==,type:str]
+    read-token: ENC[AES256_GCM,data:wlfeba0KGV9eHTqeBXjymlxOXupvhE5JSUNr6Itkb9VlBLaS79KnuAxlgTojjcEVuyIivv2SFS+F6Y6RE8icx/27Pd9K4gMYfARhsmOykGnzUoQLrimV6Q==,iv:MmbY/DokyoKsP5+X/Xth/i36XTFeIY/5I+7MtG95plI=,tag:uiFdwwK22IB6aXY4WRP01g==,type:str]
+    write-token: ENC[AES256_GCM,data:PCnpCDSOTVFMtrBR5BNCxBukA8XIt7ucrULuNx79gJMMpdRYRgU9ZdF7SCFf6nmp47qIhSdJZjqRLRkDxIKY5tybMlQX51ikL2eSh/lAkPVhcixsG5MOsw==,iv:UxxzRLGcd3sfmERTgIYNgmM1nxVys1m3y4wSHgxl+DY=,tag:MEEGJyU5aip+VwbOFgl/Uw==,type:str]
+type: Opaque
+sops:
+    lastmodified: "2026-11-11T10:11:33Z"
+    mac: ENC[AES256_GCM,data:qUcwwAmefSHSNpmadcaDGBcL5iW7x1huKP77tP+qB2ZV8gc/WqDZGVtrV6ABquQz8LohnBtM+sygqTSA9ARfqzwZpo5g/J3ylIAjtbyRiIvHm44dqBjWl094KprTN6Dqvuc/JjErHlDr8210xOUqQbs0QSx3r7qtMv8xtOIRjFk=,iv:QZ3YQvI7mjtR4/eF06UHiOIAXBqtm/Re4DVeIt9qgVQ=,tag:qWNNVyR5TMffBTZi86rYIA==,type:str]
+    pgp:
+        - created_at: "2026-11-11T10:11:33Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA1X/kZ4Jzp5jAQ//fufjM8bfmiuyt9d9zKoiQ+OkHfi2YK5mK3qyr2wE79xj
+            sHpcbflx+0Vaa8Fa+2vCp3PBcQiKPi9dMPAoGUqWQlRfQAZ+Rhs4fGWhRR+oZJFA
+            BszQBL2bC3XUl7f1TRcakHtcnlLuE5bmxiN6GB3i3PETc9b4G32Gf+OFE/wP4cuu
+            Ep9qFbNYqgLaexHCwv/XnOq5+VYp9DiuRAQffejC88rPLuzLWCSPPG1CB6Sg2QnF
+            hxpMm7W4A9qWhIA7atUNvZdY+5T/ovLtTTdbm2vzuSB15wCvZThCs2TEPvT0V8iH
+            BAnPFM5Q5YPnnmrwpLT5/pA3FluV0S4MnV3qwj1GGBQQzdhhajZHtqf22bPQ/qzz
+            qzVAyDzkgHDPKaJySGkiHymNyFqNi7xN4U6sFnqRXlfy0eUBS4mqtlaJ4ee8T9R/
+            eKSxXwA9QsO91EJ9SW9YJntGxX+3JohXqiXApnn0GKbuumzyfrxOCBtBvnUhoTwv
+            GssCBErlQL57NSx69IkFGrfijp6kH3Db648OQI3ZwUGqGwkkvXQvvd0MPzaDSCQK
+            5SKvyLK37EW/kqDBTM8ANnH88xFeqRlvMQ20ZsMuVAwHIScYxFmFOwwJJLOBIV0J
+            oLgAU942EBMd3kvAnRSOucXI8KNV5O9b8cxmzkzW2rn3fVxqZC4DTgmW+LOjmrDS
+            XAEJcNXEOC5ECPRPMViXnG47AGYs9MIKCsOBh0PvA3eFb/nRdtOhRxO+Eb63zaMy
+            0iIOT9RT1ZVcylWdERqntgbXYqP1SSohLGAnLu59pIo6tqtQ/hMRViI15dEY
+            =YqeI
+            -----END PGP MESSAGE-----
+          fp: 7A5DC69AD7F7A05AAF22EBD8005B9C45909B266E
+    encrypted_regex: ^(data|stringData)$
+    version: 3.11.0

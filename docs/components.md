@@ -28,11 +28,11 @@ The source of truth is the [infrastructure registration list](../clusters/homela
 | Networking | MetalLB, external-dns, public and private ingress-nginx |
 | Certificates | cert-manager and custom resources under `infrastructure/crds` |
 | Storage | NFS subdirectory provisioner (`nfs-client`); Synology CSI (`syno-storage`, explicit opt-in) |
-| Monitoring | Observability stack (Prometheus, Grafana, Alertmanager, Loki, Alloy), metrics-server |
+| Monitoring | Observability stack (Prometheus, Grafana, Alertmanager, Loki, Alloy), InfluxDB 2 for Home Assistant, metrics-server |
 | Controllers and UI | Reloader, Reflector, Capacitor and its LoadBalancer |
 | Flux notifications | GitHub receiver |
 
-Discord notification provider, InfluxDB, and image automation
+Discord notification provider and image automation
 have files but are not registered in this list. Renovate configuration is stored
 in the repository; successful update automation is not verified by this audit.
 
@@ -93,3 +93,10 @@ Mosquitto now runs in Kubernetes at `192.168.11.4:1883`, with authenticated acce
 and a 1 GiB iSCSI volume. RTL433, Theengs, and Home Assistant use this endpoint;
 the old Pi broker is stopped and its Quadlet disabled. See the
 [MQTT guide](mqtt.md) for configuration, verification, and rollback backups.
+
+## Home Assistant history
+
+Home Assistant now writes new state changes to the InfluxDB 2 bucket with 90-day
+retention. Grafana has a read-only datasource for that bucket. This is separate
+from Recorder and does not import Recorder history. See the
+[InfluxDB guide](influxdb.md) for configuration and live verification.

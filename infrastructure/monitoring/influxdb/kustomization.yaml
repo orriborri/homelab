@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: influxdb
 resources:
   - influxdb-auth.yaml
+  - homeassistant-auth.yaml
   - namespace.yaml
   - release.yaml
   # - telegraf.yaml

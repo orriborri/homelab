@@ -1,0 +1,15 @@
+# First-time YAML connection example. Set the actual write-only token in
+# Home Assistant secrets.yaml, never in Git. After HA imports the connection,
+# remove the connection fields and keep only the options shown here.
+influxdb:
+  api_version: 2
+  host: 192.168.11.5
+  port: 8086
+  ssl: false
+  organization: homelab
+  bucket: homeassistant
+  token: !secret influxdb_homeassistant_token
+  max_retries: 3
+  default_measurement: state
+  tags:
+    source: homeassistant

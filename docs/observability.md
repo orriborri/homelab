@@ -87,7 +87,9 @@ broker has been [moved to Kubernetes](mqtt.md), and the clients and Home Assista
 were updated to use the cluster broker. External metrics and log collection
 have not yet been configured.
 
-For Home Assistant, enable its authenticated `prometheus:` integration and scrape
+Home Assistant also writes state history to the separate InfluxDB instance;
+this does not configure Prometheus metrics or log forwarding. See the
+[InfluxDB guide](influxdb.md). For Home Assistant metrics, enable its authenticated `prometheus:` integration and scrape
 `/api/prometheus` with a long-lived access token stored in an encrypted Secret.
 Select relevant entities to control metric volume. Changing its configuration
 requires validation and a Home Assistant restart. Logs need an available log

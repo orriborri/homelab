@@ -6,3 +6,4 @@ resources:
   - metrics.yaml
   - loki.yaml
   - alloy.yaml
+  - influxdb-datasource.yaml

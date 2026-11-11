@@ -16,3 +16,7 @@ spec:
     - name: synology-csi
   prune: true
   wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg

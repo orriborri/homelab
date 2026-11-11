@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    labels:
+        grafana_datasource: "1"
+    name: homeassistant-influxdb-datasource
+    namespace: observability
+stringData:
+    homeassistant-influxdb.yaml: ENC[AES256_GCM,data:5gYvdDUznd+/EFlOw6t6nJKkq9I9V0BgaKwRrZ5SWSw3bd2ugf98rCx8L68VV9knusBj/rDEXFbFxuRoI9pSeiOJLlNaKzxcT1o7m/8ZmePBZCuVdZ+WdsjOeb5G1Qr0JZ9ehLCgxSEcfumZ045LroUcsHzoIsi9WaiRDIag6UH1vWyo+x226wJT/DoS//ZlE0IU49hBk6x/uFRsKB0P8fRv9VPqWKpfPwpfZ+9D5JsF+pfc/NuLjlRx0xQzhsGdEirKsYax+yB2eD/rMBL7bnhuufMeu7dGBDrf5rxDft/tC1VyqIhKv5T33Polc/deN4tkUbYM5zthE7XPfzI8+55U8tqKjDAu7tIuIYDb7WzjWhfGfx1j2kcHdiuQLLrxDTYMBtrP3HEGSs/aJyKPbPBlOLvnIqSo9Y9OdXegD8aEprpDcF35YrY57voSUCzq8tBCV+15kuBq0WByEj8R0xN8qKG9otS7k9hNrU/BHd6xNejm1mi1TAXZr7m75EGQ,iv:O+afLNhPS7yN8G+FzqyDgCnsNkxBD1YjHYsJrU/N+uo=,tag:4C8aNsfAENsgClJLIscgSQ==,type:str]
+type: Opaque
+sops:
+    lastmodified: "2026-11-11T10:11:34Z"
+    mac: ENC[AES256_GCM,data:ZrhwGUgv+LBb5g2g3nXf/piQRftcKrcYYqgA0fwzbtslNMAWqRvgJ12UWcD97vQwuuKF76Gyl0lXiOn51fIvGkoq7bt8ckMR9KUMsZ5cYVanlqnmG3brldayZEcNQqKobpL4pkPbh+J+63//4KFgPlwYEgNbAMI9QBLobsgdN8s=,iv:XRD4GOsRAOIwn93VCqAAaTYrn+x1Yq54lrVpTJvfnUM=,tag:lkWKFa0GrNTzgwcbcdA0XQ==,type:str]
+    pgp:
+        - created_at: "2026-11-11T10:11:34Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA1X/kZ4Jzp5jARAApB1rjeIy6xXXDNtYcJ7wY5A6oWt4iIqSe+vwBQDiTIOc
+            eqKIdOHE4zFO+l4KzFwBpJgGLZ/D5L1BP+UlVwGf2vtyOwxNESUAHkJVvDy8kAh8
+            lW8SxyjGhWYrRjOGx3eUXHO3ZV46c6wOM4uN1K03Tus1N7XivLOwmInlgx1F9rg6
+            xgQTk3XJ5Wf+MpVwqexKOKhpPbmqp3FPXtgzP8n7UhtMaefCLu9UEYN88wuVhRa8
+            x4qBe0gbr3OmJIBMM0nhv9ayUA6za1iJpYf+Y5cRrmaln6tHU6N0uqCWvEcVHJ9u
+            VgIFyts0hzq0jCjYuoYA/k0hYnxM1azpxKv8TEDRbO/y12MB0G2Fld4WFXc3U/rF
+            nlNDRfQBAN7A/Wh6QMpAiir2LJypX4RFUSFM5GTV8C+g7xAS95eHwnADEQqmKogx
+            0EULEfyA48uCrvMNYJklOyk9xvsBr6WYdY9S4WKlEUaUVHMrXvLkTmhHHt9WugPP
+            p3sM3h+FBWnGM2R/flFCU+Rdh2QyNkPSnjSms3ODMNWaQdfIi5fQxmWV1v4jzsIg
+            yAHk+ZhYCRiBKamawQvRCNchhcjEG1ebijrjXo0VnfIJoNT6bIGjF0rzOuiwbR6v
+            NDIfrSk54I6pXBVwrIHpKpOBieexWBaI1yQoVgF0i+BvmSpFQUPOZwV0lnStyMvS
+            XAHPUMESquev5jr7b8B+uiZ77qkYCgbMQLKkv4CVKqEKj7SxkqNi8I/+EstG7pI4
+            mkzap2VSURv7ReEQj/Bf7pWNk9U8n9TCO27XpUbUPteNmgjoWfrjiRY9ETH1
+            =PnAD
+            -----END PGP MESSAGE-----
+          fp: 7A5DC69AD7F7A05AAF22EBD8005B9C45909B266E
+    encrypted_regex: ^(data|stringData)$
+    version: 3.11.0
