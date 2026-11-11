@@ -1,0 +1,51 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": { "type": "influxdb", "uid": "rtl433-influxdb" },
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "mappings": [], "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] } }, "overrides": [] },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 0 },
+      "id": 1,
+      "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showPercentChange": false, "textMode": "auto", "wideLayout": true },
+      "targets": [{ "query": "from(bucket: \"rtl433\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"rtl433\")\n  |> keep(columns: [\"id\"])\n  |> group()\n  |> distinct(column: \"id\")\n  |> count(column: \"id\")", "rawQuery": true, "refId": "A" }],
+      "title": "Devices heard in the last 24 hours",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "rtl433-influxdb" },
+      "fieldConfig": { "defaults": { "custom": { "align": "auto", "cellOptions": { "type": "auto" }, "inspect": false }, "mappings": [], "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] } }, "overrides": [] },
+      "gridPos": { "h": 12, "w": 18, "x": 6, "y": 0 },
+      "id": 2,
+      "options": { "cellHeight": "sm", "showHeader": true },
+      "targets": [{ "query": "from(bucket: \"rtl433\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"rtl433\")\n  |> keep(columns: [\"_time\", \"model\", \"id\", \"channel\", \"_field\", \"_value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 250)", "rawQuery": true, "refId": "A" }],
+      "title": "Recent radio readings",
+      "type": "table"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 41,
+  "tags": ["rtl433", "radio"],
+  "templating": { "list": [] },
+  "time": { "from": "now-24h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "RTL433 Devices",
+  "uid": "rtl433-devices",
+  "version": 1
+}

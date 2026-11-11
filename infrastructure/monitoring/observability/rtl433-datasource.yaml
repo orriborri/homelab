@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: rtl433-influxdb-datasource
+    namespace: observability
+    labels:
+        grafana_datasource: "1"
+type: Opaque
+stringData:
+    rtl433.yaml: ENC[AES256_GCM,data:LQJaOkL53hY8xkkuh3IKXMETqypWzqQeCLSYnaYDqhaVEDKYM4j+Vu0CedyQubKICH7GmHukp9kBGBguCTu2UAOshltngoBmqTSk+a1cSaIg3Ky89lrRax4jpCNTXata3fnjnh2kExGSTWJs/rADVdi/vY5j89EPJP7TbaWUF7Tnp9blJhMI4Pf/RPfBce6/5H/iBU382N/4N2ncIddt748xliVhcPsle7UnaUYORov7JmkxfXjt1OAHcf5tU6tRMKmDndEm0uTY43oPVCg9k8JfuAedskHPndwKTBxruL4hRARWkzsqMZlgAcwZ4NUCKehYzFAO7FHMcJa7t/ASnibZPJ+Ruomie1u19CNkWHiydTKVtts2KRRqaRbyVc4RDXscGHmkkRK/6i2NKNHx9xglt0sk38klnFXtdKFJKK7Fjt68wz6Ac1qi0Y04QKOyJqrihibnIuHPddc2yfLwF2RHqXTCldLuAMz0,iv:VPgn4sM1GOQcu0J0B79WcHiCrKmYlHK6rAWnzvbOiQo=,tag:ja/ErkO5ckPI91Fr3KLi8g==,type:str]
+sops:
+    lastmodified: "2026-11-11T21:07:58Z"
+    mac: ENC[AES256_GCM,data:sMTZCNNb7znS8morz0somy7aXPiNCC4V5kvCEjVtlkSa8Fne5VkSNt8kEKkDWBLsqjzFahQuz3ny5BX574bu9OQqqwpELnhb+oJjv1hBHPr33W6ijpPVy7coOXsq+phh47w3TmLV/lrHFgjgBcIF18VfnIU7zmIyFmP1mdgnqzY=,iv:6DOHdyarbp6jCCT629BCwVMVbqtGTHD6e8xJFpBiUAs=,tag:9jqCTrvuP8ns3bEFwGbosA==,type:str]
+    pgp:
+        - created_at: "2026-11-11T21:07:58Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA1X/kZ4Jzp5jAQ//fJEI6ZWCqyYdLGRW4B8tYgEw516tIGl3k8TgyT475qf1
+            D+l68Yh6X0P3d2RhB9wfAoQA7i4V9MUnhUASPlye7RW4PU5YD6C5jchLE+xzuD7N
+            adNFwxZ7nW17cm6XDRaivIlp0eiKwSkwygStvCR8DyxHhx935Q0N2g1mWv8nW0F+
+            i9ZjKMvkZCJH1pCfEhuIDaZaKRrEYmBZy+/I79gC5CNjOXCJKgLdaIqKw3pJ2hv2
+            uKMv2dpigUxGSpPsDAfqprM38A8BkGHSqmzAHggQTKb21omwPMs5YtIDpPP6eOCs
+            L5GmcDuUxFqvFtVSJambldJ9avvFA+T+zekpcactv6xoprWKevppL4di+EIoVK3z
+            b7rEvN5ItOCBnEzsj5KSQKNcYSw/ET3xX+vkZ9TfXs8v5S3hJPcz9W2kOUbm/Hor
+            s/TFAE3gY0+4i7KuRCLfiI4wpPeYWnEdxLek8Jgn1Ye/bR5hfp9HvkigfDyvWoy2
+            J/vdDFJoCu3aXC/vH0o1wuhP5oazJDbesZVAK+ZDyvH5r34sA40Xj++t1Eu3Grle
+            IsHqjf2qpqwkj2uV4TpXsFtPnXDdfHiYVVeexd076CQq03V9A3iY05v6q8Qb2AIQ
+            Y9iHdB0ErQ0BMB7PHv9P4CZveCLDQ+ponxya3tg0cYks99A+rVRxaRp9UkYI/EHS
+            XgFM18JJ+nnIeEiT2ImNcDOfmv/1maqnGffD0LKia/uPuG41WtlXcE8lpQ97sWNy
+            XR+6BZa9sp5/zEPZoXG8Q++R05PHjnk4aT1AHhfAZbSpxyGcD76XD+5rcE67yDA=
+            =Mn26
+            -----END PGP MESSAGE-----
+          fp: 7A5DC69AD7F7A05AAF22EBD8005B9C45909B266E
+    encrypted_regex: ^(data|stringData)$
+    version: 3.11.0

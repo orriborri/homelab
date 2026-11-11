@@ -96,6 +96,11 @@ requires validation and a Home Assistant restart. Logs need an available log
 source or forwarding route; Home Assistant OS access differs from a normal Linux
 host and must be established before choosing a collector.
 
+The Pi's RTL433 event messages are stored separately in InfluxDB and available
+through the Grafana **RTL433 Devices** dashboard. This records radio events;
+Pi host metrics and log forwarding are still unconfigured. See the
+[RTL433 guide](rtl433.md).
+
 For a Linux Pi, Alloy can collect journal/file logs and host metrics. Inventory
 its actual services first, then add application metrics endpoints and uptime
 checks where available. Provide an authenticated private route to Loki for the

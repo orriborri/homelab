@@ -28,7 +28,7 @@ The source of truth is the [infrastructure registration list](../clusters/homela
 | Networking | MetalLB, external-dns, public and private ingress-nginx |
 | Certificates | cert-manager and custom resources under `infrastructure/crds` |
 | Storage | NFS subdirectory provisioner (`nfs-client`); Synology CSI (`syno-storage`, explicit opt-in) |
-| Monitoring | Observability stack (Prometheus, Grafana, Alertmanager, Loki, Alloy), InfluxDB 2 for Home Assistant, metrics-server |
+| Monitoring | Observability stack (Prometheus, Grafana, Alertmanager, Loki, Alloy), InfluxDB 2 for Home Assistant and RTL433, metrics-server |
 | Controllers and UI | Reloader, Reflector, Capacitor and its LoadBalancer |
 | Flux notifications | GitHub receiver |
 
@@ -100,3 +100,9 @@ Home Assistant now writes new state changes to the InfluxDB 2 bucket with 90-day
 retention. Grafana has a read-only datasource for that bucket. This is separate
 from Recorder and does not import Recorder history. See the
 [InfluxDB guide](influxdb.md) for configuration and live verification.
+
+## 433 MHz radio history
+
+Telegraf stores RTL433 event messages from the Pi's MQTT topic in a separate
+InfluxDB bucket; Grafana has an RTL433 datasource and device dashboard. See the
+[RTL433 guide](rtl433.md).

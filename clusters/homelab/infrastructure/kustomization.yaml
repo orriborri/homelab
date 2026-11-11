@@ -10,6 +10,7 @@ resources:
   - crds.yaml
   - observability.yaml
   - influxdb.yaml
+  - rtl433.yaml
   - external-dns.yaml
   - ingress-nginx-public.yaml
   - ingress-nginx-private.yaml

@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegraf-rtl433
+  namespace: rtl433
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: telegraf-rtl433
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: telegraf-rtl433
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: telegraf
+          image: telegraf:1.40.3@sha256:2958e3cbdc22d702ebd4a1e2db004c564f52a866551a65817eea26011407ea66
+          args:
+            - --config
+            - /etc/telegraf/telegraf.conf
+          envFrom:
+            - secretRef:
+                name: rtl433-auth
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/telegraf
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: telegraf-rtl433

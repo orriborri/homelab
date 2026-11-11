@@ -21,6 +21,7 @@ resources:
   - infrastructure/synology-csi.yaml
   - infrastructure/observability.yaml
   - infrastructure/influxdb.yaml
+  - infrastructure/rtl433.yaml
   - apps/mosquitto.yaml
   - apps/grocy.yaml
   - apps/hermes.yaml

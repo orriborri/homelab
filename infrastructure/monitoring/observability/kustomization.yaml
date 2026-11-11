@@ -7,3 +7,11 @@ resources:
   - loki.yaml
   - alloy.yaml
   - influxdb-datasource.yaml
+  - rtl433-datasource.yaml
+configMapGenerator:
+  - name: rtl433-dashboard
+    files:
+      - dashboards/rtl433.json
+    options:
+      labels:
+        grafana_dashboard: "1"
