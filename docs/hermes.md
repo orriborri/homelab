@@ -1,14 +1,12 @@
 # Hermes Agent
 
 Hermes runs in the `hermes` namespace with its web dashboard enabled. Dashboard
-credentials are in the SOPS-encrypted `apps/hermes/secrets.yaml`; no model-provider
-credentials or messaging accounts are configured. Choose the provider in the
-dashboard after signing in.
+credentials are in the SOPS-encrypted `apps/hermes/secrets.yaml`. Its configured
+inference provider is OpenAI Codex; no messaging accounts are configured.
 
-The initial installation was applied directly to the cluster on 2026-11-10,
-without publishing the other pending repository changes. Flux takeover requires
-committing and publishing the Hermes manifests and cluster registrations, including
-the pending Synology CSI registration that its Flux dependency references.
+The initial installation was applied directly to the cluster on 2026-11-10 and
+adopted by Flux on 2026-11-11. Flux now reconciles the Hermes workload from this
+repository.
 
 ## Deployment
 
@@ -34,7 +32,35 @@ the pending Synology CSI registration that its Flux dependency references.
 The current Flannel network does not provide policy enforcement by itself.
 The namespace and missing service account token do not prevent access to other
 network services. Add Home Assistant and other integrations deliberately with
-their own credentials; no homelab administration access is configured here.
+their own credentials. No Kubernetes API credentials or cluster-admin access
+are configured here.
+
+## GitHub access
+
+The bundled `github` skill uses the GitHub CLI and `git`. The Hermes image does
+not include `gh`, so an init container installs GitHub CLI 2.103.3 from the
+official release package and verifies its SHA-256 digest before exposing it to
+the Hermes container. Git uses `gh auth git-credential`, which reads the same
+`GH_TOKEN` environment variable as `gh`.
+
+To let Hermes create branches, issues, and pull requests in this homelab repo,
+create a fine-grained personal access token for resource owner `orriborri`,
+limited to the `homelab` repository. Grant only these repository permissions:
+
+- Contents: Read and write (create branches and push commits)
+- Issues: Read and write
+- Pull requests: Read and write
+
+Metadata read access is granted automatically. Do not grant organization,
+administration, actions, or workflow permissions. Set an expiration and rotate
+the token as it expires.
+
+Add the token as `GH_TOKEN` in `apps/hermes/secrets.yaml` using SOPS, then let
+Flux reconcile the Secret. Stakater Reloader restarts the Deployment so Hermes
+gets the new environment value. The Deployment's `envFrom` loads the SOPS
+Secret; the example file is only a template. Do not put the token in chat or
+commit it unencrypted. Verify setup from Hermes with `gh auth status` and
+`gh repo view orriborri/homelab`.
 
 ## Dashboard credentials
 
@@ -74,9 +100,9 @@ places, and remove an obsolete persisted override before rotating a SOPS key.
 
 ## Choose a model
 
-Sign in to the dashboard and select the model provider and model. Add that
-provider's API key or complete its supported sign-in flow there. Until then,
-dashboard administration works, but chats cannot receive model responses.
+The active provider is OpenAI Codex and the configured model is `gpt-6-luna`.
+Confirm the account can make inference by sending a short dashboard message;
+the stored OAuth credential has not been verified with a model response.
 
 ### Connect a ChatGPT account for Codex models
 

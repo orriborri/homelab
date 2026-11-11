@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hermes
+  annotations:
+    secret.reloader.stakater.com/reload: hermes-secrets
 spec:
   replicas: 1
   strategy:
@@ -20,6 +22,36 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       initContainers:
+        - name: install-github-cli
+          image: nousresearch/hermes-agent:v0.23.1@sha256:276d44685c65c0cb2a25f190b63c65c8906f9dc76486fb1c05ae71b5826bda08
+          command:
+            - sh
+            - -ec
+            - |
+              curl -fsSL \
+                https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_linux_amd64.deb \
+                -o /tmp/gh.deb
+              echo 'e3bafef96328d1a67de3a968bdfe1cc2ffd58cf6aba8b5e201356897ed06bb3d  /tmp/gh.deb' | sha256sum -c -
+              dpkg-deb -x /tmp/gh.deb /tmp/gh-cli
+              cp /tmp/gh-cli/usr/bin/gh /github-cli/gh
+              chmod 0755 /github-cli/gh
+              /github-cli/gh --version
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          volumeMounts:
+            - name: github-cli
+              mountPath: /github-cli
         - name: seed-config
           image: nousresearch/hermes-agent:v0.23.1@sha256:276d44685c65c0cb2a25f190b63c65c8906f9dc76486fb1c05ae71b5826bda08
           command:
@@ -85,6 +117,18 @@ spec:
               value: "8642"
             - name: GATEWAY_ALLOW_ALL_USERS
               value: "false"
+            - name: GH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-secrets
+                  key: GH_TOKEN
+                  optional: true
+            - name: GIT_CONFIG_COUNT
+              value: "1"
+            - name: GIT_CONFIG_KEY_0
+              value: credential.helper
+            - name: GIT_CONFIG_VALUE_0
+              value: "!gh auth git-credential"
           ports:
             - name: dashboard
               containerPort: 9119
@@ -131,6 +175,10 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /opt/data
+            - name: github-cli
+              mountPath: /usr/local/bin/gh
+              subPath: gh
+              readOnly: true
       volumes:
         - name: data
           persistentVolumeClaim:
@@ -138,3 +186,5 @@ spec:
         - name: bootstrap
           configMap:
             name: hermes-bootstrap
+        - name: github-cli
+          emptyDir: {}
