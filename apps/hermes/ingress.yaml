@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hermes
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # This record is managed directly in Cloudflare until external-dns is adopted.
+    external-dns.alpha.kubernetes.io/exclude: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 64m
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: private
+  tls:
+    - hosts:
+        - hermes.orriborri.com
+      secretName: hermes-tls
+  rules:
+    - host: hermes.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: hermes
+                port:
+                  name: dashboard

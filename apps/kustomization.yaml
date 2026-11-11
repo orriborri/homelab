@@ -2,6 +2,7 @@ resources:
   - actual/
   - audiobookshelf/
   - calibre/
+  - hermes/
   - homeassistant/
   - grocy/
   - influxdb/

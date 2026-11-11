@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hermes
+  template:
+    metadata:
+      labels:
+        app: hermes
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: seed-config
+          image: nousresearch/hermes-agent:v0.23.1@sha256:276d44685c65c0cb2a25f190b63c65c8906f9dc76486fb1c05ae71b5826bda08
+          command:
+            - sh
+            - -ec
+            - |
+              mkdir -p /opt/data/workspace
+              if [ ! -f /opt/data/config.yaml ]; then
+                cp /bootstrap/config.yaml /opt/data/config.yaml
+                chown 10000:10000 /opt/data/config.yaml
+                chmod 640 /opt/data/config.yaml
+              fi
+              chown 10000:10000 /opt/data /opt/data/workspace
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - CHOWN
+                - DAC_OVERRIDE
+                - FOWNER
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 32Mi
+          volumeMounts:
+            - name: data
+              mountPath: /opt/data
+            - name: bootstrap
+              mountPath: /bootstrap
+              readOnly: true
+      containers:
+        - name: hermes
+          image: nousresearch/hermes-agent:v0.23.1@sha256:276d44685c65c0cb2a25f190b63c65c8906f9dc76486fb1c05ae71b5826bda08
+          # Keep the image entrypoint: it prepares storage and drops the
+          # gateway and dashboard processes to the hermes user (UID 10000).
+          args:
+            - gateway
+            - run
+          workingDir: /opt/data/workspace
+          envFrom:
+            - secretRef:
+                name: hermes-secrets
+          env:
+            - name: HERMES_HOME
+              value: /opt/data
+            - name: HERMES_DASHBOARD
+              value: "1"
+            - name: HERMES_DASHBOARD_HOST
+              value: 0.0.0.0
+            - name: HERMES_DASHBOARD_PORT
+              value: "9119"
+            - name: API_SERVER_ENABLED
+              value: "true"
+            - name: API_SERVER_HOST
+              value: 127.0.0.1
+            - name: API_SERVER_PORT
+              value: "8642"
+            - name: GATEWAY_ALLOW_ALL_USERS
+              value: "false"
+          ports:
+            - name: dashboard
+              containerPort: 9119
+          startupProbe:
+            exec:
+              command:
+                - python3
+                - -c
+                - >-
+                  import json, urllib.request;
+                  response = urllib.request.urlopen('http://127.0.0.1:8642/health', timeout=3);
+                  assert json.load(response)['status'] == 'ok'
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /api/status
+              port: dashboard
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - python3
+                - -c
+                - >-
+                  import json, urllib.request;
+                  response = urllib.request.urlopen('http://127.0.0.1:8642/health', timeout=3);
+                  assert json.load(response)['status'] == 'ok'
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 2Gi
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: data
+              mountPath: /opt/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: hermes-data
+        - name: bootstrap
+          configMap:
+            name: hermes-bootstrap

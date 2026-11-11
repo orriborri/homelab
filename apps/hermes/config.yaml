@@ -1,0 +1,16 @@
+# Seeded only when the persistent configuration does not exist.
+# Configure the model with `hermes setup` before enabling conversations.
+database:
+  journal_mode: wal
+dashboard:
+  public_url: https://hermes.orriborri.com
+  # Only the private ingress controller may supply forwarding headers.
+  # Refresh this address if its pod is replaced.
+  trusted_proxies:
+    - 10.244.1.33
+terminal:
+  backend: local
+  cwd: /opt/data/workspace
+  home_mode: profile
+agent:
+  max_turns: 30
