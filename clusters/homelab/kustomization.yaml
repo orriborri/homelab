@@ -25,3 +25,4 @@ resources:
   - apps/mosquitto.yaml
   - apps/grocy.yaml
   - apps/hermes.yaml
+  - apps/actual.yaml
