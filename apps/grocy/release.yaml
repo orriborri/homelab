@@ -66,6 +66,22 @@ spec:
       labels:
         app: grocy
     spec:
+      initContainers:
+        - name: nutrition-userfields
+          image: lscr.io/linuxserver/grocy:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+            - -ec
+            - |
+              while [ ! -f /config/data/grocy.db ]; do sleep 5; done
+              until php -r '$db=new PDO("sqlite:/config/data/grocy.db"); exit((int)!$db->query("SELECT 1 FROM sqlite_master WHERE type=\047table\047 AND name=\047products\047")->fetchColumn());'; do sleep 5; done
+              php /nutrition/install-userfields.php
+          volumeMounts:
+            - name: grocy-config
+              mountPath: /config
+            - name: grocy-nutrition
+              mountPath: /nutrition
       containers:
         - name: grocy
           image: lscr.io/linuxserver/grocy:latest
@@ -85,9 +101,17 @@ spec:
               value: EUR
             - name: GROCY_CULTURE
               value: fi
+            - name: GROCY_STOCK_BARCODE_LOOKUP_PLUGIN
+              value: SKaupatBarcodeLookupPlugin
           volumeMounts:
             - name: grocy-config
               mountPath: /config
+            - name: grocy-nutrition
+              mountPath: /config/data/custom.js
+              subPath: custom.js
+            - name: grocy-nutrition
+              mountPath: /config/data/plugins/SKaupatBarcodeLookupPlugin.php
+              subPath: SKaupatBarcodeLookupPlugin.php
           resources:
             requests:
               cpu: 100m
@@ -122,3 +146,6 @@ spec:
         - name: grocy-config
           persistentVolumeClaim:
             claimName: grocy-config
+        - name: grocy-nutrition
+          configMap:
+            name: grocy-nutrition
