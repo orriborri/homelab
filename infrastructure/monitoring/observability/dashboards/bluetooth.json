@@ -1,0 +1,61 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": { "type": "influxdb", "uid": "bluetooth-influxdb" },
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "mappings": [], "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] } }, "overrides": [] },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 0 },
+      "id": 1,
+      "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showPercentChange": false, "textMode": "auto", "wideLayout": true },
+      "targets": [{ "query": "from(bucket: \"bluetooth\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"bluetooth\")\n  |> keep(columns: [\"id\"])\n  |> group()\n  |> distinct(column: \"id\")\n  |> count(column: \"id\")", "rawQuery": true, "refId": "A" }],
+      "title": "Bluetooth IDs heard in the last 24 hours",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "bluetooth-influxdb" },
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "lineWidth": 1, "showPoints": "auto" }, "mappings": [], "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }, "unit": "dBm" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 18, "x": 6, "y": 0 },
+      "id": 2,
+      "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [{ "query": "from(bucket: \"bluetooth\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"bluetooth\" and r[\"_field\"] == \"rssi\")\n  |> group(columns: [\"id\", \"name\", \"model\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)", "rawQuery": true, "refId": "A" }],
+      "title": "Bluetooth signal strength (RSSI)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "bluetooth-influxdb" },
+      "fieldConfig": { "defaults": { "custom": { "align": "auto", "cellOptions": { "type": "auto" }, "inspect": false }, "mappings": [], "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] } }, "overrides": [] },
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 8 },
+      "id": 3,
+      "options": { "cellHeight": "sm", "showHeader": true },
+      "targets": [{ "query": "from(bucket: \"bluetooth\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"bluetooth\")\n  |> keep(columns: [\"_time\", \"name\", \"id\", \"brand\", \"model\", \"_field\", \"_value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 300)", "rawQuery": true, "refId": "A" }],
+      "title": "Recent Bluetooth readings",
+      "type": "table"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 41,
+  "tags": ["bluetooth", "ble"],
+  "templating": { "list": [] },
+  "time": { "from": "now-24h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Bluetooth Devices",
+  "uid": "bluetooth-devices",
+  "version": 1
+}

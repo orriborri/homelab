@@ -28,7 +28,7 @@ The source of truth is the [infrastructure registration list](../clusters/homela
 | Networking | MetalLB, external-dns, public and private ingress-nginx |
 | Certificates | cert-manager and custom resources under `infrastructure/crds` |
 | Storage | NFS subdirectory provisioner (`nfs-client`); Synology CSI (`syno-storage`, explicit opt-in) |
-| Monitoring | Observability stack (Prometheus, Grafana, Alertmanager, Loki, Alloy), InfluxDB 2 for Home Assistant and RTL433, metrics-server |
+| Monitoring | Observability stack (Prometheus, Grafana, Alertmanager, Loki, Alloy), InfluxDB 2 for Home Assistant, RTL433, and Bluetooth, metrics-server |
 | Controllers and UI | Reloader, Reflector, Capacitor and its LoadBalancer |
 | Flux notifications | GitHub receiver |
 
@@ -106,3 +106,9 @@ from Recorder and does not import Recorder history. See the
 Telegraf stores RTL433 event messages from the Pi's MQTT topic in a separate
 InfluxDB bucket; Grafana has an RTL433 datasource and device dashboard. See the
 [RTL433 guide](rtl433.md).
+
+## Bluetooth history
+
+Telegraf stores decoded BLE readings from Theengs Gateway in a separate
+InfluxDB bucket, with a Grafana datasource and device dashboard. See the
+[Bluetooth guide](bluetooth.md).

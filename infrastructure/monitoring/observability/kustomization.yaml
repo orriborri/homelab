@@ -8,10 +8,17 @@ resources:
   - alloy.yaml
   - influxdb-datasource.yaml
   - rtl433-datasource.yaml
+  - bluetooth-datasource.yaml
 configMapGenerator:
   - name: rtl433-dashboard
     files:
       - dashboards/rtl433.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+  - name: bluetooth-dashboard
+    files:
+      - dashboards/bluetooth.json
     options:
       labels:
         grafana_dashboard: "1"

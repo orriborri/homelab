@@ -22,6 +22,7 @@ resources:
   - infrastructure/observability.yaml
   - infrastructure/influxdb.yaml
   - infrastructure/rtl433.yaml
+  - infrastructure/bluetooth.yaml
   - apps/mosquitto.yaml
   - apps/grocy.yaml
   - apps/hermes.yaml

@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: bluetooth-influxdb-datasource
+    namespace: observability
+    labels:
+        grafana_datasource: "1"
+type: Opaque
+stringData:
+    bluetooth.yaml: ENC[AES256_GCM,data:wiki5oSzo7NzhLboc7VIy+XwZ/CiRo1eKP2ogK1GcUy2EPtQVi0RpTPkSA5kUed+mX4IC30LXuE26R4tvboeLI+uNTm885nUiPWZh2ktoqlYbtDiqZKlYK0lErojl9nY+FN06R9nvTLtgEpIiaNYllc0jUB/cXoFXelwNj+d8XU+KFNyEPRBl0fMvpt5kgPF1zsp3DG0fEFKY2kD9Jn0aRCkZYlHJ61/1Nj6nuqG5L34WSutdk4X6dHmoi/Hss6D2kPZxBwMOhzHT2B+TDHUg7IrRD+enQFh/SPaaPpTHGj3d0zKDzs12XB6FE/YPkWwJJA17ty7NNQx+KpIArOys+fjwhy3WBtXWBfj2zomPASQK+zrooQUjCHhMWssMVxBbBYe58VKmEdxx/bNkeytii/kD54Ql3fpAParPmT6wdDfID5N/fuxwfFu0D/v9V+CTD5EUpmYKl5DQ47oIpCM1/7Ml/aTVKx5rr+jS0eUjA6WWNA+,iv:aYcuyidBdoXGwsyUlOyjrek3n96MNNCwg/tMOEUe2gE=,tag:slZFpnWFstUvaVVthhErWQ==,type:str]
+sops:
+    lastmodified: "2026-11-13T20:52:59Z"
+    mac: ENC[AES256_GCM,data:4QEQK4QKKfv8nfAhoQ0iXcq3H6a32H8btkQ9Hv68rR8KuD0CXz4zwQ2wWrf2KIhPx/E9iWEiGfFAkMq0NZQ1pNcBn4XrJWtrqdZhAy26RQVFVWCsKB0SLgcSfvvjcG/EoZMYvvkXXv9g7W0CbCAfvUBHvVgaMfMev1a5B3l78TI=,iv:ImDbwwrPbBsU/19jcp4V+5AvZbWBAMeIRRYeaC4ErJU=,tag:4dAvvStCM5lf6ruXmZTyew==,type:str]
+    pgp:
+        - created_at: "2026-11-13T20:52:59Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA1X/kZ4Jzp5jARAAnzCk0V69WNCcsaTc7m7AaWh2eBOWiJpC5Xtc+eG4y2VF
+            s3PSRiTbMCvsQjZ9xWtpO1yBRGHnf2Qan2KTgiF5z+gN3GdoYin1HnTwYs/kZg6K
+            d5Ep6w3O5yq+13gM8m+0+DJTdE8OxSIsotpxkMQX0c8OqupFK7QrwmkGCBo8UyIX
+            2GW/QD1q7zW0J1z997+CkTwk/tfhNk9TCQsNPWvfy8ljGGVPft7kKWOA8+6M5XH+
+            53ADkLJvgp9v9hELOQoxWwl9u+Hed6Ot9pXmlyYb79C/eFblGqRv5VWwCMmFK28I
+            KVHk+DeB2gIgafAuwWVy71Ft+pNbiCHXWb+uXFWpfOX47uQoptCsI2gMEH9timMe
+            V7BRm05TzJYruIaVp00Pc0zYInKgKiC4UDu18R7Zc/hhx+BiywsClc+txcrleUTX
+            GR8iLRds86qy11ZAMuzu7c2A5QlVQTvcBYOm/lPxbVNe0QnbdFZu42C5Jt5//VbH
+            YfFavSXkm6ZNTlnTFkkw4Y89hFBfZZGIAugzcs8O3St8FkZMMtWoF4j2YbpnbQDe
+            ABiiK5VAe2JLun7/BySvYar5s8LsHCh1aeIEnwlwgjrlBhkDoWwDUhb+yDvkhIjx
+            JwQI1x6Rm+vbg40L1zNrTl6rHDhZkHQZb7TNfpgZir/qr6jAqJftqgKLJ5QinDTS
+            XAG76Ltrh8UyFrUo99RMvrwYta7EQ8TuSEWtxEvWdYeiV0gg+8jS6YUCWMiOJQms
+            87KI3Wmj/9m5B6Sli/SuDie3ogt6eGdDM8lz42KrmykpcAUvE+mzQ5SwSu8L
+            =4TBK
+            -----END PGP MESSAGE-----
+          fp: 7A5DC69AD7F7A05AAF22EBD8005B9C45909B266E
+    encrypted_regex: ^(data|stringData)$
+    version: 3.11.0

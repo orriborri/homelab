@@ -11,6 +11,7 @@ resources:
   - observability.yaml
   - influxdb.yaml
   - rtl433.yaml
+  - bluetooth.yaml
   - external-dns.yaml
   - ingress-nginx-public.yaml
   - ingress-nginx-private.yaml
