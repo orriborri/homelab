@@ -69,7 +69,7 @@
     if (!/\/recipes(?:\/|$)|\/mealplan(?:\/|$)/i.test(path)) return;
     try {
       const [productsRows, positions, recipes, mealPlan] = await Promise.all([
-        load('products'), load('recipes_pos_resolved'), load('recipes'), load('meal_plan')
+        load('products'), load('recipes_pos'), load('recipes'), load('meal_plan')
       ]);
       const products = Object.fromEntries((productsRows || []).map(product => [Number(product.id), product]));
       const recipeRows = recipes || [];
