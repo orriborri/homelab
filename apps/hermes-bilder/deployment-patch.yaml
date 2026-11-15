@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes
+spec:
+  template:
+    spec:
+      containers:
+        - name: hermes
+          volumeMounts:
+            - name: bilder
+              mountPath: /mnt/nas/Bilder
+              readOnly: true
+      volumes:
+        - name: bilder
+          persistentVolumeClaim:
+            claimName: hermes-bilder
+            readOnly: true

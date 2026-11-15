@@ -41,7 +41,20 @@ The bundled `github` skill uses the GitHub CLI and `git`. The Hermes image does
 not include `gh`, so an init container installs GitHub CLI 2.103.3 from the
 official release package and verifies its SHA-256 digest before exposing it to
 the Hermes container. Git uses `gh auth git-credential`, which reads the same
-`GH_TOKEN` environment variable as `gh`.
+GitHub CLI credential store as `gh`.
+
+Hermes strips `GH_TOKEN` from terminal subprocesses. The init container therefore
+uses the scoped token with `gh auth login --with-token` to prepare a native
+`hosts.yml` in an ephemeral volume. It is owned by UID 10000 with mode `0600` and
+mounted read-only at `/opt/data/home/.config/gh`, the terminal tool's native
+GitHub configuration path. `GH_CONFIG_DIR` also points direct CLI calls there.
+This preserves Hermes's subprocess credential filtering. Reloader rebuilds
+the credential file when the SOPS Secret changes and the pod restarts.
+
+Verified on 2026-11-16: the agent's terminal initially reported no GitHub login
+even though direct container commands authenticated. Native CLI credentials in
+the tool home resolved the failure; the agent's terminal successfully returned
+`orriborri/homelab` from `gh repo view` without a second browser login.
 
 To let Hermes create branches, issues, and pull requests in this homelab repo,
 create a fine-grained personal access token for resource owner `orriborri`,
@@ -61,6 +74,56 @@ gets the new environment value. The Deployment's `envFrom` loads the SOPS
 Secret; the example file is only a template. Do not put the token in chat or
 commit it unencrypted. Verify setup from Hermes with `gh auth status` and
 `gh repo view orriborri/homelab`.
+
+## Read-only NAS access (prepared, not enabled)
+
+`apps/hermes-bilder` is an opt-in overlay of the existing Hermes workload. It
+mounts the existing SMB share `//192.168.1.244/Bilder` at `/mnt/nas/Bilder`.
+Confirm that `Bilder` is the share name, rather than a directory inside another
+share, before enabling it. For a nested directory, set `source` to the share and
+`volumeAttributes.subDir` to the existing directory in `volume.yaml`.
+
+The static PV uses `Retain`; it does not provision NAS directories. Its 1 GiB
+capacity is binding metadata, not an allocation or quota. The CIFS mount, CSI
+volume, PVC mount, and container mount are read-only. Files are presented to
+Hermes's UID/GID 10000. The NAS password is passed only to the CSI driver, not
+loaded into Hermes's environment or mounted in the container.
+
+Prerequisites and activation:
+
+1. Create a dedicated NAS account with **Read only** permission on `Bilder` and
+   no access to other shares. Do not reuse the Synology CSI administrative account.
+2. Use `apps/hermes-bilder/smb-credentials.yaml.example` as the schema for a
+   SOPS-encrypted `apps/hermes-bilder/smb-credentials.yaml`. Follow
+   [the SOPS guide](sops.md), and add only the encrypted file to the overlay's
+   `resources`. Never commit the completed plaintext template.
+3. Publish the SMB CSI source, infrastructure manifests, and registrations.
+   Confirm the `csi-driver-smb` Flux Kustomization and HelmRelease are Ready and
+   the node plugin is ready on every node. The chart is pinned to 1.20.4 and
+   Windows support is disabled. Talos mount compatibility still needs live
+   verification; do not change node configuration speculatively.
+4. Change the existing `clusters/homelab/apps/hermes.yaml` path to
+   `./apps/hermes-bilder`, keeping its SOPS decryption settings, and add
+   `csi-driver-smb` to its `dependsOn`. Do not create a second Hermes Flux
+   Kustomization or register both workload directories in `apps/kustomization.yaml`.
+5. Render the overlay and cluster entrypoint locally, then publish the changes.
+   Verify PVC binding, Hermes readiness, and that UID 10000 can list/read files.
+   Confirm `/mnt/nas/Bilder` has `ro` mount flags. If checking rejection of a
+   write syscall, use an exclusive-create probe with a unique name and require
+   `EROFS`; never overwrite or delete an existing NAS file.
+
+The normal Hermes Flux path remains `./apps/hermes` until these prerequisites
+are met. The encrypted SMB Secret is registered in the overlay, but the overlay
+is not active.
+
+Live setup on 2026-11-16: the SMB HelmRelease and all three node plugins are Ready;
+the static Bilder PVC is Bound. A separate test pod's mount attempt returned
+`mount error(13): Permission denied`. Confirm the share name and the saved NAS
+account's password, SMB access, and read-only permission on Bilder before retrying.
+No NAS writes were attempted, and Hermes's deployment was not switched to the
+NAS overlay.
+
+Upstream: [SMB CSI driver 1.20.4 parameters](https://github.com/kubernetes-csi/csi-driver-smb/blob/v1.20.4/docs/driver-parameters.md).
 
 ## Dashboard credentials
 
@@ -101,8 +164,9 @@ places, and remove an obsolete persisted override before rotating a SOPS key.
 ## Choose a model
 
 The active provider is OpenAI Codex and the configured model is `gpt-6-luna`.
-Confirm the account can make inference by sending a short dashboard message;
-the stored OAuth credential has not been verified with a model response.
+The stored account credential returned a successful model response through the
+Hermes CLI on 2026-11-15. Send a short dashboard message to verify the browser
+chat flow as well.
 
 ### Connect a ChatGPT account for Codex models
 
@@ -210,6 +274,14 @@ maintaining the exact peer list.
 - HTTP redirects to HTTPS. Password login, dashboard HTML, and application
   bundles were verified through the normal HTTPS hostname.
 - Authentication cookies use the `__Host-` prefix and Secure/HttpOnly flags.
+
+### Chat setup verification (2026-11-15)
+
+- The Hermes pod was `1/1 Running` with zero restarts, its PVC was Bound, and
+  the Flux Kustomization reported Ready.
+- A single CLI connectivity prompt returned `Hermes is ready.` with exit code
+  zero, confirming inference through the configured provider.
+- Browser chat and messaging-channel delivery remain unverified.
 
 ## State and recovery
 

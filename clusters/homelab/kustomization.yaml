@@ -19,6 +19,7 @@ resources:
   - apps/audiobookshelf.yaml
   - infrastructure/crds.yaml
   - infrastructure/synology-csi.yaml
+  - infrastructure/csi-driver-smb.yaml
   - infrastructure/observability.yaml
   - infrastructure/influxdb.yaml
   - infrastructure/rtl433.yaml

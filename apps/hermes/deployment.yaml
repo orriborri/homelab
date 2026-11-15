@@ -36,12 +36,30 @@ spec:
               cp /tmp/gh-cli/usr/bin/gh /github-cli/gh
               chmod 0755 /github-cli/gh
               /github-cli/gh --version
+              mkdir -p /github-cli/auth
+              if [ -n "$GH_TOKEN" ]; then
+                umask 077
+                printf '%s' "$GH_TOKEN" | env -u GH_TOKEN -u GITHUB_TOKEN \
+                  GH_CONFIG_DIR=/github-cli/auth /github-cli/gh auth login \
+                  --hostname github.com --git-protocol https --with-token
+                chmod 0600 /github-cli/auth/hosts.yml
+                chown 10000:10000 /github-cli/auth/hosts.yml
+              fi
+          env:
+            - name: GH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-secrets
+                  key: GH_TOKEN
+                  optional: true
           securityContext:
             runAsUser: 0
             allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL
+              add:
+                - CHOWN
           resources:
             requests:
               cpu: 10m
@@ -123,6 +141,8 @@ spec:
                   name: hermes-secrets
                   key: GH_TOKEN
                   optional: true
+            - name: GH_CONFIG_DIR
+              value: /opt/data/home/.config/gh
             - name: GIT_CONFIG_COUNT
               value: "1"
             - name: GIT_CONFIG_KEY_0
@@ -178,6 +198,10 @@ spec:
             - name: github-cli
               mountPath: /usr/local/bin/gh
               subPath: gh
+              readOnly: true
+            - name: github-cli
+              mountPath: /opt/data/home/.config/gh
+              subPath: auth
               readOnly: true
       volumes:
         - name: data

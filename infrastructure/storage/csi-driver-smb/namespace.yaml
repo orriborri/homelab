@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: csi-driver-smb
+  labels:
+    # The CSI node plugin mounts volumes on behalf of workloads.
+    pod-security.kubernetes.io/enforce: privileged
