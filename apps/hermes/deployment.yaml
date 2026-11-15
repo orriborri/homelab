@@ -42,8 +42,8 @@ spec:
                 printf '%s' "$GH_TOKEN" | env -u GH_TOKEN -u GITHUB_TOKEN \
                   GH_CONFIG_DIR=/github-cli/auth /github-cli/gh auth login \
                   --hostname github.com --git-protocol https --with-token
-                chmod 0600 /github-cli/auth/hosts.yml
-                chown 10000:10000 /github-cli/auth/hosts.yml
+                chmod 0600 /github-cli/auth/hosts.yml /github-cli/auth/config.yml
+                chown 10000:10000 /github-cli/auth/hosts.yml /github-cli/auth/config.yml
               fi
           env:
             - name: GH_TOKEN

@@ -45,7 +45,8 @@ GitHub CLI credential store as `gh`.
 
 Hermes strips `GH_TOKEN` from terminal subprocesses. The init container therefore
 uses the scoped token with `gh auth login --with-token` to prepare a native
-`hosts.yml` in an ephemeral volume. It is owned by UID 10000 with mode `0600` and
+credential and settings files in an ephemeral volume. Both are owned by UID
+10000 with mode `0600` and
 mounted read-only at `/opt/data/home/.config/gh`, the terminal tool's native
 GitHub configuration path. `GH_CONFIG_DIR` also points direct CLI calls there.
 This preserves Hermes's subprocess credential filtering. Reloader rebuilds
