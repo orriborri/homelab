@@ -16,6 +16,7 @@ spec:
       labels:
         app: hermes
     spec:
+      serviceAccountName: hermes
       automountServiceAccountToken: false
       terminationGracePeriodSeconds: 60
       securityContext:
@@ -36,6 +37,11 @@ spec:
               cp /tmp/gh-cli/usr/bin/gh /github-cli/gh
               chmod 0755 /github-cli/gh
               /github-cli/gh --version
+              curl -fsSL \
+                https://dl.k8s.io/release/v1.36.2/bin/linux/amd64/kubectl \
+                -o /github-cli/kubectl
+              echo '1e9045ec32bea85da43de85f0065358529ea7c7a152eca78154fba5b58c27d82  /github-cli/kubectl' | sha256sum -c -
+              chmod 0755 /github-cli/kubectl
               mkdir -p /github-cli/auth
               if [ -n "$GH_TOKEN" ]; then
                 umask 077
@@ -106,6 +112,51 @@ spec:
             - name: bootstrap
               mountPath: /bootstrap
               readOnly: true
+        - name: prepare-homelab-repo
+          image: nousresearch/hermes-agent:v0.23.1@sha256:276d44685c65c0cb2a25f190b63c65c8906f9dc76486fb1c05ae71b5826bda08
+          command:
+            - sh
+            - -ec
+            - |
+              repo=/opt/data/workspace/homelab
+              if [ ! -e "$repo" ]; then
+                git -c credential.helper='!gh auth git-credential' clone \
+                  https://github.com/orriborri/homelab.git "$repo"
+              fi
+              git -C "$repo" rev-parse --git-dir >/dev/null
+              git -C "$repo" config credential.helper '!gh auth git-credential'
+              git -C "$repo" config user.name 'Hermes Agent'
+              git -C "$repo" config user.email 'hermes@localhost'
+          env:
+            - name: HOME
+              value: /opt/data/home
+            - name: GH_CONFIG_DIR
+              value: /github-auth
+          securityContext:
+            runAsUser: 10000
+            runAsGroup: 10000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          volumeMounts:
+            - name: data
+              mountPath: /opt/data
+            - name: github-cli
+              mountPath: /usr/local/bin/gh
+              subPath: gh
+              readOnly: true
+            - name: github-cli
+              mountPath: /github-auth
+              subPath: auth
+              readOnly: true
       containers:
         - name: hermes
           image: nousresearch/hermes-agent:v0.23.1@sha256:276d44685c65c0cb2a25f190b63c65c8906f9dc76486fb1c05ae71b5826bda08
@@ -114,7 +165,7 @@ spec:
           args:
             - gateway
             - run
-          workingDir: /opt/data/workspace
+          workingDir: /opt/data/workspace/homelab
           envFrom:
             - secretRef:
                 name: hermes-secrets
@@ -200,8 +251,19 @@ spec:
               subPath: gh
               readOnly: true
             - name: github-cli
+              mountPath: /usr/local/bin/kubectl
+              subPath: kubectl
+              readOnly: true
+            - name: github-cli
               mountPath: /opt/data/home/.config/gh
               subPath: auth
+              readOnly: true
+            - name: kubernetes-client
+              mountPath: /opt/data/home/.kube/config
+              subPath: config
+              readOnly: true
+            - name: kubernetes-api
+              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
               readOnly: true
       volumes:
         - name: data
@@ -212,3 +274,23 @@ spec:
             name: hermes-bootstrap
         - name: github-cli
           emptyDir: {}
+        - name: kubernetes-client
+          configMap:
+            name: hermes-kubernetes-client
+        - name: kubernetes-api
+          projected:
+            defaultMode: 0444
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  expirationSeconds: 3600
+              - configMap:
+                  name: kube-root-ca.crt
+                  items:
+                    - key: ca.crt
+                      path: ca.crt
+              - downwardAPI:
+                  items:
+                    - path: namespace
+                      fieldRef:
+                        fieldPath: metadata.namespace

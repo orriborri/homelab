@@ -24,16 +24,64 @@ repository.
   Cloudflare DNS01 solver. The Cloudflare DNS-only A record points at
   `192.168.11.99` with TTL 300. It is managed directly for now; the Ingress is
   excluded from external-dns until that controller is explicitly adopted.
-- No Kubernetes service account token, host paths, or container runtime socket
-  is mounted. Tool commands run locally inside the Hermes container as UID 10000.
+- A short-lived Kubernetes service account token is projected only into the
+  Hermes container for read-only cluster inspection. No host paths or container
+  runtime socket are mounted. Tool commands run locally as UID 10000.
   The image entrypoint starts as root to prepare storage and its supervisor,
   then drops the agent and dashboard to the Hermes user.
 
 The current Flannel network does not provide policy enforcement by itself.
-The namespace and missing service account token do not prevent access to other
+The namespace and read-only service account do not prevent access to other
 network services. Add Home Assistant and other integrations deliberately with
-their own credentials. No Kubernetes API credentials or cluster-admin access
-are configured here.
+their own credentials. Cluster changes are deployed through Git and Flux.
+
+## Kubernetes inspection and GitOps management
+
+Hermes uses the `hermes/hermes` ServiceAccount and `hermes-observer` ClusterRole.
+The role permits `get`, `list`, and `watch` on workloads, pod logs, nodes,
+namespaces, services, ingress, storage, metrics, events, and Flux resources.
+It does not grant Secret or ConfigMap reads, exec/attach/port-forward, workload
+writes, RBAC management, or node proxy access.
+
+The pod keeps automatic token mounting disabled. Only the main container mounts
+a kubelet-rotated token with a requested lifetime of one hour. A nonsecret
+kubeconfig at `/opt/data/home/.kube/config` uses `tokenFile`, the cluster CA, and
+`https://kubernetes.default.svc`. `kubectl` 1.36.2 is downloaded from the official
+release and verified against its pinned SHA-256 digest. Native file discovery
+works even when Hermes filters subprocess environment variables.
+
+The homelab repository is cloned once to `/opt/data/workspace/homelab`, which is
+the default working directory for new chats. Existing checkouts and uncommitted
+work are preserved on pod restarts. The clone uses the existing scoped GitHub
+credential helper and a local commit identity of `Hermes Agent <hermes@localhost>`.
+Read root `AGENTS.md` before making changes.
+
+For requested app creation or changes, Hermes should:
+
+1. Inspect the current cluster and the repository's existing workload examples.
+2. Fetch the repository's latest remote state without discarding local work.
+3. Edit manifests under `apps/<app>` and register the app's Flux definition in
+   both `clusters/homelab/apps/kustomization.yaml` and the active root entrypoint
+   `clusters/homelab/kustomization.yaml`. Follow the repository's SOPS patterns;
+   no decryption key or administrator kubeconfig is supplied to Hermes.
+4. Render changed workloads and the root entrypoint with `kubectl kustomize`.
+   Commit and push the requested changes, then observe Flux and pod readiness.
+
+Read-only Kubernetes RBAC constrains direct API calls. Repository write access
+is deployment authority: Flux applies the pushed manifests with its own
+permissions. To revoke access, remove the ClusterRoleBinding and GitHub token;
+restarting the pod alone does not revoke repository access.
+
+Useful checks from Hermes's terminal:
+
+```sh
+kubectl get pods -A
+kubectl get kustomizations -n flux-system
+kubectl logs -n hermes deployment/hermes --tail=20
+kubectl auth can-i get secrets -A        # no
+kubectl auth can-i patch deployments -A # no
+git -C /opt/data/workspace/homelab status --short
+```
 
 ## GitHub access
 

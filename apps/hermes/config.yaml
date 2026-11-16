@@ -10,7 +10,7 @@ dashboard:
     - 10.244.1.33
 terminal:
   backend: local
-  cwd: /opt/data/workspace
+  cwd: /opt/data/workspace/homelab
   home_mode: profile
 agent:
   max_turns: 30

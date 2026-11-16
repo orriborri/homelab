@@ -3,12 +3,16 @@ kind: Kustomization
 namespace: hermes
 resources:
   - namespace.yaml
+  - rbac.yaml
   - secrets.yaml
   - pvc.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml
 configMapGenerator:
+  - name: hermes-kubernetes-client
+    files:
+      - config=kubeconfig.yaml
   - name: hermes-bootstrap
     files:
       - config.yaml
