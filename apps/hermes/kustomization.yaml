@@ -6,6 +6,7 @@ resources:
   - rbac.yaml
   - secrets.yaml
   - pvc.yaml
+  - pasta-pvc.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml

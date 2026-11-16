@@ -157,6 +157,50 @@ spec:
               mountPath: /github-auth
               subPath: auth
               readOnly: true
+        - name: prepare-pasta-repo
+          image: nousresearch/hermes-agent:v0.23.1@sha256:276d44685c65c0cb2a25f190b63c65c8906f9dc76486fb1c05ae71b5826bda08
+          command:
+            - sh
+            - -ec
+            - |
+              repo=/pasta-workspace
+              if [ ! -e "$repo/.git" ]; then
+                git -c credential.helper='!gh auth git-credential' clone https://github.com/orriborri/pasta.git "$repo"
+              fi
+              git -C "$repo" rev-parse --git-dir >/dev/null
+              git -C "$repo" config credential.helper '!gh auth git-credential'
+              git -C "$repo" config user.name 'Hermes Agent'
+              git -C "$repo" config user.email 'hermes@localhost'
+          env:
+            - name: HOME
+              value: /opt/data/home
+            - name: GH_CONFIG_DIR
+              value: /github-auth
+          securityContext:
+            runAsUser: 10000
+            runAsGroup: 10000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          volumeMounts:
+            - name: pasta-workspace
+              mountPath: /pasta-workspace
+            - name: github-cli
+              mountPath: /usr/local/bin/gh
+              subPath: gh
+              readOnly: true
+            - name: github-cli
+              mountPath: /github-auth
+              subPath: auth
+              readOnly: true
       containers:
         - name: hermes
           image: nousresearch/hermes-agent:v0.23.1@sha256:276d44685c65c0cb2a25f190b63c65c8906f9dc76486fb1c05ae71b5826bda08
@@ -250,6 +294,8 @@ spec:
               mountPath: /usr/local/bin/gh
               subPath: gh
               readOnly: true
+            - name: pasta-workspace
+              mountPath: /opt/data/workspace/pasta
             - name: github-cli
               mountPath: /usr/local/bin/kubectl
               subPath: kubectl
@@ -269,6 +315,9 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: hermes-data
+        - name: pasta-workspace
+          persistentVolumeClaim:
+            claimName: pasta-workspace
         - name: bootstrap
           configMap:
             name: hermes-bootstrap
