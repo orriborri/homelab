@@ -10,7 +10,8 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./apps/second-brain
-  prune: true
+  # Storage and transferred inventory must never be garbage-collected.
+  prune: false
   wait: true
   dependsOn:
     - name: nfs-subdir-external-provisioner

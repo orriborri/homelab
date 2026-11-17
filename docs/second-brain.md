@@ -6,9 +6,10 @@ JDex note updates. Reviewed publication is a separate step.
 
 ## Storage and ownership
 
-`apps/second-brain` owns the `hermes` namespace, the existing `pasta-workspace`
-20 GiB NFS claim, and an idempotent directory initialization Job. The claim name
-is retained to preserve its data. Namespace and claim have Flux pruning disabled;
+`apps/second-brain` owns the `pasta-workspace` 20 GiB NFS claim and an
+idempotent directory initialization Job. Hermes retains ownership of its
+namespace; do not transfer namespace ownership between Flux Kustomizations. The claim name
+is retained to preserve its data. The storage Kustomization has pruning disabled, as do namespace and claim;
 do not delete or recreate them to rename this storage. Existing repository files
 at the volume root are left in place but are no longer used at startup.
 
@@ -78,8 +79,10 @@ other supported sources; this is not an isolated Gmail-only scheduler.
 
 ## Hermes integration and publication
 
-Hermes startup never clones or initializes Pasta. Each application depends on
-the storage Kustomization, not on the other application's readiness.
+Hermes startup never clones or initializes Pasta. Pasta depends on the storage
+Kustomization. Hermes creates its namespace without waiting for storage readiness;
+Kubernetes waits for its document mounts while the storage Job initializes them.
+Neither application depends on the other application's readiness.
 
 The shared files alone do not configure knowledge MCP or automatic synthesis.
 The pinned `kb-mcp` is a stdio server, so a separate pod cannot be connected by
