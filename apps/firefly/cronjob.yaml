@@ -19,7 +19,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: cron
-              image: docker.io/curlimages/curl:8.17.0
+              image: docker.io/curlimages/curl:8.23.0
               command: [sh, -ec]
               args:
                 - 'curl --fail --silent --show-error --max-time 240 "http://firefly/api/v1/cron/$STATIC_CRON_TOKEN"'
