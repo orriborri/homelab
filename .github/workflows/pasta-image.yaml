@@ -1,0 +1,45 @@
+name: pasta-image
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/pasta-image.yaml
+      - apps/pasta/Dockerfile
+      - apps/pasta/requirements-mcp.txt
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: pasta-image
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      IMAGE: ghcr.io/${{ github.repository }}-pasta:${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build pinned Pasta runtime
+        run: |
+          docker build --build-arg CARGO_BUILD_JOBS=2 \
+            --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" \
+            --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
+            --tag "$IMAGE" apps/pasta
+      - name: Verify runtime tools
+        run: |
+          docker run --rm "$IMAGE" kb --help
+          docker run --rm "$IMAGE" gog --version
+          docker run --rm "$IMAGE" /opt/mcp-proxy/bin/mcp-proxy --help
+      - name: Publish image
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          docker push "$IMAGE"
+          docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE" >> "$GITHUB_STEP_SUMMARY"
