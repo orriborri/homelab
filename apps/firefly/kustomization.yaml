@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - secrets.yaml
+  - config.yaml
+  - postgres.yaml
+  - deployment.yaml
+  - importer.yaml
+  - ingress.yaml
+  - cronjob.yaml

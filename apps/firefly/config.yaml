@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: firefly-config
+data:
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_URL: https://firefly.orriborri.com
+  SITE_OWNER: oscar.henriksson91@gmail.com
+  TZ: Europe/Helsinki
+  DEFAULT_LANGUAGE: en_US
+  DEFAULT_LOCALE: fi_FI
+  TRUSTED_PROXIES: "**"
+  DB_CONNECTION: pgsql
+  DB_HOST: firefly-postgres
+  DB_PORT: "5432"
+  DB_DATABASE: firefly
+  DB_USERNAME: firefly
+  PGSQL_SCHEMA: public
+  CACHE_STORE: file
+  SESSION_DRIVER: file
+  LOG_CHANNEL: stdout
+  APP_LOG_LEVEL: warning
+  MAIL_MAILER: array

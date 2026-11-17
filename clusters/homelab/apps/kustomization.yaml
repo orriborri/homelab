@@ -38,3 +38,4 @@ resources:
   - kia-poller.yaml
   - kitchenowl.yaml
   - grocy.yaml
+  - firefly.yaml

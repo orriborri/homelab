@@ -28,3 +28,4 @@ resources:
   - apps/grocy.yaml
   - apps/hermes.yaml
   - apps/actual.yaml
+  - apps/firefly.yaml

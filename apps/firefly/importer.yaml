@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: firefly-importer
+spec:
+  type: ClusterIP
+  selector:
+    app: firefly-importer
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: firefly-importer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: firefly-importer
+  template:
+    metadata:
+      labels:
+        app: firefly-importer
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: importer
+          image: docker.io/fireflyiii/data-importer:version-2.3.5
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: FIREFLY_III_URL
+              value: http://firefly
+            - name: VANITY_URL
+              value: https://firefly.orriborri.com
+            - name: TRUSTED_PROXIES
+              value: "**"
+            - name: TZ
+              value: Europe/Helsinki
+            - name: FALLBACK_LOCALE
+              value: fi_FI
+            - name: APP_DEBUG
+              value: "false"
+            - name: LOG_LEVEL
+              value: warning
+            - name: ENABLE_MAIL_REPORT
+              value: "false"
+          startupProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
