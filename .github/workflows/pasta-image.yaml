@@ -3,7 +3,7 @@ name: pasta-image
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, master]
     paths:
       - .github/workflows/pasta-image.yaml
       - apps/pasta/Dockerfile
