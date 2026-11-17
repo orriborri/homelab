@@ -3,6 +3,8 @@ kind: Kustomization
 namespace: flux-system
 resources:
   - hermes.yaml
+  - second-brain.yaml
+  - pasta.yaml
   - podinfo.yaml
   - audiobookshelf.yaml
   - mosquitto.yaml

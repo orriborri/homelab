@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: second-brain-initialize-v1
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: initialize
+          image: nousresearch/hermes-agent:v0.23.2@sha256:d6746a084e9341baada483e3d6210444d3c1aeb7c130f0915150065fb2851459
+          command:
+            - python3
+            - -c
+            - |
+              from pathlib import Path
+              root = Path('/storage/second-brain')
+              for name in ('vault', 'evidence/gmail', 'proposals', 'registry'):
+                  path = root / name
+                  path.mkdir(parents=True, exist_ok=True, mode=0o750)
+              print('Second-brain directories ready; existing files preserved.')
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          volumeMounts:
+            - name: documents
+              mountPath: /storage
+      volumes:
+        - name: documents
+          persistentVolumeClaim:
+            claimName: pasta-workspace

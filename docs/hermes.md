@@ -1,5 +1,8 @@
 # Hermes Agent
 
+For the new shared knowledge store, ownership boundaries and rollout status,
+see [Second brain](second-brain.md). Pasta setup is independent of Hermes startup.
+
 Hermes runs in the `hermes` namespace with its web dashboard enabled. Dashboard
 credentials are in the SOPS-encrypted `apps/hermes/secrets.yaml`. Its configured
 inference provider is OpenAI Codex; no messaging accounts are configured.

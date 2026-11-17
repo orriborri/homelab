@@ -1,0 +1,19 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: pasta
+spec:
+  # Resume after publishing a pullable image and provisioning Gmail credentials.
+  suspend: true
+  interval: 1h
+  timeout: 10m
+  retryInterval: 30s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/pasta
+  prune: true
+  wait: true
+  dependsOn:
+    - name: second-brain
+    - name: synology-csi

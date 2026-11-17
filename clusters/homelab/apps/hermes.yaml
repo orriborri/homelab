@@ -13,6 +13,7 @@ spec:
   prune: true
   wait: true
   dependsOn:
+    - name: second-brain
     - name: synology-csi
   decryption:
     provider: sops

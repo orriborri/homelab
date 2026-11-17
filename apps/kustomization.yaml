@@ -3,6 +3,8 @@ resources:
   - audiobookshelf/
   - calibre/
   - hermes/
+  - second-brain/
+  - pasta/
   - homeassistant/
   - grocy/
   - influxdb/

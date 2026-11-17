@@ -1,0 +1,20 @@
+[general]
+vault_path = "/second-brain/vault"
+log_level = "info"
+[kb]
+data_dir = "/var/lib/pasta/kb"
+write_vault_metadata = false
+internal_domains = []
+internal_slack = false
+[gog]
+account = "oscar.henriksson91@gmail.com"
+keyring_backend = "file"
+home = "/var/lib/pasta/gog"
+gmail_evidence_dir = "/second-brain/evidence/gmail"
+[schedules.gmail]
+interval_minutes = 15
+enabled = true
+[schedules.vault-maintenance]
+enabled = false
+[schedules.trello]
+enabled = false

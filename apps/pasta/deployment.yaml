@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pasta
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: pasta
+  template:
+    metadata:
+      labels:
+        app: pasta
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 10000
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: prepare-state
+          image: ghcr.io/orriborri/pasta:64007a84159e85fb4cfe9c3f34279749cd4312cf
+          command:
+            - sh
+            - -ec
+            - |
+              mkdir -p /var/lib/pasta/.pasta /var/lib/pasta/gog
+          securityContext:
+            runAsUser: 10000
+            runAsGroup: 10000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: state
+              mountPath: /var/lib/pasta
+      containers:
+        - name: pasta
+          image: ghcr.io/orriborri/pasta:64007a84159e85fb4cfe9c3f34279749cd4312cf
+          env:
+            - name: HOME
+              value: /var/lib/pasta
+            - name: GOG_ACCOUNT
+              value: oscar.henriksson91@gmail.com
+            - name: GOG_KEYRING_BACKEND
+              value: file
+          envFrom:
+            - secretRef:
+                name: pasta-secrets
+          securityContext:
+            runAsUser: 10000
+            runAsGroup: 10000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+          readinessProbe:
+            exec:
+              command: [sh, -ec, 'test -S /var/lib/pasta/.pasta/pasta.sock']
+            initialDelaySeconds: 5
+          volumeMounts:
+            - name: second-brain
+              mountPath: /second-brain
+              subPath: second-brain
+            - name: state
+              mountPath: /var/lib/pasta
+            - name: config
+              mountPath: /var/lib/pasta/.pasta/config.toml
+              subPath: config.toml
+              readOnly: true
+      volumes:
+        - name: second-brain
+          persistentVolumeClaim:
+            claimName: pasta-workspace
+        - name: state
+          persistentVolumeClaim:
+            claimName: pasta-state
+        - name: config
+          configMap:
+            name: pasta-config

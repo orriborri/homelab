@@ -157,50 +157,6 @@ spec:
               mountPath: /github-auth
               subPath: auth
               readOnly: true
-        - name: prepare-pasta-repo
-          image: nousresearch/hermes-agent:v0.23.2@sha256:d6746a084e9341baada483e3d6210444d3c1aeb7c130f0915150065fb2851459
-          command:
-            - sh
-            - -ec
-            - |
-              repo=/pasta-workspace
-              if [ ! -e "$repo/.git" ]; then
-                git -c credential.helper='!gh auth git-credential' clone https://github.com/orriborri/pasta.git "$repo"
-              fi
-              git -C "$repo" rev-parse --git-dir >/dev/null
-              git -C "$repo" config credential.helper '!gh auth git-credential'
-              git -C "$repo" config user.name 'Hermes Agent'
-              git -C "$repo" config user.email 'hermes@localhost'
-          env:
-            - name: HOME
-              value: /opt/data/home
-            - name: GH_CONFIG_DIR
-              value: /github-auth
-          securityContext:
-            runAsUser: 10000
-            runAsGroup: 10000
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-          resources:
-            requests:
-              cpu: 10m
-              memory: 64Mi
-            limits:
-              cpu: 250m
-              memory: 256Mi
-          volumeMounts:
-            - name: pasta-workspace
-              mountPath: /pasta-workspace
-            - name: github-cli
-              mountPath: /usr/local/bin/gh
-              subPath: gh
-              readOnly: true
-            - name: github-cli
-              mountPath: /github-auth
-              subPath: auth
-              readOnly: true
       containers:
         - name: hermes
           image: nousresearch/hermes-agent:v0.23.2@sha256:d6746a084e9341baada483e3d6210444d3c1aeb7c130f0915150065fb2851459
@@ -288,14 +244,27 @@ spec:
             runAsUser: 0
             allowPrivilegeEscalation: false
           volumeMounts:
+            - name: second-brain
+              mountPath: /second-brain/vault
+              subPath: second-brain/vault
+              readOnly: true
+            - name: second-brain
+              mountPath: /second-brain/evidence
+              subPath: second-brain/evidence
+              readOnly: true
+            - name: second-brain
+              mountPath: /second-brain/proposals
+              subPath: second-brain/proposals
+            - name: second-brain
+              mountPath: /second-brain/registry
+              subPath: second-brain/registry
+              readOnly: true
             - name: data
               mountPath: /opt/data
             - name: github-cli
               mountPath: /usr/local/bin/gh
               subPath: gh
               readOnly: true
-            - name: pasta-workspace
-              mountPath: /opt/data/workspace/pasta
             - name: github-cli
               mountPath: /usr/local/bin/kubectl
               subPath: kubectl
@@ -312,12 +281,12 @@ spec:
               mountPath: /var/run/secrets/kubernetes.io/serviceaccount
               readOnly: true
       volumes:
+        - name: second-brain
+          persistentVolumeClaim:
+            claimName: pasta-workspace
         - name: data
           persistentVolumeClaim:
             claimName: hermes-data
-        - name: pasta-workspace
-          persistentVolumeClaim:
-            claimName: pasta-workspace
         - name: bootstrap
           configMap:
             name: hermes-bootstrap
