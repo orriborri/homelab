@@ -101,3 +101,13 @@ canonical vault mount is intentionally read-only during this initial rollout.
 Acceptance requires one real email with an attachment to be retained, searchable,
 retrievable by evidence ID and usable in a cited JDex proposal. Restart Pasta and
 verify no duplicate ingestion; stop Pasta and verify Hermes stays ready.
+
+## Rollout recovery (2026-11-17)
+
+Moving namespace ownership caused namespace deletion during the first rollout.
+Hermes now retains namespace ownership; storage pruning is disabled. The original
+Hermes data PV was retained and rebound, and its PVC explicitly pins that PV to
+prevent accidental provisioning of empty runtime state. The NFS provisioner
+archived the original shared tree; its two registry files and 173 JDex folders
+were copied to the replacement shared claim and verified by read-back/hash. The
+archived directory remains on the NAS. Both live data PVs use Retain.

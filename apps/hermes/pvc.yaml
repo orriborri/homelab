@@ -2,7 +2,11 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: hermes-data
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
+  # Rebind the original retained volume; never provision an empty replacement.
+  volumeName: pvc-efa44465-bc34-48ae-b773-1d1a718a64ec
   storageClassName: syno-storage
   accessModes:
     - ReadWriteOnce
