@@ -55,7 +55,7 @@ cffi==1.17.1
 cfgv==3.4.0
 click==8.5.1
 cryptography==50.0.2
-distlib==0.4.0
+distlib==0.4.4
 filelock==3.18.0
 h11==0.16.0
 httpcore==1.0.9
