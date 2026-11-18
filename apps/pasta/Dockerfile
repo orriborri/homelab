@@ -1,5 +1,5 @@
 FROM rust:1-slim-bookworm AS builder
-RUN apt-get update && apt-get install -y --no-install-recommends git pkg-config libssl-dev protobuf-compiler ca-certificates curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends git pkg-config libssl-dev protobuf-compiler libprotobuf-dev ca-certificates curl && rm -rf /var/lib/apt/lists/*
 ARG CARGO_BUILD_JOBS=2
 ENV CARGO_BUILD_JOBS=${CARGO_BUILD_JOBS}
 ARG PASTA_REV=64007a84159e85fb4cfe9c3f34279749cd4312cf
