@@ -1,11 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: default
 resources:
-- ./deployment.yaml
-- ./service.yaml
-- ./ingress.yaml
-- ./sump-it-config.yaml
-images:
-- name: ghcr.io/orriborri/sump-it
-  newName: ghcr.io/orriborri/sump-it
-  newTag: sha-176b6b4
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml

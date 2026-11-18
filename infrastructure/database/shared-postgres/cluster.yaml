@@ -1,0 +1,28 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: shared-postgres
+  namespace: default
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.7-standard-bookworm@sha256:6669f2fdbc344beb60d307e7aa0a343c510183ac49fd13db8d161d294ed5e141
+  enableSuperuserAccess: false
+  storage:
+    storageClass: syno-storage
+    size: 10Gi
+  resources:
+    requests: {cpu: 100m, memory: 256Mi}
+    limits: {cpu: '1', memory: 768Mi}
+  bootstrap:
+    initdb:
+      database: sump_it
+      owner: sump_it
+      postInitApplicationSQL:
+        - REVOKE CONNECT ON DATABASE sump_it FROM PUBLIC;
+  postgresql:
+    pg_hba:
+      # Add a database/role pair here when onboarding another application.
+      - hostssl sump_it sump_it all scram-sha-256
+      - host all all all reject

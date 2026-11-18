@@ -4,9 +4,8 @@ metadata:
   name: sump-it
   namespace: default
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/app-root: /brew
 spec:
   ingressClassName: private
   tls:
@@ -17,6 +16,13 @@ spec:
     - host: sump.orriborri.com
       http:
         paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: sump-it
+                port:
+                  name: api
           - path: /
             pathType: Prefix
             backend:
