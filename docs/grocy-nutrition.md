@@ -6,6 +6,33 @@ product is found, its name, description, ingredients, and full nutrition-label
 values are added to the product lookup result. The lookup only reads public
 catalogue data; it does not use an S-kaupat account.
 
+## Package counts and weight
+
+For new products, barcode lookup automatically sets the purchase unit to `Pack`
+and the stock unit to `Gram` when it finds an explicit fixed package weight
+(for example `500 g`, `1,5 kg`, or `6 x 25 g`). One 500 g pack then adds 500 g;
+buying three packs adds 1,500 g. Grocy stores the product-specific conversion.
+The existing quantity units must include Pack and Gram (Finnish `pakkaus` or
+`paketti` and `gramma` are also recognised).
+
+Weight is read from an explicitly unit-labelled catalogue net weight, falling
+back to the product name. Bare numeric net weights are ignored because their
+unit has not been verified. Missing, approximate, variable, zero, and ambiguous
+weights keep the existing unit presets and require manual setup. Volumes such
+as `1 l` are not converted to grams. Review the units and conversion on the
+new product form before recording stock.
+
+This applies when creating a product through external barcode lookup. Existing
+products and their stock balances are unchanged. Existing stocked products
+need a separate migration: changing the unit alone does not rescale their stock.
+The inventory form may use different units from purchasing; select Pack where
+available and verify the converted total before saving.
+
+Run `php debug/test-grocy-weight.php` for isolated lookup checks (requires PHP
+with cURL). The test mocks catalogue responses and does not change Grocy data.
+
+## Nutrition fields
+
 The deployment adds these product userfields automatically:
 
 | Field | Meaning |
