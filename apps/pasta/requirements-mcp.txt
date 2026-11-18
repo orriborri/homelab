@@ -20,7 +20,7 @@ jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
 mcp==1.30.0
 mcp-proxy==0.15.0
-nodeenv==1.9.1
+nodeenv==1.12.0
 packaging==25.0
 platformdirs==4.3.8
 pluggy==1.6.0
