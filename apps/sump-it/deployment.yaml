@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sump-it
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -13,24 +12,60 @@ spec:
       labels:
         app: sump-it
     spec:
+      automountServiceAccountToken: false
       containers:
-        - name: sump-it
-          image: ghcr.io/orriborri/sump-it:sha-ef8b70b
-          imagePullPolicy: Always
+        - name: frontend
+          image: ghcr.io/orriborri/sump-it:frontend-8e23642cbbaab1b9fd3ad6508c5850e07eb8a26f@sha256:6391ad178199667911c80c3d1f886aed7d6464efa9f030df8f4420af81faa513
           ports:
             - name: http
-              containerPort: 8080
-              protocol: TCP
-          envFrom:
-          - secretRef:
-              name: sump-it-postgres-config
+              containerPort: 3000
+          readinessProbe:
+            httpGet: {path: /brew, port: http}
+            timeoutSeconds: 5
           resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: '1', memory: 512Mi}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+        - name: backend
+          image: ghcr.io/orriborri/sump-it:backend-8e23642cbbaab1b9fd3ad6508c5850e07eb8a26f@sha256:21034d7abce73c067f0e0e8cc25db6a00f5937cae50c4323805d285ec94d0062
           env:
-            - name: PORT
-              value: "8080"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: shared-postgres-app
+                  key: fqdn-uri
+            - name: PGSSLMODE
+              value: verify-full
+            - name: PGSSLROOTCERT
+              value: /etc/postgres-ca/ca.crt
+          ports:
+            - name: api
+              containerPort: 3001
+          readinessProbe:
+            httpGet: {path: /api/beans/active, port: api}
+            timeoutSeconds: 5
+          resources:
+            requests: {cpu: 100m, memory: 64Mi}
+            limits: {cpu: '1', memory: 256Mi}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: postgres-ca
+              mountPath: /etc/postgres-ca
+              readOnly: true
+      volumes:
+        - name: postgres-ca
+          secret:
+            secretName: shared-postgres-ca
+            items:
+              - key: ca.crt
+                path: ca.crt

@@ -1,0 +1,24 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: shared-postgres
+spec:
+  interval: 1h
+  timeout: 8m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./infrastructure/database/shared-postgres
+  prune: true
+  healthChecks:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      name: shared-postgres
+      namespace: default
+  healthCheckExprs:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      current: status.conditions.exists(c, c.type == 'Ready' && c.status == 'True')
+  dependsOn:
+    - name: cloudnative-pg
+    - name: synology-csi

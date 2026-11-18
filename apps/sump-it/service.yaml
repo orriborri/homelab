@@ -4,13 +4,16 @@ metadata:
   name: sump-it
   namespace: default
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: sump-it
   ports:
     - name: http
       protocol: TCP
       port: 80
-      targetPort: 8080
+      targetPort: http
+    - name: api
+      port: 3001
+      targetPort: api
 
 

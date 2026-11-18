@@ -14,7 +14,7 @@ resources:
   - mealie/
   - mosquitto/
   - n8n/
-  - neolink/
+
 
   - podinfo/
   - postgres/

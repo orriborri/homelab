@@ -31,3 +31,6 @@ resources:
   - apps/second-brain.yaml
   - apps/actual.yaml
   - apps/firefly.yaml
+  - infrastructure/cloudnative-pg.yaml
+  - infrastructure/shared-postgres.yaml
+  - apps/sump-it.yaml
