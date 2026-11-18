@@ -17,3 +17,7 @@ spec:
   dependsOn:
     - name: second-brain
     - name: synology-csi
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg

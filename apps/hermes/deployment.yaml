@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: hermes
   annotations:
-    secret.reloader.stakater.com/reload: hermes-secrets
+    secret.reloader.stakater.com/reload: hermes-secrets,second-brain-mcp
 spec:
   replicas: 1
   strategy:
@@ -170,6 +170,11 @@ spec:
             - secretRef:
                 name: hermes-secrets
           env:
+            - name: PASTA_MCP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: second-brain-mcp
+                  key: PASTA_MCP_TOKEN
             - name: HERMES_HOME
               value: /opt/data
             - name: HERMES_DASHBOARD
