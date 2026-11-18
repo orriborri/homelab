@@ -24,7 +24,7 @@ nodeenv==1.12.0
 packaging==25.0
 platformdirs==4.14.7
 pluggy==1.7.0
-pre_commit==4.3.0
+pre_commit==4.7.0
 pycparser==2.22
 pydantic==2.14.3
 pydantic-settings==2.16.3
