@@ -4,7 +4,6 @@ namespace: hermes
 resources:
   - secrets.yaml
   - pvc.yaml
-  - state-v2-pvc.yaml
   - deployment.yaml
   - service.yaml
 configMapGenerator:

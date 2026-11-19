@@ -201,7 +201,7 @@ spec:
             claimName: pasta-workspace
         - name: state
           persistentVolumeClaim:
-            claimName: pasta-state-v2
+            claimName: pasta-state
         - name: config
           configMap:
             name: pasta-config
