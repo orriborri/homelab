@@ -3,8 +3,6 @@ kind: Kustomization
 metadata:
   name: pasta
 spec:
-  # Resume after publishing a pullable image and provisioning Gmail credentials.
-  suspend: true
   interval: 1h
   timeout: 10m
   retryInterval: 30s
@@ -17,3 +15,7 @@ spec:
   dependsOn:
     - name: second-brain
     - name: synology-csi
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg

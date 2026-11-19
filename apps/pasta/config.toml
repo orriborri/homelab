@@ -13,7 +13,8 @@ home = "/var/lib/pasta/gog"
 gmail_evidence_dir = "/second-brain/evidence/gmail"
 [schedules.gmail]
 interval_minutes = 15
-enabled = true
+# Enable after the first successful read-only Gmail sync.
+enabled = false
 [schedules.vault-maintenance]
 enabled = false
 [schedules.trello]

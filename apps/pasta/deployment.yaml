@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pasta
+  annotations:
+    secret.reloader.stakater.com/reload: pasta-secrets,second-brain-mcp
 spec:
   replicas: 1
   strategy:
@@ -22,24 +24,25 @@ spec:
           type: RuntimeDefault
       initContainers:
         - name: prepare-state
-          image: ghcr.io/orriborri/pasta:64007a84159e85fb4cfe9c3f34279749cd4312cf
+          image: ghcr.io/orriborri/homelab-pasta:b03f868e2995b509926be2132479ce6dbf132246@sha256:f7284d1c0237bfa72f032f0b49d6f25a5bedf5d362b0ce505b6c153575855909
           command:
             - sh
             - -ec
             - |
-              mkdir -p /var/lib/pasta/.pasta /var/lib/pasta/gog
+              mkdir -p /var/lib/pasta/.pasta /var/lib/pasta/gog /var/lib/pasta/kb /var/lib/pasta/ollama
           securityContext:
             runAsUser: 10000
             runAsGroup: 10000
             allowPrivilegeEscalation: false
             capabilities:
-              drop: [ALL]
+              drop:
+                - ALL
           volumeMounts:
             - name: state
               mountPath: /var/lib/pasta
       containers:
         - name: pasta
-          image: ghcr.io/orriborri/pasta:64007a84159e85fb4cfe9c3f34279749cd4312cf
+          image: ghcr.io/orriborri/homelab-pasta:b03f868e2995b509926be2132479ce6dbf132246@sha256:f7284d1c0237bfa72f032f0b49d6f25a5bedf5d362b0ce505b6c153575855909
           env:
             - name: HOME
               value: /var/lib/pasta
@@ -47,6 +50,8 @@ spec:
               value: oscar.henriksson91@gmail.com
             - name: GOG_KEYRING_BACKEND
               value: file
+            - name: GOG_HOME
+              value: /var/lib/pasta/gog
           envFrom:
             - secretRef:
                 name: pasta-secrets
@@ -55,17 +60,21 @@ spec:
             runAsGroup: 10000
             allowPrivilegeEscalation: false
             capabilities:
-              drop: [ALL]
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 100m
               memory: 512Mi
             limits:
-              cpu: "2"
+              cpu: '2'
               memory: 4Gi
           readinessProbe:
             exec:
-              command: [sh, -ec, 'test -S /var/lib/pasta/.pasta/pasta.sock']
+              command:
+                - sh
+                - -ec
+                - test -S /var/lib/pasta/.pasta/pasta.sock
             initialDelaySeconds: 5
           volumeMounts:
             - name: second-brain
@@ -77,13 +86,122 @@ spec:
               mountPath: /var/lib/pasta/.pasta/config.toml
               subPath: config.toml
               readOnly: true
+        - name: knowledge-mcp
+          image: ghcr.io/orriborri/homelab-pasta:b03f868e2995b509926be2132479ce6dbf132246@sha256:f7284d1c0237bfa72f032f0b49d6f25a5bedf5d362b0ce505b6c153575855909
+          command:
+            - /opt/mcp-proxy/bin/mcp-proxy
+            - --host
+            - 0.0.0.0
+            - --port
+            - '8000'
+            - --allowed-host
+            - pasta-mcp.hermes.svc.cluster.local:8000
+            - --allowed-host
+            - 127.0.0.1:8000
+            - --no-pass-environment
+            - --env
+            - HOME
+            - /var/lib/pasta
+            - --
+            - /usr/local/bin/kb-mcp
+          env:
+            - name: HOME
+              value: /var/lib/pasta
+            - name: MCP_PROXY_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: second-brain-mcp
+                  key: PASTA_MCP_TOKEN
+          securityContext: &id002
+            runAsUser: 10000
+            runAsGroup: 10000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - name: mcp
+              containerPort: 8000
+          readinessProbe:
+            exec: &id001
+              command:
+                - python3
+                - -c
+                - import os,urllib.request; r=urllib.request.Request('http://127.0.0.1:8000/status',headers={'Authorization':'Bearer '+os.environ['MCP_PROXY_AUTH_TOKEN']}); assert urllib.request.urlopen(r,timeout=3).status==200
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            exec: *id001
+            periodSeconds: 10
+            timeoutSeconds: 5
+            initialDelaySeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: '1'
+              memory: 2Gi
+          volumeMounts:
+            - name: state
+              mountPath: /var/lib/pasta/kb
+              subPath: kb
+            - name: config
+              mountPath: /var/lib/pasta/.pasta/config.toml
+              subPath: config.toml
+              readOnly: true
+        - name: embeddings
+          image: ollama/ollama:0.40.16@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592
+          command:
+            - sh
+            - -ec
+            - |
+              ollama serve &
+              server_pid=$!
+              trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+              until ollama list >/dev/null 2>&1; do
+                kill -0 "$server_pid"
+                sleep 1
+              done
+              if ! ollama show nomic-embed-text >/dev/null 2>&1; then
+                ollama pull nomic-embed-text:v1.5
+                ollama cp nomic-embed-text:v1.5 nomic-embed-text
+              fi
+              wait "$server_pid"
+          env:
+            - name: HOME
+              value: /var/lib/ollama
+            - name: OLLAMA_HOST
+              value: 127.0.0.1:11434
+            - name: OLLAMA_MODELS
+              value: /var/lib/ollama/models
+          securityContext: *id002
+          readinessProbe:
+            exec:
+              command:
+                - ollama
+                - show
+                - nomic-embed-text
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: '1'
+              memory: 2Gi
+          volumeMounts:
+            - name: state
+              mountPath: /var/lib/ollama
+              subPath: ollama
       volumes:
         - name: second-brain
           persistentVolumeClaim:
             claimName: pasta-workspace
         - name: state
           persistentVolumeClaim:
-            claimName: pasta-state
+            claimName: pasta-state-v2
         - name: config
           configMap:
             name: pasta-config

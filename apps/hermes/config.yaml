@@ -14,3 +14,23 @@ terminal:
   home_mode: profile
 agent:
   max_turns: 30
+
+# Knowledge ingestion runs independently in the Pasta pod.
+mcp_servers:
+  pasta:
+    url: http://pasta-mcp.hermes.svc.cluster.local:8000/mcp/
+    headers:
+      Authorization: Bearer ${PASTA_MCP_TOKEN}
+    connect_timeout: 10
+    timeout: 60
+    tools:
+      include:
+      - search_knowledge
+      - get_changes
+      - get_entity
+      - get_related
+      - get_evidence
+      - get_context
+      - get_timeline
+      resources: false
+      prompts: false

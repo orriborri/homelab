@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pasta-mcp
+spec:
+  selector:
+    app: pasta
+  ports:
+    - name: mcp
+      port: 8000
+      targetPort: mcp
