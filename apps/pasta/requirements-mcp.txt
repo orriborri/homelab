@@ -26,7 +26,7 @@ platformdirs==4.14.7
 pluggy==1.7.0
 pre_commit==4.7.0
 pycparser==2.23
-pydantic==2.14.3
+pydantic==2.14.4
 pydantic-settings==2.16.3
 pydantic_core==2.50.4
 Pygments==2.19.2
