@@ -49,7 +49,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       initContainers:
         - name: wait-for-postgres
-          image: docker.io/library/postgres:18.7-bookworm
+          image: docker.io/library/postgres:19.0-bookworm
           command: [sh, -ec]
           args:
             - until pg_isready -h firefly-postgres -U firefly -d firefly; do sleep 3; done
