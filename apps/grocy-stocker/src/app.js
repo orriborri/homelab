@@ -2,6 +2,7 @@ import http from 'node:http';
 
 const EAN = /^\d{8,14}$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
+const MAX_BODY_BYTES = 10_000;
 
 class HttpError extends Error {
   constructor(status, message) { super(message); this.status = status; }
@@ -14,7 +15,11 @@ export function createApp({ grocyUrl, apiKey, catalogue, locationId, defaultBest
       headers: { 'GROCY-API-KEY': apiKey, 'content-type': 'application/json' },
       body: body === undefined ? undefined : JSON.stringify(body)
     });
-    if (!res.ok) throw new HttpError(502, `Grocy ${method} ${path} -> ${res.status}`);
+    if (!res.ok) {
+      const reason = (await res.json().catch(() => ({}))).error_message ?? '';
+      // Grocy rejecting the data (e.g. duplicate name) is a conflict; auth or server faults are a bad gateway.
+      throw new HttpError([400, 409].includes(res.status) ? 409 : 502, `Grocy ${method} ${path} -> ${res.status} ${reason}`.trim());
+    }
     return res.status === 204 ? null : res.json();
   }
 
@@ -24,17 +29,25 @@ export function createApp({ grocyUrl, apiKey, catalogue, locationId, defaultBest
     const units = await grocy('GET', '/api/objects/quantity_units');
     const packId = unitId(units, 'pack', 'package', 'pakkaus', 'paketti', 'pkt');
     const gramId = unitId(units, 'gram', 'grams', 'gramma', 'grammaa', 'g');
-    const pieceId = unitId(units, 'piece', 'pieces', 'kpl', 'kappale') ?? units[0].id;
-    const byWeight = found.packageGrams > 0 && packId && gramId;
+    const pieceId = unitId(units, 'piece', 'pieces', 'kpl', 'kappale');
+    const byWeight = found.packageGrams > 0;
+    if (byWeight && !(packId && gramId)) throw new HttpError(409, 'Grocy needs Pack and Gram quantity units to stock a product with a known package weight');
+    if (!byWeight && !pieceId) throw new HttpError(409, 'Grocy needs a Piece quantity unit to create a product without a package weight');
     const { created_object_id: id } = await grocy('POST', '/api/objects/products', {
       name: found.name, description: found.description, location_id: locationId,
       qu_id_purchase: byWeight ? packId : pieceId, qu_id_stock: byWeight ? gramId : pieceId,
       default_best_before_days: defaultBestBeforeDays
     });
-    await grocy('POST', '/api/objects/product_barcodes', { product_id: id, barcode: ean });
-    if (byWeight) {
-      await grocy('POST', '/api/objects/quantity_unit_conversions', { product_id: id, from_qu_id: packId, to_qu_id: gramId, factor: found.packageGrams });
-      await grocy('PUT', `/api/userfields/products/${id}`, { quantity_unit_stock_to_gram_factor: 1 });
+    try {
+      await grocy('POST', '/api/objects/product_barcodes', { product_id: id, barcode: ean });
+      if (byWeight) {
+        await grocy('POST', '/api/objects/quantity_unit_conversions', { product_id: id, from_qu_id: packId, to_qu_id: gramId, factor: found.packageGrams });
+        await grocy('PUT', `/api/userfields/products/${id}`, { quantity_unit_stock_to_gram_factor: 1 });
+      }
+    } catch (err) {
+      // An orphan would block retries (product names are unique), so undo the product; Grocy cascades its rows.
+      await grocy('DELETE', `/api/objects/products/${id}`).catch(() => {});
+      throw err;
     }
     return id;
   }
@@ -57,7 +70,7 @@ export function createApp({ grocyUrl, apiKey, catalogue, locationId, defaultBest
     let status = 'stocked';
     let productId = barcode?.product_id;
     if (productId === undefined) {
-      const found = await catalogue(ean);
+      const found = await catalogue(ean).catch(err => { throw new HttpError(502, `catalogue unavailable: ${err.message}`); });
       if (!found) throw new HttpError(404, 'unknown product');
       productId = await createProduct(ean, found);
       status = 'created';
@@ -74,9 +87,13 @@ export function createApp({ grocyUrl, apiKey, catalogue, locationId, defaultBest
     try {
       if (req.method !== 'POST' || req.url !== '/api/scan') throw new HttpError(404, 'not found');
       let raw = '';
-      for await (const chunk of req) raw += chunk;
+      for await (const chunk of req) {
+        raw += chunk;
+        if (raw.length > MAX_BODY_BYTES) throw new HttpError(413, 'request body too large');
+      }
       let payload;
       try { payload = JSON.parse(raw); } catch { throw new HttpError(400, 'invalid JSON'); }
+      if (payload === null || typeof payload !== 'object' || Array.isArray(payload)) throw new HttpError(400, 'body must be a JSON object');
       reply(200, await scan(payload));
     } catch (err) {
       reply(err.status ?? 502, { status: 'error', error: err.message });

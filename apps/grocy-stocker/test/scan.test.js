@@ -106,3 +106,59 @@ test('a Grocy failure is reported as a bad gateway', async (t) => {
   const res = await fetch(`http://127.0.0.1:${server.address().port}/api/scan`, { method: 'POST', body: JSON.stringify({ ean: '6410000000007' }) });
   assert.equal(res.status, 502);
 });
+
+test('a failure part-way through creating a product leaves nothing behind, so a retry can succeed', async (t) => {
+  const { fake, scan, close } = await setup({
+    catalogue: async () => ({ name: 'Oat drink 500 g', description: '', packageGrams: 500 }),
+    grocy: { failOn: ['PUT /api/userfields'] }
+  });
+  t.after(close);
+  assert.equal((await scan({ ean: '6410000000008' })).status, 502);
+  assert.deepEqual(fake.state.products, []);
+  assert.deepEqual(fake.state.barcodes, []);
+  assert.deepEqual(fake.state.stock, []);
+  fake.state.failOn = [];
+  assert.equal((await scan({ ean: '6410000000008' })).status, 200);
+});
+
+test('a Grocy rejection such as a duplicate product name is a conflict that carries the reason', async (t) => {
+  const { scan, close } = await setup({ catalogue: async () => ({ name: 'Same name', description: '', packageGrams: null }) });
+  t.after(close);
+  assert.equal((await scan({ ean: '6410000000009' })).status, 200);
+  const res = await scan({ ean: '6410000000010' });
+  assert.equal(res.status, 409);
+  assert.match(res.body.error, /UNIQUE/);
+});
+
+test('a known package weight without Pack and Gram units is refused instead of silently creating a piece product', async (t) => {
+  const { fake, scan, close } = await setup({
+    catalogue: async () => ({ name: 'Rice 1 kg', description: '', packageGrams: 1000 }),
+    grocy: { units: [{ id: 2, name: 'Piece' }] }
+  });
+  t.after(close);
+  const res = await scan({ ean: '6410000000011' });
+  assert.equal(res.status, 409);
+  assert.match(res.body.error, /Pack and Gram/);
+  assert.deepEqual(fake.state.products, []);
+});
+
+test('a catalogue outage says so', async (t) => {
+  const { scan, close } = await setup({ catalogue: async () => { throw new Error('fetch failed'); } });
+  t.after(close);
+  const res = await scan({ ean: '6410000000012' });
+  assert.equal(res.status, 502);
+  assert.match(res.body.error, /catalogue unavailable/);
+});
+
+test('a JSON body that is not an object is a bad request', async (t) => {
+  const { scan, close } = await setup();
+  t.after(close);
+  assert.equal((await scan(null)).status, 400);
+  assert.equal((await scan([1])).status, 400);
+});
+
+test('an oversized request body is rejected', async (t) => {
+  const { scan, close } = await setup();
+  t.after(close);
+  assert.equal((await scan({ ean: '6410000000013', pad: 'x'.repeat(20000) })).status, 413);
+});

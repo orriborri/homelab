@@ -5,7 +5,7 @@ export async function startFakeGrocy(seed = {}) {
   const state = {
     products: [], barcodes: [], conversions: [], stock: [], userfields: {},
     units: [{ id: 2, name: 'Piece' }, { id: 3, name: 'Pack' }, { id: 4, name: 'Gram' }],
-    calls: [],
+    calls: [], failOn: [], // failOn: 'METHOD /path-prefix' entries that answer 500
     ...seed
   };
   let nextId = 100;
@@ -17,6 +17,7 @@ export async function startFakeGrocy(seed = {}) {
     state.calls.push({ method: req.method, path: url.pathname, body });
     const send = (status, data) => { res.writeHead(status, { 'content-type': 'application/json' }); res.end(JSON.stringify(data)); };
     if (req.headers['grocy-api-key'] !== 'secret') return send(401, { error_message: 'bad key' });
+    if (state.failOn.some(f => `${req.method} ${url.pathname}`.startsWith(f))) return send(500, { error_message: 'injected failure' });
     const filters = Object.fromEntries(url.searchParams.getAll('query[]').map(q => q.split('=')));
     const match = rows => rows.filter(r => Object.entries(filters).every(([k, v]) => String(r[k]) === v));
     const m = (re) => url.pathname.match(re);
@@ -28,7 +29,15 @@ export async function startFakeGrocy(seed = {}) {
       const p = state.products.find(p => p.id === Number(x[1]));
       return p ? send(200, p) : send(400, { error_message: 'not found' });
     }
+    if (req.method === 'DELETE' && (x = m(/^\/api\/objects\/products\/(\d+)$/))) {
+      const id = Number(x[1]);
+      state.products = state.products.filter(p => p.id !== id);
+      state.barcodes = state.barcodes.filter(b => b.product_id !== id);
+      state.conversions = state.conversions.filter(c => c.product_id !== id);
+      return send(204, {});
+    }
     if (req.method === 'POST' && url.pathname === '/api/objects/products') {
+      if (state.products.some(p => p.name === body.name)) return send(400, { error_message: 'UNIQUE constraint failed: products.name' });
       const id = nextId++; state.products.push({ id, ...body }); return send(200, { created_object_id: id });
     }
     if (req.method === 'POST' && url.pathname === '/api/objects/product_barcodes') {
