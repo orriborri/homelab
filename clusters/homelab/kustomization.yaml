@@ -15,6 +15,7 @@ resources:
   - infrastructure/metallb-config.yaml
   - infrastructure/ingress-nginx-public.yaml
   - infrastructure/ingress-nginx-private.yaml
+  - infrastructure/external-dns.yaml
   - apps/podinfo.yaml
   - apps/audiobookshelf.yaml
   - infrastructure/crds.yaml
