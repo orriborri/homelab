@@ -34,3 +34,4 @@ resources:
   - infrastructure/cloudnative-pg.yaml
   - infrastructure/shared-postgres.yaml
   - apps/sump-it.yaml
+  - apps/baby-monitor.yaml
