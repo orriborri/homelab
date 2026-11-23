@@ -1,0 +1,20 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: grocy-stocker
+spec:
+  interval: 1h
+  timeout: 5m
+  retryInterval: 30s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/grocy-stocker
+  prune: true
+  wait: true
+  dependsOn:
+    - name: grocy
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg

@@ -41,4 +41,5 @@ resources:
   - kia-poller.yaml
   - kitchenowl.yaml
   - grocy.yaml
+  - grocy-stocker.yaml
   - firefly.yaml
