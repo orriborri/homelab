@@ -68,7 +68,7 @@ spec:
     spec:
       initContainers:
         - name: nutrition-userfields
-          image: lscr.io/linuxserver/grocy:latest
+          image: lscr.io/linuxserver/grocy:v4.7.1-ls349
           imagePullPolicy: IfNotPresent
           command:
             - /bin/bash
@@ -84,7 +84,7 @@ spec:
               mountPath: /nutrition
       containers:
         - name: grocy
-          image: lscr.io/linuxserver/grocy:latest
+          image: lscr.io/linuxserver/grocy:v4.7.1-ls349
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
