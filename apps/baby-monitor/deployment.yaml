@@ -21,8 +21,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: baby-monitor
-          # Replace with ghcr.io/orriborri/homelab-baby-monitor:<sha>@sha256:<digest> from the first baby-monitor-image run.
-          image: ghcr.io/orriborri/homelab-baby-monitor:bootstrap
+          image: ghcr.io/orriborri/homelab-baby-monitor:1a48c2ab95dd25b8fd1177a3c2646d411f593fcb@sha256:89c5d7981e2e7d104e4b2eb62332677f47c74e019ff7db77d99dab881b9e1469
           ports:
             - name: http
               containerPort: 8080
