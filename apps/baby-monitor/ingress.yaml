@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: baby-monitor
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # Keep idle signaling sockets open between nights.
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: private
+  tls:
+    - secretName: orriborri-com-tls
+      hosts:
+        - baby.orriborri.com
+  rules:
+    - host: baby.orriborri.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: baby-monitor
+                port:
+                  name: http

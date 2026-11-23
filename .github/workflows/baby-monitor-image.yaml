@@ -1,0 +1,48 @@
+name: baby-monitor-image
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/baby-monitor-image.yaml
+      - apps/baby-monitor/Dockerfile
+      - apps/baby-monitor/package*.json
+      - apps/baby-monitor/server/**
+      - apps/baby-monitor/public/**
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: baby-monitor-image
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      IMAGE: ghcr.io/${{ github.repository }}-baby-monitor:${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Test
+        working-directory: apps/baby-monitor
+        run: npm ci && npm test
+      - name: Build
+        run: |
+          docker build \
+            --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" \
+            --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
+            --tag "$IMAGE" apps/baby-monitor
+      - name: Publish image
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          docker push "$IMAGE"
+          docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE" >> "$GITHUB_STEP_SUMMARY"

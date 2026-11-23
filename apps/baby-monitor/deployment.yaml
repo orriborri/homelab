@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baby-monitor
+spec:
+  replicas: 1 # rooms live in memory
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: baby-monitor
+  template:
+    metadata:
+      labels:
+        app: baby-monitor
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: baby-monitor
+          # Replace with ghcr.io/orriborri/homelab-baby-monitor:<sha>@sha256:<digest> from the first baby-monitor-image run.
+          image: ghcr.io/orriborri/homelab-baby-monitor:bootstrap
+          ports:
+            - name: http
+              containerPort: 8080
+          securityContext:
+            runAsUser: 10000
+            runAsGroup: 10000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http

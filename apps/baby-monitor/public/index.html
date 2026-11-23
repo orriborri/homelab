@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111">
+<link rel="manifest" href="/manifest.webmanifest">
+<title>Baby monitor</title>
+<style>
+  body { margin: 0; font: 18px system-ui, sans-serif; background: #111; color: #eee; text-align: center; padding: 1rem; }
+  button { font: inherit; padding: 1rem 1.5rem; margin: .5rem; border: 0; border-radius: .5rem; background: #3a7; color: #fff; }
+  button.secondary { background: #444; }
+  #meter { width: 100%; height: 2rem; background: #333; border-radius: .5rem; overflow: hidden; }
+  #bar { height: 100%; width: 0; background: #3a7; transition: width .2s; }
+  #alarm { background: #c22; padding: 1rem; border-radius: .5rem; }
+  #dim { position: fixed; inset: 0; background: #000; }
+  [hidden] { display: none !important; }
+  canvas { width: min(80vw, 320px); height: auto; background: #fff; padding: 8px; }
+</style>
+</head>
+<body>
+<h1 id="title">Baby monitor</h1>
+<p id="status"></p>
+<div id="home" hidden>
+  <button id="btn-baby">Start baby station</button>
+  <button id="btn-listen" class="secondary">Listen</button>
+</div>
+<div id="baby" hidden>
+  <div id="qr"></div>
+  <p>Code: <b id="code">…</b></p>
+  <p>Listeners: <b id="listeners">0</b></p>
+  <p><button id="btn-dim">Dim screen</button><button id="btn-new" class="secondary">New pairing</button></p>
+</div>
+<div id="listen" hidden>
+  <button id="btn-start">Start listening</button>
+  <div id="live" hidden>
+    <div id="meter"><div id="bar"></div></div>
+    <p>Alert sensitivity <input id="threshold" type="range" min="0.02" max="0.5" step="0.01"></p>
+    <p id="batt"></p>
+  </div>
+  <div id="alarm" hidden><b id="alarm-text"></b><br><button id="btn-snooze">Snooze 5 min</button></div>
+</div>
+<div id="dim" hidden></div>
+<script src="qrcode.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
