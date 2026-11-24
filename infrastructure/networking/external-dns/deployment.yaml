@@ -27,6 +27,7 @@ spec:
             - --domain-filter=orriborri.com
             - --domain-filter=vetelainen.fi
             - --provider=cloudflare
+            - --policy=upsert-only
             - --cloudflare-dns-records-per-page=5000
             - --request-timeout=2m
           env:
