@@ -24,7 +24,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: telegraf
-          image: telegraf:1.40.3@sha256:3b9fce7c353dc6deba774ee2b2d85619536c6263f43106e7b39b20d47b37ca6c
+          image: telegraf:1.40.3@sha256:d900727dcf5a0dbd6da3fa5d4f7a616d7f3ec0ff8b31110b9bd14312b941784d
           args:
             - --config
             - /etc/telegraf/telegraf.conf
