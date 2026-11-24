@@ -132,3 +132,13 @@ pod logs, and Grafana data-source health. See deployment results recorded below.
 - [Loki chart](https://github.com/grafana/loki/tree/main/production/helm/loki)
 - [Alloy log collection](https://grafana.com/docs/alloy/latest/collect/)
 - [Home Assistant Prometheus integration](https://www.home-assistant.io/integrations/prometheus/)
+
+## Baby monitor logs
+
+`baby-monitor` writes one JSON line per event to stdout, so Alloy ships it to Loki
+with no extra setup. Phones report WebRTC state (`ice-state`, `conn-state`, `track`,
+`play-rejected`, candidate types) over the signaling socket as `event="client"`
+lines. The room ID is a secret and is logged only as an 8-character hash.
+
+In Grafana Explore (Loki): `{namespace="default", app="baby-monitor"} | json`.
+Add `| event="client"` for the phones' view of the connection.

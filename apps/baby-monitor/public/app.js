@@ -15,6 +15,28 @@
     return Math.sqrt(s / buf.length);
   };
 
+  // Candidates can arrive while setRemoteDescription is still pending; queue them instead of dropping them.
+  function setRemote(pc, sdp) {
+    return pc.setRemoteDescription(sdp).then(function () {
+      (pc.pending || []).forEach(function (c) { pc.addIceCandidate(c).catch(function () {}); });
+      pc.pending = [];
+    });
+  }
+  function addIce(pc, c) {
+    if (pc.remoteDescription) pc.addIceCandidate(c).catch(function () {});
+    else (pc.pending = pc.pending || []).push(c);
+  }
+  // Report connection events to the server, which logs them (Loki) with the room hashed.
+  function watch(pc, ws) {
+    var log = function (event, data) { ws.send({ type: 'log', event: event, data: data }); };
+    var show = function () { $('conn').textContent = 'Connection: ' + pc.connectionState + ' / ice ' + pc.iceConnectionState; };
+    pc.oniceconnectionstatechange = function () { show(); log('ice-state', pc.iceConnectionState); };
+    pc.onconnectionstatechange = function () { show(); log('conn-state', pc.connectionState); };
+    pc.onicecandidateerror = function (e) { log('ice-error', e.errorCode + ' ' + e.errorText); };
+    return log;
+  }
+  var candInfo = function (c) { return { type: c.type, proto: c.protocol, mdns: /\.local/.test(c.candidate) }; };
+
   // Reconnecting WebSocket: retry every 2 s; onopen re-sends join.
   function connect(onopen, onmsg, onstate) {
     var ws, api = { send: function (m) { if (ws && ws.readyState === 1) ws.send(JSON.stringify(m)); } };
@@ -78,13 +100,14 @@
         else if (m.type === 'peer-joined') {
           var pc = new RTCPeerConnection({ iceServers: [] });
           pcs[m.id] = pc; count();
+          var log = watch(pc, ws);
           stream.getTracks().forEach(function (t) { pc.addTrack(t, stream); });
           channels[m.id] = pc.createDataChannel('status');
-          pc.onicecandidate = function (e) { if (e.candidate) ws.send({ type: 'ice', to: m.id, candidate: e.candidate }); };
+          pc.onicecandidate = function (e) { if (e.candidate) { log('local-candidate', candInfo(e.candidate)); ws.send({ type: 'ice', to: m.id, candidate: e.candidate }); } };
           pc.createOffer().then(function (o) { return pc.setLocalDescription(o); })
             .then(function () { ws.send({ type: 'offer', to: m.id, sdp: pc.localDescription }); });
-        } else if (m.type === 'answer' && pcs[m.from]) pcs[m.from].setRemoteDescription(m.sdp);
-        else if (m.type === 'ice' && pcs[m.from]) pcs[m.from].addIceCandidate(m.candidate).catch(function () {});
+        } else if (m.type === 'answer' && pcs[m.from]) setRemote(pcs[m.from], m.sdp);
+        else if (m.type === 'ice' && pcs[m.from]) addIce(pcs[m.from], m.candidate);
         else if (m.type === 'peer-left' && pcs[m.id]) { pcs[m.id].close(); delete pcs[m.id]; delete channels[m.id]; count(); }
       }, function (up) { $('status').textContent = up ? 'Connected to server' : 'Server offline, retrying…'; });
       setInterval(function () { ws.send({ type: 'code' }); }, 4.5 * 60000); // codes live 5 min
@@ -127,8 +150,13 @@
         if (m.type === 'offer') {
           if (pc) pc.close();
           pc = new RTCPeerConnection({ iceServers: [] });
-          pc.onicecandidate = function (e) { if (e.candidate) ws.send({ type: 'ice', to: m.from, candidate: e.candidate }); };
-          pc.ontrack = function (e) { audio.srcObject = e.streams[0]; audio.play(); };
+          var log = watch(pc, ws);
+          pc.onicecandidate = function (e) { if (e.candidate) { log('local-candidate', candInfo(e.candidate)); ws.send({ type: 'ice', to: m.from, candidate: e.candidate }); } };
+          pc.ontrack = function (e) {
+            log('track', e.track.kind);
+            audio.srcObject = e.streams[0];
+            audio.play().catch(function (err) { log('play-rejected', err.name); $('conn').textContent = 'Sound blocked: ' + err.name; });
+          };
           pc.ondatachannel = function (e) {
             e.channel.onmessage = function (ev) {
               var s = JSON.parse(ev.data); lastStatus = Date.now();
@@ -147,10 +175,10 @@
               }
             };
           };
-          pc.setRemoteDescription(m.sdp).then(function () { return pc.createAnswer(); })
+          setRemote(pc, m.sdp).then(function () { return pc.createAnswer(); })
             .then(function (a) { return pc.setLocalDescription(a); })
             .then(function () { ws.send({ type: 'answer', to: m.from, sdp: pc.localDescription }); });
-        } else if (m.type === 'ice' && pc) pc.addIceCandidate(m.candidate).catch(function () {});
+        } else if (m.type === 'ice' && pc) addIce(pc, m.candidate);
         else if (m.type === 'error') $('status').textContent = m.message;
       }, function (up) { if (!up) $('status').textContent = 'Reconnecting…'; else $('status').textContent = ''; });
     }
