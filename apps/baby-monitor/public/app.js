@@ -29,13 +29,29 @@
   // Report connection events to the server, which logs them (Loki) with the room hashed.
   function watch(pc, ws) {
     var log = function (event, data) { ws.send({ type: 'log', event: event, data: data }); };
-    var show = function () { $('conn').textContent = 'Connection: ' + pc.connectionState + ' / ice ' + pc.iceConnectionState; };
-    pc.oniceconnectionstatechange = function () { show(); log('ice-state', pc.iceConnectionState); };
+    var show = function () { $('conn').textContent = 'Connection: ' + (pc.connectionState || 'n/a') + ' / ice ' + pc.iceConnectionState; };
+    log('ua', navigator.userAgent);
+    pc.oniceconnectionstatechange = function () {
+      show(); log('ice-state', pc.iceConnectionState);
+      if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') pairStats(pc, log);
+    };
     pc.onconnectionstatechange = function () { show(); log('conn-state', pc.connectionState); };
     pc.onicecandidateerror = function (e) { log('ice-error', e.errorCode + ' ' + e.errorText); };
     return log;
   }
-  var candInfo = function (c) { return { type: c.type, proto: c.protocol, mdns: /\.local/.test(c.candidate) }; };
+  // Raw candidate line (LAN IPs only appear in our own Loki); old Chrome lacks c.type.
+  var candInfo = function (c) { return c.candidate.replace(/ generation.*/, ''); };
+  // On ICE failure, record which candidate pairs were tried and whether any check got a reply.
+  function pairStats(pc, log) {
+    pc.getStats().then(function (r) {
+      var out = [];
+      r.forEach(function (x) {
+        if (x.type === 'candidate-pair') out.push({ pair: x.localCandidateId + '>' + x.remoteCandidateId, state: x.state, sent: x.requestsSent, recv: x.responsesReceived });
+        if (x.type === 'remote-candidate') out.push({ remote: x.id, ip: x.ip || x.address, port: x.port, proto: x.protocol });
+      });
+      log('stats', out.slice(0, 24));
+    });
+  }
 
   // Reconnecting WebSocket: retry every 2 s; onopen re-sends join.
   function connect(onopen, onmsg, onstate) {
