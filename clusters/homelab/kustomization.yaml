@@ -27,6 +27,7 @@ resources:
   - infrastructure/bluetooth.yaml
   - apps/mosquitto.yaml
   - apps/grocy.yaml
+  - apps/grocy-stocker.yaml
   - apps/hermes.yaml
   - apps/pasta.yaml
   - apps/second-brain.yaml
