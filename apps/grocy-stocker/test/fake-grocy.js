@@ -3,7 +3,7 @@ import http from 'node:http';
 // Minimal in-memory stand-in for the Grocy REST routes the stocker uses.
 export async function startFakeGrocy(seed = {}) {
   const state = {
-    products: [], barcodes: [], conversions: [], stock: [], userfields: {},
+    products: [], barcodes: [], locations: [], conversions: [], stock: [], userfields: {},
     units: [{ id: 2, name: 'Piece' }, { id: 3, name: 'Pack' }, { id: 4, name: 'Gram' }],
     calls: [], failOn: [], // failOn: 'METHOD /path-prefix' entries that answer 500
     ...seed
@@ -24,6 +24,11 @@ export async function startFakeGrocy(seed = {}) {
     let x;
     if (req.method === 'GET' && url.pathname === '/api/objects/product_barcodes') return send(200, match(state.barcodes));
     if (req.method === 'GET' && url.pathname === '/api/objects/quantity_unit_conversions') return send(200, match(state.conversions));
+    if (req.method === 'GET' && url.pathname === '/api/objects/locations') return send(200, state.locations);
+    if (req.method === 'POST' && url.pathname === '/api/objects/locations') {
+      if (state.locations.some(l => l.name === body.name)) return send(400, { error_message: 'UNIQUE constraint failed: locations.name' });
+      const id = nextId++; state.locations.push({ id, ...body }); return send(200, { created_object_id: id });
+    }
     if (req.method === 'GET' && url.pathname === '/api/objects/quantity_units') return send(200, state.units);
     if (req.method === 'GET' && (x = m(/^\/api\/objects\/products\/(\d+)$/))) {
       const p = state.products.find(p => p.id === Number(x[1]));

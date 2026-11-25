@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { cabinetCodes } from './cabinets.js';
 
 const EAN = /^\d{8,14}$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -82,10 +83,27 @@ export function createApp({ grocyUrl, apiKey, catalogue, locationId, defaultBest
     return { status, productId };
   }
 
+  // Safe to retry after a partial failure: codes that already exist are skipped.
+  async function addCabinet({ description, ...spec }) {
+    let codes;
+    try { codes = cabinetCodes(spec); } catch (err) { throw new HttpError(400, err.message); }
+    if (description !== undefined && typeof description !== 'string') throw new HttpError(400, 'description must be a string');
+    const existing = new Set((await grocy('GET', '/api/objects/locations')).map(l => l.name));
+    const created = [];
+    for (const name of codes.filter(code => !existing.has(code))) {
+      await grocy('POST', '/api/objects/locations', { name, description });
+      created.push(name);
+    }
+    return { status: 'ok', created, existing: codes.filter(code => existing.has(code)) };
+  }
+
+  const routes = { '/api/scan': scan, '/api/cabinets': addCabinet };
+
   return http.createServer(async (req, res) => {
     const reply = (status, body) => { res.writeHead(status, { 'content-type': 'application/json' }); res.end(JSON.stringify(body)); };
     try {
-      if (req.method !== 'POST' || req.url !== '/api/scan') throw new HttpError(404, 'not found');
+      const route = req.method === 'POST' && routes[req.url];
+      if (!route) throw new HttpError(404, 'not found');
       let raw = '';
       for await (const chunk of req) {
         raw += chunk;
@@ -94,7 +112,7 @@ export function createApp({ grocyUrl, apiKey, catalogue, locationId, defaultBest
       let payload;
       try { payload = JSON.parse(raw); } catch { throw new HttpError(400, 'invalid JSON'); }
       if (payload === null || typeof payload !== 'object' || Array.isArray(payload)) throw new HttpError(400, 'body must be a JSON object');
-      reply(200, await scan(payload));
+      reply(200, await route(payload));
     } catch (err) {
       reply(err.status ?? 502, { status: 'error', error: err.message });
     }
