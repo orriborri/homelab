@@ -90,6 +90,7 @@ spec:
             memory: 256Mi
     prometheus:
       prometheusSpec:
+        enableRemoteWriteReceiver: true
         retention: 14d
         retentionSize: 20GB
         scrapeInterval: 30s
