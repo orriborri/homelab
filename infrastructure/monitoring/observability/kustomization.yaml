@@ -22,3 +22,9 @@ configMapGenerator:
     options:
       labels:
         grafana_dashboard: "1"
+  - name: compost-dashboard
+    files:
+      - dashboards/compost.json
+    options:
+      labels:
+        grafana_dashboard: "1"
