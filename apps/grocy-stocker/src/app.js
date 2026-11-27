@@ -45,7 +45,10 @@ export function createApp({ grocyUrl, apiKey, catalogue, locationId, defaultBest
     try {
       await grocy('POST', '/api/objects/product_barcodes', { product_id: id, barcode: ean });
       if (byWeight) {
-        await grocy('POST', '/api/objects/quantity_unit_conversions', { product_id: id, from_qu_id: packId, to_qu_id: gramId, factor: found.packageGrams });
+        // Grocy's own insert trigger already added a 1:1 pack->gram conversion, and a second row is rejected, so set its factor.
+        const [auto] = await grocy('GET', `/api/objects/quantity_unit_conversions?query[]=product_id=${id}&query[]=from_qu_id=${packId}&query[]=to_qu_id=${gramId}`);
+        if (auto) await grocy('PUT', `/api/objects/quantity_unit_conversions/${auto.id}`, { factor: found.packageGrams });
+        else await grocy('POST', '/api/objects/quantity_unit_conversions', { product_id: id, from_qu_id: packId, to_qu_id: gramId, factor: found.packageGrams });
       }
       const fields = { ...(byWeight && { quantity_unit_stock_to_gram_factor: 1 }), ...found.nutrition };
       if (Object.keys(fields).length) await grocy('PUT', `/api/userfields/products/${id}`, fields);

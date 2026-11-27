@@ -43,13 +43,20 @@ export async function startFakeGrocy(seed = {}) {
     }
     if (req.method === 'POST' && url.pathname === '/api/objects/products') {
       if (state.products.some(p => p.name === body.name)) return send(400, { error_message: 'UNIQUE constraint failed: products.name' });
-      const id = nextId++; state.products.push({ id, ...body }); return send(200, { created_object_id: id });
+      const id = nextId++; state.products.push({ id, ...body });
+      // Real Grocy's products_default_qu_conversions_INS trigger adds a 1:1 purchase->stock conversion when the units differ.
+      if (body.qu_id_purchase !== body.qu_id_stock) state.conversions.push({ id: nextId++, product_id: id, from_qu_id: body.qu_id_purchase, to_qu_id: body.qu_id_stock, factor: 1 });
+      return send(200, { created_object_id: id });
     }
     if (req.method === 'POST' && url.pathname === '/api/objects/product_barcodes') {
       const id = nextId++; state.barcodes.push({ id, ...body }); return send(200, { created_object_id: id });
     }
     if (req.method === 'POST' && url.pathname === '/api/objects/quantity_unit_conversions') {
+      if (state.conversions.some(c => c.product_id === body.product_id && c.from_qu_id === body.from_qu_id && c.to_qu_id === body.to_qu_id)) return send(400, { error_message: 'QU conversion already exists' });
       const id = nextId++; state.conversions.push({ id, ...body }); return send(200, { created_object_id: id });
+    }
+    if (req.method === 'PUT' && (x = m(/^\/api\/objects\/quantity_unit_conversions\/(\d+)$/))) {
+      Object.assign(state.conversions.find(c => c.id === Number(x[1])), body); return send(204, {});
     }
     if (req.method === 'PUT' && (x = m(/^\/api\/userfields\/products\/(\d+)$/))) {
       state.userfields[x[1]] = body; return send(204, {});
