@@ -56,6 +56,10 @@ Read `docs/agents/issue-tracker.md` before working with tickets.
 Use the five canonical triage labels.
 Read `docs/agents/triage-labels.md` before triaging issues.
 
+### PR review
+
+Read `docs/agents/pr-review.md` before going through open PRs.
+
 ### Domain docs
 
 Use a single-context layout: root `GLOSSARY.md` and `docs/adr/`.
