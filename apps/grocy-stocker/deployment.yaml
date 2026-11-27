@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: grocy-stocker
-          image: ghcr.io/orriborri/homelab-grocy-stocker:c4f602e7c295b6d371f8c34f063953d4cea2a5a7@sha256:5fc0e959c8e529c93baa97ec10c28797644540616367c900c6d1dc68681157d9
+          image: ghcr.io/orriborri/homelab-grocy-stocker:8d0b28ef0bd66525839027177c7b1f7bbbb7311f@sha256:625dee117960f86ba0912ee83fa744fbaa08ac9a7e13845d927aeca15a4ddc9d
           env:
             - name: GROCY_URL
               value: http://grocy.default.svc.cluster.local
