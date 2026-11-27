@@ -28,6 +28,19 @@
   },
   "packageRules": [
     {
+      "description": "Postgres majors need a dump/restore or CNPG import, see docs/postgres-upgrade.md",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "/postgres/"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    },
+    {
       "description": "Pin Flux/Helm chart versions instead of leaving them floating",
       "matchDatasources": [
         "helm"
