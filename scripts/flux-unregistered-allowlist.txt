@@ -1,0 +1,31 @@
+# Flux definitions that exist but are deliberately not in clusters/homelab/kustomization.yaml.
+# Generated from the state on 2026-11-27; review and delete entries you no longer need.
+apps/adb-mqtt.yaml
+apps/add-bot.yaml
+apps/calibre.yaml
+apps/fruitiex-org.yaml
+apps/homeassistant.yaml
+apps/homectl.yaml
+apps/hue-mqtt.yaml
+apps/influxdb.yaml
+apps/ingress-proxy.yaml
+apps/jellyfin.yaml
+apps/kavita.yaml
+apps/kia-poller.yaml
+apps/kitchenowl.yaml
+apps/lifx-mqtt.yaml
+apps/mealie.yaml
+apps/n8n.yaml
+apps/nordpool-mqtt.yaml
+apps/postgres.yaml
+apps/sparkyfitness.yaml
+apps/tuya-mqtt.yaml
+apps/twinkly-mqtt.yaml
+apps/vikunja.yaml
+apps/wger.yaml
+apps/wol.yaml
+infrastructure/capacitor-loadbalancer.yaml
+infrastructure/capacitor.yaml
+infrastructure/image-automation.yaml
+infrastructure/notification-provider.yaml
+infrastructure/notification-receiver.yaml

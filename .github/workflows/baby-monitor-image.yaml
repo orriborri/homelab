@@ -45,4 +45,4 @@ jobs:
         run: |
           printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
           docker push "$IMAGE"
-          docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE" >> "$GITHUB_STEP_SUMMARY"
+          docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE" | tee -a "$GITHUB_STEP_SUMMARY"

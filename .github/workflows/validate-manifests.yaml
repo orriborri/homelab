@@ -39,6 +39,13 @@ jobs:
         run: |
           kubectl kustomize clusters/homelab/infrastructure > .artifacts/cluster-infrastructure.yaml
 
+      - name: Render cluster entrypoint
+        run: |
+          kubectl kustomize clusters/homelab > .artifacts/cluster-entrypoint.yaml
+
+      - name: Check Flux definitions are registered
+        run: bash scripts/check-flux-registration.sh
+
       - name: Verify artifacts
         run: ls -la .artifacts/
 

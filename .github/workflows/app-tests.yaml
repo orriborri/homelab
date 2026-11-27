@@ -1,0 +1,29 @@
+name: app-tests
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/app-tests.yaml
+      - apps/baby-monitor/**
+      - apps/grocy-stocker/**
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [baby-monitor, grocy-stocker]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install
+        run: if [ -f apps/${{ matrix.app }}/package-lock.json ]; then npm ci --prefix apps/${{ matrix.app }}; fi
+      - name: Test
+        run: npm test --prefix apps/${{ matrix.app }}
