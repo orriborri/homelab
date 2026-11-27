@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stock</title>
+<style>
+  :root { --bg: #f6f5f1; --card: #fff; --text: #1d1d1b; --muted: #6b6a64; --line: #dcdad2; --accent: #2f6f4f; --accent-text: #fff; --bad: #b3261e; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161615; --card: #20201e; --text: #ecebe6; --muted: #9b9a92; --line: #383733; --accent: #5fae86; --accent-text: #10110f; --bad: #f2b8b5; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.4 system-ui, sans-serif; }
+  main { max-width: 32rem; margin: 0 auto; padding: 16px; display: grid; gap: 12px; }
+  h1 { font-size: 1.25rem; margin: 4px 0; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 10px; }
+  label { display: grid; gap: 4px; font-size: .85rem; color: var(--muted); }
+  input, button { font: inherit; padding: 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--text); min-height: 44px; width: 100%; }
+  button { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; cursor: pointer; }
+  button.plain { background: transparent; color: var(--text); border-color: var(--line); }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  video { width: 100%; border-radius: 10px; background: #000; max-height: 40vh; object-fit: cover; }
+  #log { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  #log li { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); font-size: .9rem; overflow-wrap: anywhere; }
+  #log li.err { color: var(--bad); }
+  summary { font-weight: 600; cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+  .hint { color: var(--muted); font-size: .85rem; margin: 0; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Stock</h1>
+
+  <section>
+    <label>Location
+      <input id="location" list="locations" placeholder="default (Keittiö)" autocomplete="off" autocapitalize="characters">
+    </label>
+    <datalist id="locations"></datalist>
+    <button id="camera" type="button">Scan with camera</button>
+    <video id="video" playsinline muted hidden></video>
+    <p class="hint" id="cameraHint">Scan a location label first, then the products. Everything stocks there until you change it.</p>
+  </section>
+
+  <section>
+    <label>Barcode (EAN)
+      <input id="ean" inputmode="numeric" autocomplete="off" placeholder="6410405060457">
+    </label>
+    <div class="row">
+      <label>Best before <input id="date" type="date"></label>
+      <label>Count <input id="count" type="number" min="1" value="1" inputmode="numeric"></label>
+    </div>
+    <button id="add" type="button">Add to stock</button>
+    <ul id="log" aria-live="polite"></ul>
+  </section>
+
+  <section>
+    <details>
+      <summary>Add a cabinet</summary>
+      <form id="cabinetForm" style="display:grid;gap:10px">
+        <div class="row">
+          <label>Room letter <input id="room" maxlength="1" value="K" autocapitalize="characters" required></label>
+          <label>Cabinet number <input id="cabinet" type="number" min="1" max="99" inputmode="numeric" required></label>
+        </div>
+        <div class="row">
+          <label>Shelves or drawers <input id="shelves" type="number" min="1" max="99" inputmode="numeric"></label>
+          <span class="hint" style="align-self:end">or a grid:</span>
+        </div>
+        <div class="row">
+          <label>Rows <input id="rows" type="number" min="1" max="9" inputmode="numeric"></label>
+          <label>Columns <input id="cols" type="number" min="1" max="9" inputmode="numeric"></label>
+        </div>
+        <label>Description (optional) <input id="description" placeholder="Rice and pasta"></label>
+        <button type="submit">Create locations</button>
+        <p class="hint">Codes are always 6 characters: K06-02 is room K, cabinet 06, shelf 2 from the top. A grid slot is row then column (G01-23).</p>
+      </form>
+    </details>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const LOCATION = /^[A-Z]\d{2}-\d{2}$/;
+const EAN = /^\d{8,14}$/;
+const store = {
+  get: k => { try { return localStorage.getItem(k) ?? ''; } catch { return ''; } },
+  set: (k, v) => { try { localStorage.setItem(k, v); } catch {} }
+};
+
+function log(text, isError) {
+  const li = document.createElement('li');
+  li.textContent = text;
+  if (isError) li.className = 'err';
+  $('log').prepend(li);
+  while ($('log').children.length > 20) $('log').lastChild.remove();
+}
+
+async function api(path, payload) {
+  const res = await fetch(path, payload === undefined ? {} : { method: 'POST', body: JSON.stringify(payload) });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.error || `HTTP ${res.status}`);
+  return body;
+}
+
+async function loadLocations() {
+  try {
+    const rows = await api('/api/locations');
+    $('locations').replaceChildren(...rows.map(r => Object.assign(document.createElement('option'), { value: r.name, label: r.description || '' })));
+  } catch (err) { log(`Could not load locations: ${err.message}`, true); }
+}
+
+function setLocation(code) {
+  $('location').value = code;
+  store.set('location', code);
+  log(`Location: ${code}`);
+}
+
+async function add(ean) {
+  const location = $('location').value.trim().toUpperCase();
+  if (!EAN.test(ean)) return log(`"${ean}" is not a barcode (8-14 digits)`, true);
+  if (location && !LOCATION.test(location)) return log(`"${location}" is not a location code like K06-02`, true);
+  const payload = { ean, count: Number($('count').value) || 1 };
+  if ($('date').value) payload.bestBefore = $('date').value;
+  if (location) payload.location = location;
+  try {
+    const { status } = await api('/api/scan', payload);
+    log(`${status === 'created' ? 'New product created and stocked' : 'Stocked'}: ${ean}${location ? ' in ' + location : ''}`);
+    $('ean').value = '';
+    $('date').value = '';
+    $('count').value = 1;
+  } catch (err) { log(`${ean}: ${err.message}`, true); }
+}
+
+$('add').onclick = () => add($('ean').value.trim());
+$('ean').onkeydown = e => { if (e.key === 'Enter') add($('ean').value.trim()); };
+$('location').onchange = () => store.set('location', $('location').value.trim().toUpperCase());
+
+// Camera scanning: location QR codes set the location, anything else that looks like a barcode is added.
+let stream, timer, last = { code: '', at: 0 };
+function stopCamera() {
+  clearInterval(timer);
+  stream?.getTracks().forEach(t => t.stop());
+  stream = undefined;
+  $('video').hidden = true;
+  $('camera').textContent = 'Scan with camera';
+}
+
+$('camera').onclick = async () => {
+  if (stream) return stopCamera();
+  if (!('BarcodeDetector' in window)) { $('cameraHint').textContent = "This browser can't scan barcodes. Type the code instead (Chrome on Android works)."; return; }
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+  } catch (err) { $('cameraHint').textContent = `Camera unavailable: ${err.message}`; return; }
+  const detector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'qr_code'] });
+  $('video').srcObject = stream;
+  $('video').hidden = false;
+  await $('video').play();
+  $('camera').textContent = 'Stop camera';
+  timer = setInterval(async () => {
+    const [hit] = await detector.detect($('video')).catch(() => []);
+    const code = hit?.rawValue?.trim();
+    if (!code || (code === last.code && Date.now() - last.at < 4000)) return;
+    last = { code, at: Date.now() };
+    navigator.vibrate?.(60);
+    if (LOCATION.test(code)) setLocation(code);
+    else add(code);
+  }, 300);
+};
+
+$('cabinetForm').onsubmit = async (e) => {
+  e.preventDefault();
+  const num = id => ($(id).value === '' ? undefined : Number($(id).value));
+  const spec = { room: $('room').value.trim().toUpperCase(), cabinet: num('cabinet'), shelves: num('shelves'), rows: num('rows'), cols: num('cols') };
+  if ($('description').value.trim()) spec.description = $('description').value.trim();
+  try {
+    const { created, existing } = await api('/api/cabinets', spec);
+    log(`Created ${created.length}: ${created.join(', ') || '-'}${existing.length ? `. Already existed: ${existing.join(', ')}` : ''}`);
+    loadLocations();
+  } catch (err) { log(`Cabinet: ${err.message}`, true); }
+};
+
+$('location').value = store.get('location');
+loadLocations();
+</script>
+</body>
+</html>

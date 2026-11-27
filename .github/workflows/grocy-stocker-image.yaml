@@ -9,6 +9,7 @@ on:
       - apps/grocy-stocker/Dockerfile
       - apps/grocy-stocker/package.json
       - apps/grocy-stocker/src/**
+      - apps/grocy-stocker/public/**
       - apps/grocy-stocker/test/**
 
 permissions:

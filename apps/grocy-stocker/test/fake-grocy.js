@@ -24,7 +24,7 @@ export async function startFakeGrocy(seed = {}) {
     let x;
     if (req.method === 'GET' && url.pathname === '/api/objects/product_barcodes') return send(200, match(state.barcodes));
     if (req.method === 'GET' && url.pathname === '/api/objects/quantity_unit_conversions') return send(200, match(state.conversions));
-    if (req.method === 'GET' && url.pathname === '/api/objects/locations') return send(200, state.locations);
+    if (req.method === 'GET' && url.pathname === '/api/objects/locations') return send(200, match(state.locations));
     if (req.method === 'POST' && url.pathname === '/api/objects/locations') {
       if (state.locations.some(l => l.name === body.name)) return send(400, { error_message: 'UNIQUE constraint failed: locations.name' });
       const id = nextId++; state.locations.push({ id, ...body }); return send(200, { created_object_id: id });
