@@ -12,18 +12,19 @@ This repository defines a Talos Kubernetes homelab through Flux GitOps.
 - `scripts/` and `debug/`: maintenance helpers and diagnostic manifests.
 - Root Talos YAML files: node configuration and machine patches.
 
-When adding a workload, register its manifests in its local Kustomization and its Flux definition in `clusters/homelab/apps/kustomization.yaml`.
+When adding a workload, register its manifests in its local Kustomization, put its Flux definition in `clusters/homelab/apps/<app>.yaml`, and list that file in `clusters/homelab/kustomization.yaml`. That entrypoint is what Flux reads; `scripts/check-flux-registration.sh` fails CI when a definition is missing from it.
 
 ## Build, Test, and Development Commands
 
 - `nix-shell`: load the tools declared in `default.nix`, including kubectl, Flux, Helm, SOPS, and pre-commit.
+- Agents: `kubectl`, `flux`, `talosctl` etc. are not on the default PATH. Run them through nix, e.g. `NIX_PATH=nixpkgs=flake:nixpkgs nix-shell --run 'kubectl get pods -A'` from the repo root (it picks up `./kubeconfig`). Without `NIX_PATH` every call prints a harmless `<nixpkgs>` not-found `error:` trace. Keep cluster access read-only unless asked.
 - `pre-commit install`: install the configured commit and commit-message hooks.
 - `pre-commit run --all-files`: run the configured secret checks.
 - `kubectl kustomize apps/<app>`: render a workload locally; repeat for changed infrastructure directories.
 - `kubectl kustomize clusters/homelab`: check the cluster entrypoint renders.
 - `flux get all -A` and `kubectl get pods -A`: inspect reconciliation and runtime health on the configured cluster.
 
-There is no application build or local development server; Flux deploys the committed manifests.
+Manifests have no local build or development server; Flux deploys the committed ones. Apps with source are built into images by the `<app>-image` workflows. Pin the result in the app's `deployment.yaml` as `ghcr.io/...:<sha>@sha256:<digest>`; the workflow log prints the digest.
 
 ## Coding Style & Naming Conventions
 
@@ -31,11 +32,13 @@ Use two-space YAML indentation and preserve nearby formatting. Prefer lowercase,
 
 ## Testing Guidelines
 
-There is no automated unit-test framework or coverage target. Validate every changed Kustomization and review rendered resources, namespaces, storage settings, and substitutions. Local rendering does not perform Flux post-build substitution or SOPS decryption. For deployed changes, record Flux readiness and pod health; diagnostic manifests live in `debug/`.
+Apps with source code (`apps/baby-monitor`, `apps/grocy-stocker`) have `npm test`, run on pull requests by the `app-tests` workflow. Manifests have no test framework or coverage target. Validate every changed Kustomization and review rendered resources, namespaces, storage settings, and substitutions. Local rendering does not perform Flux post-build substitution or SOPS decryption. For deployed changes, record Flux readiness and pod health; diagnostic manifests live in `debug/`.
 
 ## Commit & Pull Request Guidelines
 
 Use Conventional Commits, enforced by the commit-message hook: `feat(sparkyfitness): add deployment manifests` or `chore(deps): update image tag`. History also contains legacy free-form messages. Keep changes focused. PR descriptions should explain affected workloads, configuration prerequisites, validation performed, and operational impact; link relevant issues.
+
+This repository is a fork of `FruitieX/homelab`: open pull requests with `gh pr create --repo orriborri/homelab`, since the default base is the upstream. The working tree often carries unrelated uncommitted edits, so branch from `origin/main` with `git worktree add <dir> -b <branch> origin/main` instead of `git checkout`.
 
 ## Security & Configuration
 
