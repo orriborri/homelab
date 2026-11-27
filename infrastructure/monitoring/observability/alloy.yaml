@@ -21,7 +21,17 @@ spec:
     controller:
       type: deployment
       replicas: 1
+    service:
+      type: LoadBalancer
+      annotations:
+        metallb.universe.tf/loadBalancerIPs: 192.168.11.6
+        external-dns.alpha.kubernetes.io/exclude: "true"
     alloy:
+      extraPorts:
+        - name: otlp-http
+          port: 4318
+          targetPort: 4318
+          protocol: TCP
       resources:
         requests:
           cpu: 50m
@@ -63,5 +73,26 @@ spec:
           loki.write "local" {
             endpoint {
               url = "http://observability-loki-gateway.observability.svc.cluster.local/loki/api/v1/push"
+            }
+          }
+          // OTLP from the Home Assistant otelcol add-on (LAN only, no auth).
+          otelcol.receiver.otlp "ha" {
+            http {
+              endpoint = "0.0.0.0:4318"
+            }
+            output {
+              logs    = [otelcol.exporter.loki.ha.input]
+              metrics = [otelcol.exporter.prometheus.ha.input]
+            }
+          }
+          otelcol.exporter.loki "ha" {
+            forward_to = [loki.write.local.receiver]
+          }
+          otelcol.exporter.prometheus "ha" {
+            forward_to = [prometheus.remote_write.local.receiver]
+          }
+          prometheus.remote_write "local" {
+            endpoint {
+              url = "http://observability-metrics-prometheus.observability.svc.cluster.local:9090/api/v1/write"
             }
           }

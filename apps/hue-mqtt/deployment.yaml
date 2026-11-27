@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hue-mqtt
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hue-mqtt
+  template:
+    metadata:
+      labels:
+        app: hue-mqtt
+      annotations:
+        reloader.stakater.com/auto: "true"
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: hue-mqtt
+          # Fork of FruitieX/hue-mqtt with MQTT username/password support. Pin by digest once built.
+          image: ghcr.io/orriborri/hue-mqtt:sha-PLACEHOLDER
+          workingDir: /config
+          volumeMounts:
+            - name: settings
+              mountPath: /config
+              readOnly: true
+          resources:
+            requests: {cpu: 25m, memory: 32Mi}
+            limits: {memory: 128Mi}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+      volumes:
+        - name: settings
+          secret:
+            secretName: hue-mqtt-settings

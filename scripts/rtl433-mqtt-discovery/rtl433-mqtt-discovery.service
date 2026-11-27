@@ -1,0 +1,24 @@
+[Unit]
+Description=RTL433 MQTT Home Assistant discovery bridge
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/libexec/rtl433-mqtt-discovery/run-bridge.sh
+Environment=PYTHONDONTWRITEBYTECODE=1
+Restart=always
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+ProtectProc=invisible
+ProcSubset=pid
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ReadOnlyPaths=/etc/rtl_433/rtl_433.conf
+
+[Install]
+WantedBy=multi-user.target
