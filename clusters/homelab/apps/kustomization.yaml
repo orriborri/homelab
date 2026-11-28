@@ -21,6 +21,7 @@ resources:
   #- vikunja.yaml
   - sump-it.yaml
   - baby-monitor.yaml
+  - paladio.yaml
   - ingress-proxy.yaml
 #- lifx-mqtt.yaml
 #- tuya-mqtt.yaml

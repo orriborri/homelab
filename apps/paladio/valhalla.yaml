@@ -1,0 +1,83 @@
+# tile_urls seeds the routing map; the Monaco default is a placeholder, set your region's .osm.pbf
+# (e.g. https://download.geofabrik.de/europe/finland-latest.osm.pbf) and bump force_rebuild once.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paladio-valhalla
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: paladio-valhalla
+  template:
+    metadata:
+      labels:
+        app: paladio-valhalla
+    spec:
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+      containers:
+        - name: valhalla
+          image: ghcr.io/gis-ops/docker-valhalla/valhalla:3.5.1
+          env:
+            - name: serve_tiles
+              value: "True"
+            - name: server_threads
+              value: "2"
+            - name: use_tiles_ignore_pbf
+              value: "True"
+            - name: force_rebuild
+              value: "False"
+            - name: build_elevation
+              value: "False"
+            - name: build_transit
+              value: "False"
+            - name: tile_urls
+              value: https://download.geofabrik.de/europe/monaco-latest.osm.pbf
+          ports:
+            - name: http
+              containerPort: 8002
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: http
+            periodSeconds: 30
+            failureThreshold: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 3Gi
+          volumeMounts:
+            - name: custom-files
+              mountPath: /custom_files
+            - name: gtfs
+              mountPath: /gtfs_feeds
+            - name: shm
+              mountPath: /dev/shm
+      volumes:
+        - name: custom-files
+          persistentVolumeClaim:
+            claimName: paladio-valhalla
+        - name: gtfs
+          persistentVolumeClaim:
+            claimName: paladio-gtfs
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: paladio-valhalla
+spec:
+  selector:
+    app: paladio-valhalla
+  ports:
+    - name: http
+      port: 8002

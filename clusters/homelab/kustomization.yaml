@@ -37,3 +37,4 @@ resources:
   - infrastructure/shared-postgres.yaml
   - apps/sump-it.yaml
   - apps/baby-monitor.yaml
+  - apps/paladio.yaml

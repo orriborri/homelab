@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paladio-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paladio-frontend
+  template:
+    metadata:
+      labels:
+        app: paladio-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/leandro-juan/paladio-frontend:3.0.0
+          env:
+            - name: PALADIO_PUBLIC_API_URL
+              value: https://paladio.orriborri.com/api
+          ports:
+            - name: http
+              containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: 20m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: paladio-frontend
+spec:
+  selector:
+    app: paladio-frontend
+  ports:
+    - name: http
+      port: 3000
