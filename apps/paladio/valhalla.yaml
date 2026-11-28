@@ -1,5 +1,4 @@
-# tile_urls seeds the routing map; the Monaco default is a placeholder, set your region's .osm.pbf
-# (e.g. https://download.geofabrik.de/europe/finland-latest.osm.pbf) and bump force_rebuild once.
+# tile_urls seeds the routing map; changing it later needs force_rebuild "True" for one start.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -36,7 +35,7 @@ spec:
             - name: build_transit
               value: "False"
             - name: tile_urls
-              value: https://download.geofabrik.de/europe/monaco-latest.osm.pbf
+              value: https://download.geofabrik.de/europe/finland-latest.osm.pbf
           ports:
             - name: http
               containerPort: 8002
