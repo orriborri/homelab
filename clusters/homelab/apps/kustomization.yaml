@@ -37,7 +37,6 @@ resources:
   #- tuuli-portfolio-redirect.yaml
   #- neolink.yaml
   #- znc.yaml
-  - sparkyfitness.yaml
   - kia-poller.yaml
   - kitchenowl.yaml
   - grocy.yaml

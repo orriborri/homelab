@@ -249,7 +249,6 @@ kubectl exec -i deployment/postgres -- psql -U postgres -d new_database < backup
 ## Example Applications Using This Pattern
 
 - Pinepods examples above are illustrative; verify application manifests before adopting them.
-- Sparkyfitness currently runs its own PostgreSQL deployment in the `sparkyfitness` namespace.
 
 ---
 
