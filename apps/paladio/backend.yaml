@@ -1,0 +1,120 @@
+# api, celery worker and beat share one pod so the alembic init container gates all three
+# and they share the /data volume, as in the upstream docker-compose.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: paladio-backend
+data:
+  ENVIRONMENT: production
+  POSTGRES_HOST: paladio-db
+  REDIS_URL: redis://paladio-redis:6379/0
+  VALHALLA_URL: http://paladio-valhalla:8002
+  PALADIO_DATA_DIR: /data
+  FASTEMBED_CACHE_PATH: /opt/models/fastembed
+  FASTEMBED_THREADS: "2"
+  API_WORKERS: "1"
+  ALLOWED_ORIGINS: https://paladio.orriborri.com
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paladio-backend
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: paladio-backend
+  template:
+    metadata:
+      labels:
+        app: paladio-backend
+    spec:
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+      initContainers:
+        - name: migrate
+          image: &image ghcr.io/leandro-juan/paladio-api:3.0.0
+          command: [sh, -c, "alembic upgrade head && python scripts/migrate_verified_fares_to_quotes.py"]
+          envFrom: &envfrom
+            - configMapRef:
+                name: paladio-backend
+            - secretRef:
+                name: paladio
+          volumeMounts: &mounts
+            - {name: data, mountPath: /data}
+            - {name: custom-files, mountPath: /custom_files}
+            - {name: gtfs, mountPath: /gtfs_feeds}
+      containers:
+        - name: api
+          image: *image
+          envFrom: *envfrom
+          ports:
+            - name: http
+              containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 50m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+          volumeMounts: *mounts
+        - name: worker
+          image: *image
+          command: [celery, -A, app.celery_app, worker, --loglevel=info, -Q, "celery,transit_build,poi_hydration", -c, "2", --prefetch-multiplier=1, --max-memory-per-child=1024000, --max-tasks-per-child=50]
+          envFrom: *envfrom
+          resources:
+            requests:
+              cpu: 50m
+              memory: 512Mi
+            limits:
+              memory: 3Gi
+          volumeMounts: *mounts
+        - name: beat
+          image: *image
+          command: [celery, -A, app.celery_app, beat, --loglevel=info, --schedule, /data/celerybeat-schedule]
+          envFrom: *envfrom
+          resources:
+            requests:
+              cpu: 10m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          volumeMounts:
+            - {name: data, mountPath: /data}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: paladio-data
+        - name: custom-files
+          persistentVolumeClaim:
+            claimName: paladio-valhalla
+        - name: gtfs
+          persistentVolumeClaim:
+            claimName: paladio-gtfs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: paladio-backend
+spec:
+  selector:
+    app: paladio-backend
+  ports:
+    - name: http
+      port: 8000

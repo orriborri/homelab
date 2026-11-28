@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: paladio
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # /api/ws/* websockets (trip agent, stream) stay open for long sessions
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: private
+  tls:
+    - secretName: orriborri-com-tls
+      hosts:
+        - paladio.orriborri.com
+  rules:
+    - host: paladio.orriborri.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: paladio-backend
+                port:
+                  name: http
+          - path: /mcp
+            pathType: Prefix
+            backend:
+              service:
+                name: paladio-backend
+                port:
+                  name: http
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: paladio-frontend
+                port:
+                  name: http

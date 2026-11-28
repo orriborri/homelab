@@ -1,0 +1,44 @@
+# ReadWriteMany: backend and valhalla pods share these NFS volumes (can land on different nodes).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paladio-db
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: nfs-client
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paladio-data
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: nfs-client
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paladio-valhalla
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: nfs-client
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paladio-gtfs
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: nfs-client
