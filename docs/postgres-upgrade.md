@@ -10,7 +10,7 @@ Instances (check `grep -rn "postgres:" apps infrastructure`):
 | Instance | Kind | Notes |
 |---|---|---|
 | `shared-postgres` (`infrastructure/database/shared-postgres`) | CloudNativePG | Preferred home for new databases. |
-| `firefly-postgres`, `sparkyfitness` postgres | plain Deployment + PVC | Move to CNPG when next upgraded. |
+| `firefly-postgres` | plain Deployment + PVC | Move to CNPG when next upgraded. |
 | `apps/postgres` | `pgautoupgrade` image | Upgrades itself, still back up first. |
 
 There are **no automated backups** today. Step 1 is always a manual dump.

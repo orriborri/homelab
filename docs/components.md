@@ -40,7 +40,7 @@ in the repository; successful update automation is not verified by this audit.
 
 The [application registration list](../clusters/homelab/apps/kustomization.yaml)
 includes podinfo, Audiobookshelf, Mosquitto, PostgreSQL, Home Assistant, Actual,
-Sump-it, ingress-proxy, Jellyfin, Mealie, SparkyFitness, kia-poller, and KitchenOwl.
+Sump-it, ingress-proxy, Jellyfin, Mealie, kia-poller, and KitchenOwl.
 Other application directories and commented registrations are retained examples
 or disabled workloads.
 
